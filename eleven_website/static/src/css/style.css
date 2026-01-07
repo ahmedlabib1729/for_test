@@ -1,0 +1,3909 @@
+/* ===================================
+   Eleven Website - Custom Styles
+   =================================== */
+
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===================================
+   NAVIGATION BAR
+   =================================== */
+.eleven_header {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.eleven_navbar {
+    background-color: #1e2a35;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.eleven_nav_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo */
+.eleven_logo_img {
+    height: 45px;
+    width: auto;
+}
+
+/* Navigation Menu */
+.eleven_nav_menu {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.eleven_nav_list {
+    list-style: none;
+    display: flex;
+    gap: 50px;
+    margin: 0;
+    padding: 0;
+}
+
+.eleven_nav_item {
+    position: relative;
+}
+
+.eleven_nav_link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: color 0.3s;
+    padding: 8px 0;
+    display: block;
+}
+
+.eleven_nav_link:hover,
+.eleven_nav_link.active {
+    color: #e74c3c;
+}
+
+.eleven_nav_link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e74c3c;
+}
+
+/* Right Icons */
+.eleven_nav_icons {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.eleven_icon_link {
+    color: #ffffff;
+    font-size: 18px;
+    text-decoration: none;
+    transition: color 0.3s;
+    position: relative;
+}
+
+.eleven_icon_link:hover {
+    color: #e74c3c;
+}
+
+/* Badge for Cart and Wishlist */
+.eleven_badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #e74c3c;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* ===================================
+   HERO SECTION
+   =================================== */
+
+/* ============================================
+   OPTION 1 ACTIVE: البانر يتكيف مع حجم الصورة
+   الصورة تظهر كاملة - الكلام في الثلث العلوي
+   ============================================ */
+
+.eleven_hero_section {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    overflow: hidden;
+}
+
+.eleven_hero_bg {
+    position: relative;
+    width: 100%;
+    height: auto;
+}
+
+.eleven_hero_bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.eleven_hero_img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.eleven_hero_content {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    color: #ffffff;
+    width: 90%;
+    max-width: 1200px;
+}
+
+
+/* ============================================
+   OPTION 2: البانر له حجم ثابت (الصورة تتقطع لو كبيرة) - NOT ACTIVE
+   ============================================ */
+/*
+.eleven_hero_section {
+    position: relative;
+    width: 100%;
+    height: 700px;
+    overflow: hidden;
+}
+
+.eleven_hero_bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.eleven_hero_bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.eleven_hero_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.eleven_hero_content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding-top: 180px;
+    color: #ffffff;
+}
+*/
+
+/* ============================================
+   OPTION 3: البانر responsive (يتغير حسب الشاشة) - NOT ACTIVE
+   ============================================ */
+/*
+.eleven_hero_section {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    min-height: 500px;
+    max-height: 800px;
+    overflow: hidden;
+}
+
+.eleven_hero_bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.eleven_hero_bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.eleven_hero_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.eleven_hero_content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    color: #ffffff;
+    width: 90%;
+    max-width: 1200px;
+}
+
+@media (max-width: 768px) {
+    .eleven_hero_section {
+        height: 60vh;
+        min-height: 400px;
+    }
+}
+*/
+
+/* ============================================
+   باقي الـ Styles (ما تغيرش فيهم)
+   ============================================ */
+.eleven_hero_title {
+    font-size: 56px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.eleven_hero_text {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.eleven_btn_contact {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 15px 45px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.eleven_btn_contact:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+}
+
+/* ===================================
+   CATEGORY SECTION
+   =================================== */
+.eleven_category_section {
+    padding: 80px 0;
+    background-color: #f5f5f0;
+}
+
+.eleven_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+/* Category Header */
+.eleven_category_header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.eleven_category_title {
+    font-family: 'Tajawal', sans-serif;
+    font-size: 80px;
+    font-weight: 800;
+    color: transparent;
+    -webkit-text-stroke: 2px #d4a574;
+    text-stroke: 2px #d4a574;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+}
+
+.eleven_category_subtitle {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    letter-spacing: 2px;
+}
+
+/* Category Grid */
+.eleven_category_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.eleven_category_card {
+    text-align: center;
+}
+
+.eleven_category_image {
+    width: 100%;
+    height: 350px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.eleven_category_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.eleven_category_card:hover .eleven_category_image img {
+    transform: scale(1.05);
+}
+
+.eleven_category_name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.eleven_btn_shop {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px 35px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.eleven_btn_shop:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
+/* ===================================
+   FOOTER
+   =================================== */
+.eleven_footer {
+    background-color: #1e2a35;
+    padding: 60px 0 40px;
+    color: #ffffff;
+}
+
+.eleven_footer_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 60px;
+}
+
+/* Left Section */
+.eleven_footer_left {
+    flex: 1.2;
+}
+
+.eleven_footer_logo_section {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Temporary Text Logo - Replace with image later */
+
+
+
+.eleven_footer_logo_img {
+    height: 100px;
+    width: auto;
+}
+
+
+.eleven_footer_about_text {
+    flex: 1;
+}
+
+.eleven_footer_about {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+/* Right Section */
+.eleven_footer_right {
+    flex: 1;
+    max-width: 450px;
+}
+
+.eleven_footer_title {
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    color: #ffffff;
+}
+
+.eleven_footer_subtitle {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #ffffff;
+    margin-bottom: 25px;
+}
+
+/* Social Media Icons */
+.eleven_footer_social {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.eleven_social_icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-size: 16px;
+}
+
+.eleven_social_icon:hover {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    transform: translateY(-2px);
+}
+
+/* Contact Info */
+.eleven_footer_contact {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.eleven_contact_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.eleven_contact_item i {
+    font-size: 18px;
+    color: #ffffff;
+    margin-top: 3px;
+}
+
+.eleven_contact_text {
+    flex: 1;
+}
+
+.eleven_contact_label {
+    font-size: 13px;
+    color: #ffffff;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.eleven_contact_value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+
+/* ===================================
+   ABOUT SECTION
+   =================================== */
+.eleven_about_section {
+    background-color: #f0f0f0;
+    padding: 80px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated Background Circles */
+.eleven_animated_bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.eleven_circle {
+    position: absolute;
+    border-radius: 50%;
+    background: #1e2a35;
+}
+
+/* Circle 1 - دائرة كبيرة ورا الديفيوزر */
+.eleven_circle_1 {
+    width: 450px;
+    height: 450px;
+    top: 50%;
+    left: 20%;
+    transform: translateY(-50%);
+    background: #1e2a35;
+    opacity: 1;
+    animation: float1 25s ease-in-out infinite;
+}
+
+/* Circle 2 - دائرة صغيرة فوق شمال */
+.eleven_circle_2 {
+    width: 100px;
+    height: 100px;
+    top: 15%;
+    left: 5%;
+    background: #1e2a35;
+    opacity: 1;
+    animation: float2 20s ease-in-out infinite;
+}
+
+/* Circle 3 - دائرة متوسطة يمين */
+.eleven_circle_3 {
+    width: 280px;
+    height: 280px;
+    bottom: 10%;
+    right: 8%;
+    background: #1e2a35;
+    opacity: 0.6;
+    animation: float3 22s ease-in-out infinite;
+}
+
+/* Circle 4 - دائرة صغيرة وسط يمين */
+.eleven_circle_4 {
+    width: 80px;
+    height: 80px;
+    top: 40%;
+    right: 20%;
+    background: #1e2a35;
+    opacity: 0.8;
+    animation: float4 18s ease-in-out infinite;
+}
+
+/* Circle 5 - دائرة متوسطة تحت */
+.eleven_circle_5 {
+    width: 200px;
+    height: 200px;
+    bottom: -50px;
+    left: 30%;
+    background: #1e2a35;
+    opacity: 0.5;
+    animation: float5 28s ease-in-out infinite;
+}
+
+/* Animations - حركة ناعمة وبطيئة */
+@keyframes float1 {
+    0%, 100% {
+        transform: translateY(-50%) translateX(0);
+    }
+    25% {
+        transform: translateY(-50%) translateX(-15px);
+    }
+    50% {
+        transform: translateY(-50%) translateX(20px);
+    }
+    75% {
+        transform: translateY(-50%) translateX(-10px);
+    }
+}
+
+@keyframes float2 {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    33% {
+        transform: translate(10px, -15px);
+    }
+    66% {
+        transform: translate(-12px, 10px);
+    }
+}
+
+@keyframes float3 {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    50% {
+        transform: translate(-20px, 15px) scale(1.05);
+    }
+}
+
+@keyframes float4 {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(-8px, 12px);
+    }
+    50% {
+        transform: translate(15px, -8px);
+    }
+    75% {
+        transform: translate(-10px, -15px);
+    }
+}
+
+@keyframes float5 {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    40% {
+        transform: translate(25px, -20px) scale(1.08);
+    }
+    80% {
+        transform: translate(-20px, 25px) scale(0.95);
+    }
+}
+
+.eleven_about_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.eleven_about_image {
+    flex: 1;
+    text-align: center;
+}
+
+.eleven_about_image img {
+    max-width: 100%;
+    height: auto;
+    max-height: 500px;
+    position: relative;
+    z-index: 2;
+}
+
+.eleven_about_content {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.eleven_about_logo {
+    font-family: "Cairo", sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #1e2a35;
+    margin-bottom: 5px;
+}
+
+.eleven_about_subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.eleven_about_title {
+    font-size: 36px;
+    font-weight: bold;
+    color: #e74c3c;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+.eleven_about_text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.eleven_btn_contact_about {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px 40px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+
+.eleven_btn_contact_about:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+/* ===================================
+   FEATURES SECTION
+   =================================== */
+.eleven_features_section {
+    padding: 150px 70px;
+    position: relative;
+    width: 100%;
+    min-height: 600px;
+    overflow: hidden;
+}
+
+/* Background Image Container */
+.eleven_features_bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.eleven_features_bg_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+
+
+/* Dark Overlay */
+.eleven_features_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.85);
+    z-index: 1;
+}
+
+.eleven_features_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.eleven_features_main_title {
+    font-family: "Cairo", sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: #ffffff;
+    text-align: center;
+
+    margin-bottom: 60px;
+}
+
+.eleven_features_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+}
+
+.eleven_feature_box {
+    background-color: transparent;
+}
+
+.eleven_feature_title {
+    background-color: #d63031;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 900;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+    width: fit-content;  /* ← على قد المحتوى */
+}
+
+.eleven_feature_text {
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+
+
+/* ===================================
+   WHY CHOOSE SECTION
+   =================================== */
+.eleven_why_choose_section {
+    background-color: #f5f0e8;
+    padding: 80px 20px;
+}
+
+.eleven_why_choose_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 60px;
+    align-items: center;
+}
+
+.eleven_why_choose_image {
+    flex: 1;
+    text-align: center;
+}
+
+.eleven_why_choose_image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.eleven_why_choose_content {
+    flex: 1;
+}
+
+.eleven_why_choose_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.eleven_why_choose_subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.eleven_why_choose_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.eleven_why_box {
+    background-color: #ffffff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+}
+
+.eleven_why_box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.eleven_why_number {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 2px #e74c3c;
+    text-stroke: 2px #e74c3c;
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    opacity: 0.5;
+}
+
+.eleven_why_icon {
+    width: 60px;
+    height: 60px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-bottom: 20px;
+}
+
+.eleven_why_icon i {
+    font-size: 28px;
+    color: #ffffff;
+}
+
+.eleven_why_box_title {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 10px;
+}
+
+.eleven_why_box_text {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+}
+
+
+/* ===================================
+   ESSENTIAL OILS SECTION
+   =================================== */
+.eleven_oils_section {
+    background-color: #f8f8f8;
+    padding: 80px 20px;
+}
+
+.eleven_oils_container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.eleven_oils_header {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto 60px;
+}
+
+.eleven_oils_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 20px;
+    line-height: 1.3;
+}
+
+.eleven_oils_description {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.eleven_oils_content {
+    display: grid;
+    grid-template-columns: 1fr 400px 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+/* Left & Right Features */
+.eleven_oils_left,
+.eleven_oils_right {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.eleven_oils_right {
+    padding-top: 80px;
+}
+
+.eleven_oil_item {
+    position: relative;
+    padding-left: 20px;
+}
+
+.eleven_oil_item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+}
+
+.eleven_oil_name {
+    font-size: 16px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 10px;
+}
+
+.eleven_oil_desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    text-align: justify;
+}
+
+/* Center Image */
+.eleven_oils_center {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 600px;
+}
+
+.eleven_oils_circle {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    background-color: #d63031;
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.eleven_oil_bottle {
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
+    height: auto;
+    filter: drop-shadow(-50px 150px 250px rgba(0,0,0,1));
+    transform: translateY(-70px);
+}
+
+
+
+/* ===================================
+   BEST SELLERS SECTION
+   =================================== */
+.eleven_bestsellers_section {
+    background-color: #f0ebe4;
+    padding: 80px 20px;
+}
+
+.eleven_bestsellers_container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.eleven_bestsellers_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: #1e2a35;
+    text-align: center;
+    margin-bottom: 50px;
+    letter-spacing: 2px;
+}
+
+.eleven_bestsellers_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.eleven_bestseller_card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.eleven_bestseller_card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.eleven_bestseller_image {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.eleven_bestseller_image a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eleven_bestseller_img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: all 0.3s;
+}
+
+.eleven_bestseller_card:hover .eleven_bestseller_img {
+    transform: scale(1.05);
+}
+
+.eleven_bestseller_info {
+    padding: 10px 0;
+}
+
+.eleven_bestseller_name {
+    font-size: 16px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 10px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eleven_bestseller_name a {
+    color: #1e2a35;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.eleven_bestseller_name a:hover {
+    color: #e74c3c;
+}
+
+.eleven_bestseller_rating {
+    margin-bottom: 10px;
+}
+
+.eleven_bestseller_rating i {
+    color: #e74c3c;
+    font-size: 14px;
+    margin: 0 2px;
+}
+
+.eleven_bestseller_price {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1e2a35;
+}
+
+
+
+
+
+
+/* ===================================
+   CONTACT US PAGE
+   =================================== */
+
+/* Hero Section */
+.eleven_contact_hero {
+    padding: 120px 20px;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Background Image Container */
+.eleven_contact_hero_bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.eleven_contact_hero_bg_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+   object-position: center 30%;
+    object-position: center 70%;
+}
+
+.eleven_contact_hero_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.85);
+    z-index: 1;
+}
+
+.eleven_contact_hero_content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    color: #ffffff;
+}
+
+.eleven_contact_hero_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    margin-bottom: 20px;
+    letter-spacing: 3px;
+}
+
+.eleven_contact_hero_text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.eleven_contact_hero_subtext {
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.eleven_btn_contact_hero {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px 40px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.eleven_btn_contact_hero:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Contact Form Section */
+.eleven_contact_form_section {
+    background-color: #f5f0e8;
+    padding: 80px 20px;
+}
+
+.eleven_contact_form_container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.eleven_contact_form_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 50px;
+    color: #1e2a35;
+}
+
+.eleven_text_red {
+    color: #e74c3c;
+}
+
+.eleven_contact_form {
+    background-color: transparent;
+}
+
+.eleven_form_row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.eleven_form_group {
+    display: flex;
+    flex-direction: column;
+}
+
+.eleven_form_group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e2a35;
+    margin-bottom: 8px;
+}
+
+.eleven_form_input,
+.eleven_form_textarea {
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s;
+    background-color: #ffffff;
+}
+
+.eleven_form_input:focus,
+.eleven_form_textarea:focus {
+    outline: none;
+    border-color: #e74c3c;
+}
+
+.eleven_form_textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.eleven_form_submit {
+    text-align: right;
+    margin-top: 20px;
+}
+
+.eleven_btn_submit {
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.eleven_btn_submit:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Live Help Section */
+.eleven_live_help_section {
+    background-color: #ffffff;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.eleven_live_help_container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.eleven_live_help_subtitle {
+    font-family: 'Cairo', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #e74c3c;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.eleven_live_help_title {
+    font-family: 'Cairo', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 20px;
+}
+
+.eleven_live_help_text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.eleven_btn_whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #2c3e50;
+    color: #ffffff;
+    padding: 15px 35px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s;
+    margin-bottom: 30px;
+}
+
+.eleven_btn_whatsapp:hover {
+    background-color: #1e2a35;
+    transform: translateY(-2px);
+}
+
+.eleven_btn_whatsapp i {
+    font-size: 20px;
+}
+
+.eleven_social_icons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.eleven_social_icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: #1e2a35;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 20px;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.eleven_social_icon:hover {
+    background-color: #e74c3c;
+    transform: scale(1.1);
+}
+
+
+/* ===================================
+   SHOP PAGE
+   =================================== */
+
+/* Hero Section */
+.eleven_shop_hero {
+    background-image: url('/eleven_website/static/src/img/shop-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px;
+    position: relative;
+    text-align: center;
+}
+
+.eleven_shop_hero_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.85);
+    z-index: 0;
+}
+
+.eleven_shop_hero_content {
+    position: relative;
+    z-index: 1;
+}
+
+.eleven_shop_hero_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 56px;
+    font-weight: 900;
+    color: #ffffff;
+    margin-bottom: 25px;
+    letter-spacing: 4px;
+}
+
+.eleven_btn_shop_hero {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px 40px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.eleven_btn_shop_hero:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* ===================================
+   SHOP PAGE - SIMPLE & CLEAN
+   =================================== */
+
+/* ===================================
+   SHOP PAGE - COMPLETE
+   =================================== */
+
+/* Hero Section */
+.eleven_shop_hero {
+    background-image: url('/eleven_website/static/src/img/shop-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 20px;
+    position: relative;
+    text-align: center;
+}
+
+.eleven_shop_hero_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 62, 80, 0.85);
+    z-index: 0;
+}
+
+.eleven_shop_hero_content {
+    position: relative;
+    z-index: 1;
+}
+
+.eleven_shop_hero_title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 56px;
+    font-weight: 900;
+    color: #ffffff;
+    margin-bottom: 25px;
+    letter-spacing: 4px;
+}
+
+.eleven_btn_shop_hero {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: #ffffff;
+    padding: 12px 40px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+}
+
+.eleven_btn_shop_hero:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Shop Section */
+.eleven_shop_section {
+    background-color: #ffffff;
+    padding: 40px 20px;
+}
+
+/* Container - Grid Layout (Sidebar + Main) */
+.eleven_shop_container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+/* Sidebar - Left Side */
+.eleven_shop_sidebar {
+    background-color: #f8f8f8;
+    padding: 25px;
+    border-radius: 10px;
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.eleven_filter_box {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.eleven_filter_box:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.eleven_filter_title {
+    font-size: 14px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Categories */
+.eleven_category_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.eleven_category_list li {
+    margin-bottom: 5px;
+}
+
+.eleven_category_link {
+    display: block;
+    padding: 10px 15px;
+    color: #666;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.eleven_category_link:hover,
+.eleven_category_link.active {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+/* Filters */
+.eleven_color_filters,
+.eleven_size_filters,
+.eleven_price_filters {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.eleven_color_option,
+.eleven_size_option,
+.eleven_price_option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+}
+
+.eleven_color_option input,
+.eleven_size_option input,
+.eleven_price_option input {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.eleven_no_filter {
+    font-size: 13px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Main Shop Area - Right Side */
+.eleven_shop_main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Toolbar */
+.eleven_shop_toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.eleven_search_box {
+    display: flex;
+    flex: 1;
+    max-width: 400px;
+}
+
+.eleven_search_input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 2px solid #ddd;
+    border-right: none;
+    border-radius: 5px 0 0 5px;
+    font-size: 14px;
+    outline: none;
+}
+
+.eleven_search_input:focus {
+    border-color: #e74c3c;
+}
+
+.eleven_search_btn {
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.eleven_search_btn:hover {
+    background-color: #c0392b;
+}
+
+.eleven_toolbar_right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.eleven_sort_box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eleven_sort_box label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e2a35;
+}
+
+.eleven_sort_select {
+    padding: 8px 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.eleven_view_toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.eleven_view_btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f8f8;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #666;
+}
+
+.eleven_view_btn.active,
+.eleven_view_btn:hover {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    color: #ffffff;
+}
+
+/* Products Grid */
+.eleven_products_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.eleven_product_card {
+    background-color: #ffffff;
+    border: 2px solid #f0f0f0;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.eleven_product_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: #e0e0e0;
+}
+
+.eleven_wishlist_btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 2px solid #e74c3c;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.eleven_wishlist_btn i {
+    color: #e74c3c;
+    font-size: 16px;
+}
+
+.eleven_wishlist_btn:hover {
+    background-color: #e74c3c;
+}
+
+.eleven_wishlist_btn:hover i {
+    color: #ffffff;
+}
+
+.eleven_product_image {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.eleven_product_image a {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eleven_product_img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: all 0.3s;
+}
+
+.eleven_product_card:hover .eleven_product_img {
+    transform: scale(1.05);
+}
+
+.eleven_product_info {
+    padding-top: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.eleven_product_name {
+    font-size: 15px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 10px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.eleven_product_name a {
+    color: #1e2a35;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.eleven_product_name a:hover {
+    color: #e74c3c;
+}
+
+.eleven_product_price {
+    font-size: 16px;
+    font-weight: 900;
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+
+/* Add to Cart */
+.eleven_add_to_cart_form {
+    margin-top: auto;
+}
+
+.eleven_btn_add_cart {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.eleven_btn_add_cart:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+.eleven_btn_add_cart i {
+    font-size: 14px;
+}
+
+/* Pagination */
+.eleven_pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.eleven_page_btn,
+.eleven_page_number {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f8f8;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    color: #1e2a35;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.eleven_page_number.active,
+.eleven_page_btn:hover,
+.eleven_page_number:hover {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    color: #ffffff;
+}
+
+/* List View */
+.eleven_products_grid.eleven_products_list {
+    grid-template-columns: 1fr;
+}
+
+.eleven_products_grid.eleven_products_list .eleven_product_card {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 25px;
+    text-align: left;
+}
+
+.eleven_products_grid.eleven_products_list .eleven_product_image {
+    height: 200px;
+}
+
+.eleven_products_grid.eleven_products_list .eleven_product_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.eleven_products_grid.eleven_products_list .eleven_product_name {
+    justify-content: flex-start;
+    font-size: 18px;
+}
+
+.eleven_products_grid.eleven_products_list .eleven_product_price {
+    font-size: 20px;
+    margin: 15px 0;
+}
+
+.eleven_products_grid.eleven_products_list .eleven_btn_add_cart {
+    width: auto;
+    max-width: 200px;
+}
+
+
+
+/* ===================================
+   OUT OF STOCK STYLING
+   =================================== */
+
+/* Out of Stock Badge */
+.eleven_out_of_stock_badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(231, 76, 60, 0.95);
+    color: #ffffff;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 2px;
+    z-index: 5;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transform: translate(-50%, -50%) rotate(-15deg);
+}
+
+.eleven_out_of_stock_badge span {
+    display: block;
+}
+
+/* Out of Stock Card Effect */
+.eleven_product_card.out_of_stock {
+    opacity: 0.7;
+}
+
+.eleven_product_card.out_of_stock .eleven_product_img {
+    filter: grayscale(50%);
+    opacity: 0.6;
+}
+
+/* Stock Status Text */
+.eleven_stock_status {
+    font-size: 13px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.eleven_in_stock {
+    color: #27ae60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.eleven_in_stock i {
+    font-size: 14px;
+}
+
+.eleven_out_stock {
+    color: #e74c3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.eleven_out_stock i {
+    font-size: 14px;
+}
+
+/* Disabled Add to Cart Button */
+.eleven_btn_add_cart.disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.eleven_btn_add_cart.disabled:hover {
+    background-color: #95a5a6;
+    transform: none;
+}
+
+
+/* ===================================
+   LIST VIEW
+   =================================== */
+
+/* List View Grid */
+.eleven_products_grid.eleven_products_list {
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* List View Card */
+.eleven_products_grid.eleven_products_list .eleven_product_card {
+    display: grid !important;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+    text-align: left;
+    padding: 25px;
+    align-items: center;
+}
+
+/* List View Image */
+.eleven_products_grid.eleven_products_list .eleven_product_image {
+    height: 220px;
+    margin-bottom: 0;
+}
+
+/* List View Info */
+.eleven_products_grid.eleven_products_list .eleven_product_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 0;
+    height: 100%;
+}
+
+/* List View Product Name */
+.eleven_products_grid.eleven_products_list .eleven_product_name {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 20px;
+    min-height: auto;
+    margin-bottom: 15px;
+}
+
+/* List View Price */
+.eleven_products_grid.eleven_products_list .eleven_product_price {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+/* List View Stock Status */
+.eleven_products_grid.eleven_products_list .eleven_stock_status {
+    justify-content: flex-start;
+    margin-bottom: 15px;
+}
+
+/* List View Button */
+.eleven_products_grid.eleven_products_list .eleven_btn_add_cart {
+    width: auto;
+    max-width: 250px;
+    padding: 12px 30px;
+}
+
+/* List View Out of Stock Badge */
+.eleven_products_grid.eleven_products_list .eleven_out_of_stock_badge {
+    left: 125px;
+}
+
+/* List View Wishlist Button */
+.eleven_products_grid.eleven_products_list .eleven_wishlist_btn {
+    top: 10px;
+    right: 10px;
+}
+
+
+.eleven_no_results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 16px;
+    color: #999;
+}
+
+.eleven_no_results p {
+    margin: 0;
+}
+
+
+
+
+/* ===================================
+   PRODUCT DETAIL PAGE - ENHANCED
+   =================================== */
+
+/* Breadcrumb */
+.eleven_breadcrumb {
+    background: linear-gradient(135deg, #2c3e50 0%, #1e2a35 100%);
+    padding: 20px 0;
+    margin-bottom: 50px;
+}
+
+.eleven_breadcrumb .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.eleven_breadcrumb nav {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.eleven_breadcrumb a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.eleven_breadcrumb a:hover {
+    color: #e74c3c;
+}
+
+.eleven_breadcrumb span {
+    color: #e74c3c;
+}
+
+/* Alert Messages */
+.alert {
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* Product Detail Section */
+.eleven_product_detail_section {
+    padding: 50px 20px;
+    background-color: #ffffff;
+}
+
+.eleven_product_detail_section .container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.eleven_product_detail_container {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    gap: 80px;
+    margin-bottom: 80px;
+}
+
+/* Product Images */
+.eleven_product_images {
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+}
+
+.eleven_main_image {
+    position: relative;
+    background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+    border: 2px solid #f0f0f0;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.eleven_main_image:hover {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+}
+
+.eleven_product_main_img {
+    max-width: 100%;
+    max-height: 550px;
+    object-fit: contain;
+    transition: all 0.5s;
+}
+
+.eleven_product_main_img:hover {
+    transform: scale(1.05);
+}
+
+.eleven_detail_out_of_stock_badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    padding: 25px 50px;
+    border-radius: 15px;
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 4px;
+    box-shadow: 0 10px 30px rgba(231, 76, 60, 0.5);
+    z-index: 10;
+}
+
+/* Product Details */
+.eleven_product_details {
+    padding: 0;
+}
+
+.eleven_product_detail_name {
+    font-size: 36px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 20px;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+
+/* Rating */
+.eleven_product_rating {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding: 15px 20px;
+    background-color: #fffbf5;
+    border-radius: 10px;
+    border: 1px solid #ffeaa7;
+    width: fit-content;
+}
+
+.eleven_stars {
+    display: flex;
+    gap: 5px;
+}
+
+.eleven_stars i {
+    color: #ddd;
+    font-size: 20px;
+    transition: all 0.2s;
+}
+
+.eleven_stars i.filled {
+    color: #f39c12;
+}
+
+.eleven_rating_text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e2a35;
+}
+
+.eleven_rating_text t:first-child {
+    font-size: 20px;
+    color: #f39c12;
+    margin-right: 5px;
+}
+
+/* Price */
+.eleven_product_detail_price {
+    font-size: 48px;
+    font-weight: 900;
+    color: #e74c3c;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Stock Status */
+.eleven_detail_stock_status {
+    margin-bottom: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 15px 20px;
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.eleven_detail_stock_status .eleven_in_stock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #27ae60;
+    background-color: #d5f4e6;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+
+.eleven_detail_stock_status .eleven_out_stock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e74c3c;
+    background-color: #ffeaea;
+    padding: 12px 20px;
+    border-radius: 8px;
+}
+
+.eleven_detail_stock_status i {
+    font-size: 18px;
+}
+
+/* Description */
+.eleven_product_description {
+    margin-bottom: 35px;
+    padding: 25px;
+    background-color: #f8f8f8;
+    border-radius: 15px;
+    border-left: 4px solid #e74c3c;
+}
+
+.eleven_product_description h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eleven_product_description h3::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background-color: #e74c3c;
+}
+
+.eleven_product_description p {
+    color: #666;
+    line-height: 1.9;
+    font-size: 15px;
+}
+
+/* Attributes */
+.eleven_product_attributes {
+    margin-bottom: 35px;
+    padding: 25px;
+    background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+    border-radius: 15px;
+    border: 2px solid #f0f0f0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.eleven_product_attributes h3 {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eleven_product_attributes h3::before {
+    content: '\f05a';
+    font-family: 'FontAwesome';
+    color: #e74c3c;
+}
+
+.eleven_product_attributes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.eleven_product_attributes li {
+    padding: 12px 15px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s;
+}
+
+.eleven_product_attributes li:hover {
+    border-color: #e74c3c;
+    transform: translateX(5px);
+}
+
+.eleven_product_attributes li strong {
+    color: #1e2a35;
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+.eleven_product_attributes li span {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+/* Product Actions */
+.eleven_product_actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+    border-radius: 20px;
+    border: 2px solid #f0f0f0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.eleven_quantity_selector {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.eleven_quantity_selector label {
+    font-weight: 700;
+    color: #1e2a35;
+    font-size: 16px;
+}
+
+.eleven_qty_input {
+    width: 120px;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.eleven_qty_input:focus {
+    outline: none;
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+}
+
+.eleven_btn_add_to_cart,
+.eleven_btn_buy_now,
+.eleven_btn_out_of_stock {
+    width: 100%;
+    padding: 18px 30px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.eleven_btn_add_to_cart {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+}
+
+.eleven_btn_add_to_cart:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+.eleven_btn_buy_now {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: #ffffff;
+}
+
+.eleven_btn_buy_now:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+}
+
+.eleven_btn_out_of_stock {
+    background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Reviews Section */
+.eleven_reviews_section {
+    margin-top: 100px;
+    padding-top: 80px;
+    border-top: 3px solid #f0f0f0;
+}
+
+.eleven_section_title {
+    font-size: 36px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 50px;
+    text-align: center;
+    position: relative;
+}
+
+.eleven_section_title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+}
+
+/* Rating Summary */
+.eleven_rating_summary {
+    text-align: center;
+    margin-bottom: 70px;
+    padding: 40px;
+    background: linear-gradient(135deg, #fffbf5 0%, #ffffff 100%);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.eleven_rating_average h1 {
+    font-size: 72px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+}
+
+.eleven_stars_large {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.eleven_stars_large i {
+    font-size: 32px;
+    color: #ddd;
+    transition: all 0.2s;
+}
+
+.eleven_stars_large i.filled {
+    color: #f39c12;
+    text-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}
+
+.eleven_rating_average p {
+    font-size: 16px;
+    color: #666;
+    font-weight: 600;
+}
+
+/* Write Review Form */
+.eleven_write_review {
+    background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+    padding: 50px;
+    border-radius: 20px;
+    margin-bottom: 70px;
+    border: 2px solid #f0f0f0;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.eleven_write_review h3 {
+    font-size: 26px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.eleven_write_review h3::before {
+    content: '\f27a';
+    font-family: 'FontAwesome';
+    color: #e74c3c;
+    font-size: 28px;
+}
+
+.eleven_review_form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.eleven_form_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+.eleven_form_group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.eleven_form_group label {
+    font-weight: 700;
+    color: #1e2a35;
+    font-size: 15px;
+}
+
+.eleven_form_input,
+.eleven_form_textarea {
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.eleven_form_input:focus,
+.eleven_form_textarea:focus {
+    outline: none;
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1);
+}
+
+.eleven_form_textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* Star Rating Input */
+.eleven_star_rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 0;
+}
+
+.eleven_star_rating input {
+    display: none;
+}
+
+.eleven_star_rating label {
+    cursor: pointer;
+    font-size: 36px;
+    color: #ddd;
+    transition: all 0.2s;
+}
+
+.eleven_star_rating label:hover,
+.eleven_star_rating label:hover ~ label {
+    color: #f39c12;
+    transform: scale(1.1);
+}
+
+.eleven_star_rating input:checked ~ label {
+    color: #f39c12;
+}
+
+.eleven_btn_submit_review {
+    padding: 18px 50px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: fit-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+}
+
+.eleven_btn_submit_review:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(231, 76, 60, 0.4);
+}
+
+/* Reviews List */
+.eleven_reviews_list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.eleven_review_item {
+    padding: 35px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+    border: 2px solid #f0f0f0;
+    border-radius: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.eleven_review_item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-color: #e74c3c;
+}
+
+.eleven_review_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.eleven_reviewer_info strong {
+    font-size: 18px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-right: 15px;
+}
+
+.eleven_review_date {
+    font-size: 14px;
+    color: #999;
+    font-weight: 600;
+}
+
+.eleven_review_rating {
+    display: flex;
+    gap: 5px;
+}
+
+.eleven_review_rating i {
+    font-size: 18px;
+    color: #ddd;
+}
+
+.eleven_review_rating i.filled {
+    color: #f39c12;
+}
+
+.eleven_review_title {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 12px;
+}
+
+.eleven_review_comment {
+    color: #666;
+    line-height: 1.9;
+    font-size: 15px;
+}
+
+.eleven_no_reviews {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 60px;
+    font-size: 16px;
+}
+
+/* Related Products */
+.eleven_related_products {
+    margin-top: 100px;
+    padding: 60px 0;
+    background-color: #f8f8f8;
+    border-radius: 30px;
+}
+
+.eleven_related_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.eleven_related_card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+    border: 2px solid #f0f0f0;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.eleven_related_card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    border-color: #e74c3c;
+}
+
+.eleven_related_card a {
+    text-decoration: none;
+}
+
+.eleven_related_card img {
+    max-width: 100%;
+    height: 220px;
+    object-fit: contain;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.eleven_related_card:hover img {
+    transform: scale(1.08);
+}
+
+.eleven_related_card h4 {
+    font-size: 16px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 12px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eleven_related_price {
+    font-size: 20px;
+    font-weight: 900;
+    color: #e74c3c;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .eleven_product_detail_container {
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+    }
+}
+
+@media (max-width: 992px) {
+    .eleven_product_detail_container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+
+    .eleven_product_images {
+        position: static;
+    }
+
+    .eleven_product_detail_name {
+        font-size: 28px;
+    }
+
+    .eleven_product_detail_price {
+        font-size: 38px;
+    }
+
+    .eleven_related_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .eleven_product_attributes ul {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .eleven_product_detail_name {
+        font-size: 24px;
+    }
+
+    .eleven_product_detail_price {
+        font-size: 32px;
+    }
+
+    .eleven_write_review {
+        padding: 30px;
+    }
+
+    .eleven_form_row {
+        grid-template-columns: 1fr;
+    }
+
+    .eleven_related_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eleven_review_item {
+        padding: 25px;
+    }
+
+    .eleven_section_title {
+        font-size: 28px;
+    }
+
+    .eleven_rating_average h1 {
+        font-size: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .eleven_main_image {
+        padding: 20px;
+    }
+
+    .eleven_product_actions {
+        padding: 20px;
+    }
+
+    .eleven_btn_add_to_cart,
+    .eleven_btn_buy_now {
+        font-size: 16px;
+        padding: 15px 20px;
+    }
+}
+
+
+
+/* ===================================
+   CUSTOM CART PAGE
+   =================================== */
+
+.eleven_cart_section {
+    padding: 50px 20px;
+    min-height: 60vh;
+}
+
+.eleven_cart_title {
+    font-size: 36px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* Empty Cart */
+.eleven_empty_cart {
+    text-align: center;
+    padding: 100px 20px;
+}
+
+.eleven_empty_cart i {
+    font-size: 120px;
+    color: #ddd;
+    margin-bottom: 30px;
+}
+
+.eleven_empty_cart h2 {
+    font-size: 32px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 15px;
+}
+
+.eleven_empty_cart p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.eleven_btn_continue {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 900;
+    transition: all 0.3s;
+}
+
+.eleven_btn_continue:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+}
+
+/* Cart Container */
+.eleven_cart_container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+/* Cart Items */
+.eleven_cart_items {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.eleven_cart_item {
+    display: grid;
+    grid-template-columns: 120px 1fr 120px 150px 120px 50px;
+    gap: 20px;
+    padding: 25px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+    border: 2px solid #f0f0f0;
+    border-radius: 15px;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.eleven_cart_item:hover {
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-color: #e74c3c;
+}
+
+/* Image */
+.eleven_cart_item_image {
+    text-align: center;
+}
+
+.eleven_cart_item_image img {
+    max-width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* Details */
+.eleven_cart_item_details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.eleven_cart_item_name {
+    font-size: 18px;
+    font-weight: 900;
+    margin: 0;
+}
+
+.eleven_cart_item_name a {
+    color: #1e2a35;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.eleven_cart_item_name a:hover {
+    color: #e74c3c;
+}
+
+.eleven_cart_item_attributes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.eleven_attribute_badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.eleven_cart_item_stock {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Price */
+.eleven_cart_item_price {
+    font-size: 20px;
+    font-weight: 900;
+    color: #e74c3c;
+    text-align: center;
+}
+
+/* Quantity */
+.eleven_cart_item_quantity form {
+    width: 100%;
+}
+
+.eleven_qty_control {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.eleven_qty_btn {
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.eleven_qty_btn:hover {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+.eleven_qty_input {
+    width: 60px;
+    padding: 10px;
+    border: none;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.eleven_qty_input:focus {
+    outline: none;
+}
+
+/* Subtotal */
+.eleven_cart_item_subtotal {
+    font-size: 24px;
+    font-weight: 900;
+    color: #1e2a35;
+    text-align: center;
+}
+
+/* Remove Button */
+.eleven_cart_item_remove {
+    text-align: center;
+}
+
+.eleven_remove_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #fee;
+    color: #e74c3c;
+    border-radius: 8px;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.eleven_remove_btn:hover {
+    background-color: #e74c3c;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+/* Cart Summary */
+.eleven_cart_summary {
+    position: sticky;
+    top: 100px;
+    padding: 30px;
+    background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+    border: 2px solid #f0f0f0;
+    border-radius: 20px;
+    height: fit-content;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.eleven_summary_title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 25px;
+}
+
+.eleven_summary_row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    font-size: 16px;
+    color: #666;
+}
+
+.eleven_summary_row strong {
+    color: #1e2a35;
+}
+
+.eleven_summary_divider {
+    height: 2px;
+    background-color: #e0e0e0;
+    margin: 15px 0;
+}
+
+.eleven_summary_total {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1e2a35;
+    padding-top: 15px;
+}
+
+.eleven_summary_total strong {
+    font-size: 28px;
+    color: #e74c3c;
+}
+
+.eleven_btn_checkout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 18px;
+    margin-top: 25px;
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 900;
+    transition: all 0.3s;
+}
+
+.eleven_btn_checkout:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+}
+
+.eleven_btn_continue_shopping {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px;
+    margin-top: 15px;
+    background-color: #f8f8f8;
+    color: #1e2a35;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: all 0.3s;
+    border: 2px solid #e0e0e0;
+}
+
+.eleven_btn_continue_shopping:hover {
+    background-color: #ffffff;
+    border-color: #e74c3c;
+    color: #e74c3c;
+}
+
+/* Suggested Products */
+.eleven_suggested_products {
+    margin-top: 80px;
+    padding: 60px 0;
+    background-color: #f8f8f8;
+    border-radius: 30px;
+}
+
+.eleven_suggested_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.eleven_suggested_card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+    border: 2px solid #f0f0f0;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.eleven_suggested_card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    border-color: #e74c3c;
+}
+
+.eleven_suggested_card a {
+    text-decoration: none;
+}
+
+.eleven_suggested_card img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.eleven_suggested_card h4 {
+    font-size: 16px;
+    font-weight: 900;
+    color: #1e2a35;
+    margin-bottom: 12px;
+    min-height: 40px;
+}
+
+.eleven_suggested_price {
+    font-size: 20px;
+    font-weight: 900;
+    color: #e74c3c;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .eleven_cart_container {
+        grid-template-columns: 1fr 350px;
+    }
+
+    .eleven_cart_item {
+        grid-template-columns: 100px 1fr 100px 120px 100px 40px;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .eleven_cart_container {
+        grid-template-columns: 1fr;
+    }
+
+    .eleven_cart_summary {
+        position: static;
+    }
+
+    .eleven_cart_item {
+        grid-template-columns: 80px 1fr;
+        grid-template-areas:
+            "image details"
+            "image price"
+            "qty qty"
+            "subtotal remove";
+        gap: 15px;
+    }
+
+    .eleven_cart_item_image { grid-area: image; }
+    .eleven_cart_item_details { grid-area: details; }
+    .eleven_cart_item_price { grid-area: price; text-align: left; }
+    .eleven_cart_item_quantity { grid-area: qty; }
+    .eleven_cart_item_subtotal { grid-area: subtotal; text-align: left; }
+    .eleven_cart_item_remove { grid-area: remove; text-align: right; }
+
+    .eleven_suggested_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .eleven_suggested_grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+/* ===================================
+   RESPONSIVE
+   =================================== */
+@media (max-width: 1200px) {
+    .eleven_category_grid {
+        gap: 30px;
+    }
+
+    .eleven_products_grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+}
+
+@media (max-width: 992px) {
+    .eleven_nav_list {
+        gap: 30px;
+    }
+    
+    .eleven_category_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .eleven_hero_title {
+        font-size: 48px;
+    }
+    .eleven_shop_container {
+        grid-template-columns: 240px 1fr;
+    }
+
+    .eleven_products_grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .eleven_nav_container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .eleven_nav_list {
+        gap: 20px;
+    }
+    
+    .eleven_category_grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .eleven_hero_content {
+        top: 20%;
+        width: 95%;
+    }
+    
+    .eleven_hero_title {
+        font-size: 36px;
+    }
+    
+    .eleven_hero_text {
+        font-size: 16px;
+    }
+    
+    .eleven_category_title {
+        font-size: 60px;
+    }
+    
+    .eleven_footer_container {
+        flex-direction: column;
+        gap: 40px;
+    }
+    
+    .eleven_footer_left,
+    .eleven_footer_right {
+        max-width: 100%;
+    }
+    
+    .eleven_footer_logo_section {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .eleven_about_container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .eleven_about_image img {
+        max-height: 300px;
+    }
+
+    .eleven_about_title {
+        font-size: 28px;
+    }
+
+    .eleven_about_text {
+        font-size: 13px;
+    }
+
+    /* Features Section */
+    .eleven_features_main_title {
+        font-size: 32px;
+    }
+
+    .eleven_features_grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .eleven_feature_title {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .eleven_feature_text {
+        font-size: 13px;
+    }
+
+    .eleven_features_overlay {
+        background-color: rgba(44, 62, 80, 0.90);
+    }
+
+    .eleven_circle_1 {
+        width: 250px;
+        height: 250px;
+    }
+
+    .eleven_circle_2 {
+        width: 180px;
+        height: 180px;
+    }
+
+    .eleven_circle_3 {
+        width: 120px;
+        height: 120px;
+    }
+
+    .eleven_circle_4 {
+        width: 80px;
+        height: 80px;
+    }
+
+    .eleven_circle_5 {
+        width: 200px;
+        height: 200px;
+    }
+
+
+     /* Why Choose Section */
+    .eleven_why_choose_container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .eleven_why_choose_image img {
+        border-radius: 20px;
+    }
+
+    .eleven_why_choose_title {
+        font-size: 24px;
+    }
+
+    .eleven_why_choose_subtitle {
+        font-size: 13px;
+    }
+
+    .eleven_why_choose_grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .eleven_why_box {
+        padding: 25px 20px;
+    }
+
+    .eleven_why_number {
+        font-size: 40px;
+    }
+
+    .eleven_why_icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .eleven_why_icon i {
+        font-size: 24px;
+    }
+
+    .eleven_why_box_title {
+        font-size: 16px;
+    }
+
+    /* Essential Oils Section */
+    .eleven_oils_title {
+        font-size: 24px;
+    }
+
+    .eleven_oils_description {
+        font-size: 13px;
+    }
+
+    .eleven_oils_content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .eleven_oils_right {
+        padding-top: 0;
+    }
+
+    .eleven_oils_center {
+        height: 400px;
+        order: -1;
+    }
+
+    .eleven_oils_circle {
+        width: 300px;
+        height: 300px;
+    }
+
+    .eleven_oil_bottle {
+        max-width: 200px;
+    }
+
+    .eleven_oil_item {
+        padding-left: 15px;
+    }
+
+    .eleven_oil_name {
+        font-size: 15px;
+    }
+
+    .eleven_oil_desc {
+        font-size: 12px;
+    }
+
+
+     /* Contact Us Page */
+    .eleven_contact_hero {
+        padding: 80px 20px;
+    }
+
+    .eleven_contact_hero_title {
+        font-size: 32px;
+    }
+
+    .eleven_contact_hero_text {
+        font-size: 14px;
+    }
+
+    .eleven_contact_form_title {
+        font-size: 22px;
+    }
+
+    .eleven_form_row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .eleven_form_submit {
+        text-align: center;
+    }
+
+    .eleven_live_help_title {
+        font-size: 26px;
+    }
+
+    .eleven_btn_whatsapp {
+        font-size: 13px;
+        padding: 12px 25px;
+    }
+
+    /* Shop Page */
+    .eleven_shop_hero_title {
+        font-size: 36px;
+    }
+
+    .eleven_shop_container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .eleven_shop_sidebar {
+        order: 2;
+    }
+
+    .eleven_shop_toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .eleven_search_box {
+        max-width: 100%;
+    }
+
+    .eleven_toolbar_right {
+        justify-content: space-between;
+    }
+
+    .eleven_products_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .eleven_product_card {
+        padding: 15px;
+    }
+
+    .eleven_product_image {
+        height: 150px;
+    }
+
+    .eleven_product_name {
+        font-size: 13px;
+        min-height: 35px;
+    }
+
+    .eleven_product_price {
+        font-size: 14px;
+    }
+
+    .eleven_shop_hero_title {
+        font-size: 36px;
+    }
+
+    .eleven_shop_container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .eleven_shop_sidebar {
+        order: 2;
+    }
+
+    .eleven_shop_toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 15px;
+    }
+
+    .eleven_search_box {
+        max-width: 100%;
+    }
+
+    .eleven_toolbar_right {
+        justify-content: space-between;
+    }
+
+    .eleven_products_grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .eleven_product_card {
+        padding: 15px;
+    }
+
+    .eleven_product_image {
+        height: 160px;
+    }
+
+    .eleven_product_name {
+        font-size: 13px;
+        min-height: 38px;
+    }
+
+    .eleven_product_price {
+        font-size: 16px;
+        margin-bottom: 12px;
+    }
+
+    .eleven_btn_add_cart {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_info {
+        align-items: center;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_name {
+        justify-content: center;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_btn_add_cart {
+        width: 100%;
+    }
+
+
+    .eleven_products_grid.eleven_products_list .eleven_product_card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_image {
+        height: 200px;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_info {
+        align-items: center;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_name {
+        justify-content: center;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_product_price {
+        font-size: 18px;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_stock_status {
+        justify-content: center;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_btn_add_cart {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .eleven_products_grid.eleven_products_list .eleven_out_of_stock_badge {
+        left: 50%;
+    }
+
+
+}
+
+@media (max-width: 480px) {
+    .eleven_bestsellers_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eleven_products_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eleven_sort_select {
+        min-width: 120px;
+        font-size: 13px;
+    }
+}

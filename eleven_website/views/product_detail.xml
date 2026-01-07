@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Product Detail Page -->
+    <template id="product_detail_page" name="Product Detail">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Breadcrumb -->
+                <section class="eleven_breadcrumb">
+                    <div class="container">
+                        <nav>
+                            <a href="/">Home</a> /
+                            <a href="/products">Products</a> /
+                            <span t-esc="product.display_name"/>
+                        </nav>
+                    </div>
+                </section>
+
+                <!-- Product Detail Section -->
+                <section class="eleven_product_detail_section">
+                    <div class="container">
+
+                        <!-- Success/Error Messages -->
+                        <t t-if="request.params.get('success') == 'review_submitted'">
+                            <div class="alert alert-success" role="alert">
+                                <i class="fa fa-check-circle"/> Thank you! Your review has been submitted.
+                            </div>
+                        </t>
+                        <t t-if="request.params.get('error')">
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fa fa-exclamation-circle"/> There was an error. Please try again.
+                            </div>
+                        </t>
+
+                        <div class="eleven_product_detail_container">
+                            <!-- Left: Product Images -->
+                            <div class="eleven_product_images">
+                                <div class="eleven_main_image">
+                                    <img t-attf-src="/web/image/product.product/#{product.id}/image_1920"
+                                         t-att-alt="product.display_name"
+                                         class="eleven_product_main_img"/>
+
+                                    <!-- Out of Stock Badge -->
+                                    <t t-if="product.qty_available &lt;= 0">
+                                        <div class="eleven_detail_out_of_stock_badge">
+                                            OUT OF STOCK
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Right: Product Info -->
+                            <div class="eleven_product_details">
+                                <h1 class="eleven_product_detail_name" t-esc="product.display_name"/>
+
+                                <!-- Rating -->
+                                <div class="eleven_product_rating">
+                                    <div class="eleven_stars">
+                                        <t t-set="rating" t-value="int(product.average_rating)"/>
+                                        <t t-foreach="range(1, 6)" t-as="star">
+                                            <i t-attf-class="fa fa-star #{star &lt;= rating and 'filled' or ''}"/>
+                                        </t>
+                                    </div>
+                                    <span class="eleven_rating_text">
+                                        <t t-esc="'%.1f' % product.average_rating"/>
+                                        (<t t-esc="product.review_count"/> reviews)
+                                    </span>
+                                </div>
+
+                                <!-- Price -->
+                                <div class="eleven_product_detail_price">
+                                    <span t-field="product.list_price"
+                                          t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                                </div>
+
+                                <!-- Stock Status -->
+                                <div class="eleven_detail_stock_status">
+                                    <t t-if="product.qty_available > 0">
+                                        <span class="eleven_in_stock">
+                                            <i class="fa fa-check-circle"/> In Stock
+                                            (<t t-esc="int(product.qty_available)"/> available)
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="eleven_out_stock">
+                                            <i class="fa fa-times-circle"/> Out of Stock
+                                        </span>
+                                    </t>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="eleven_product_description">
+                                    <h3>Description</h3>
+                                    <p t-field="product.product_tmpl_id.description_sale"/>
+                                </div>
+
+                                <!-- Attributes -->
+                                <t t-if="product.product_template_attribute_value_ids">
+                                    <div class="eleven_product_attributes">
+                                        <h3>Specifications</h3>
+                                        <ul>
+                                            <t t-foreach="product.product_template_attribute_value_ids" t-as="attr">
+                                                <li>
+                                                    <strong t-esc="attr.attribute_id.name"/>:
+                                                    <span t-esc="attr.name"/>
+                                                </li>
+                                            </t>
+                                        </ul>
+                                    </div>
+                                </t>
+
+                                <!-- Add to Cart / Buy Now -->
+                                <div class="eleven_product_actions">
+                                    <t t-if="product.qty_available > 0">
+                                        <!-- Quantity Selector -->
+                                        <div class="eleven_quantity_selector">
+                                            <label>Quantity:</label>
+                                            <input type="number" id="product_quantity" value="1" min="1"
+                                                   t-att-max="int(product.qty_available)" class="eleven_qty_input"/>
+                                        </div>
+
+                                        <!-- Add to Cart -->
+                                        <form action="/shop/cart/update" method="POST" class="eleven_add_cart_form">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                            <input type="hidden" name="add_qty" value="1" id="add_qty_input"/>
+                                            <button type="submit" class="eleven_btn_add_to_cart">
+                                                <i class="fa fa-shopping-cart"/> Add to Cart
+                                            </button>
+                                        </form>
+
+                                        <!-- Buy Now -->
+                                        <form t-attf-action="/product/#{product.id}/buy-now" method="POST" class="eleven_buy_now_form">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="add_qty" value="1" id="buy_qty_input"/>
+                                            <button type="submit" class="eleven_btn_buy_now">
+                                                <i class="fa fa-bolt"/> Buy Now
+                                            </button>
+                                        </form>
+                                    </t>
+                                    <t t-else="">
+                                        <button class="eleven_btn_out_of_stock" disabled="disabled">
+                                            <i class="fa fa-ban"/> Out of Stock
+                                        </button>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reviews Section -->
+                        <div class="eleven_reviews_section">
+                            <h2 class="eleven_section_title">Customer Reviews</h2>
+
+                            <!-- Rating Summary -->
+                            <div class="eleven_rating_summary">
+                                <div class="eleven_rating_average">
+                                    <h1 t-esc="'%.1f' % product.average_rating"/>
+                                    <div class="eleven_stars_large">
+                                        <t t-set="rating" t-value="int(product.average_rating)"/>
+                                        <t t-foreach="range(1, 6)" t-as="star">
+                                            <i t-attf-class="fa fa-star #{star &lt;= rating and 'filled' or ''}"/>
+                                        </t>
+                                    </div>
+                                    <p><t t-esc="product.review_count"/> reviews</p>
+                                </div>
+                            </div>
+
+                            <!-- Write a Review -->
+                            <div class="eleven_write_review">
+                                <h3>Write a Review</h3>
+                                <form t-attf-action="/product/#{product.id}/review" method="POST" class="eleven_review_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                    <div class="eleven_form_row">
+                                        <div class="eleven_form_group">
+                                            <label>Your Name *</label>
+                                            <input type="text" name="name" required="required" class="eleven_form_input"/>
+                                        </div>
+                                        <div class="eleven_form_group">
+                                            <label>Email</label>
+                                            <input type="email" name="email" class="eleven_form_input"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="eleven_form_group">
+                                        <label>Rating *</label>
+                                        <div class="eleven_star_rating">
+                                            <input type="radio" name="rating" value="5" id="star5" required="required"/>
+                                            <label for="star5"><i class="fa fa-star"/></label>
+                                            <input type="radio" name="rating" value="4" id="star4"/>
+                                            <label for="star4"><i class="fa fa-star"/></label>
+                                            <input type="radio" name="rating" value="3" id="star3"/>
+                                            <label for="star3"><i class="fa fa-star"/></label>
+                                            <input type="radio" name="rating" value="2" id="star2"/>
+                                            <label for="star2"><i class="fa fa-star"/></label>
+                                            <input type="radio" name="rating" value="1" id="star1"/>
+                                            <label for="star1"><i class="fa fa-star"/></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="eleven_form_group">
+                                        <label>Review Title</label>
+                                        <input type="text" name="title" class="eleven_form_input"/>
+                                    </div>
+
+                                    <div class="eleven_form_group">
+                                        <label>Your Review *</label>
+                                        <textarea name="comment" rows="5" required="required" class="eleven_form_textarea"></textarea>
+                                    </div>
+
+                                    <button type="submit" class="eleven_btn_submit_review">
+                                        <i class="fa fa-paper-plane"/> Submit Review
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Reviews List -->
+                            <div class="eleven_reviews_list">
+                                <t t-if="reviews">
+                                    <t t-foreach="reviews" t-as="review">
+                                        <div class="eleven_review_item">
+                                            <div class="eleven_review_header">
+                                                <div class="eleven_reviewer_info">
+                                                    <strong t-esc="review.name"/>
+                                                    <span class="eleven_review_date" t-esc="review.create_date.strftime('%B %d, %Y')"/>
+                                                </div>
+                                                <div class="eleven_review_rating">
+                                                    <t t-foreach="range(1, 6)" t-as="star">
+                                                        <i t-attf-class="fa fa-star #{star &lt;= review.rating and 'filled' or ''}"/>
+                                                    </t>
+                                                </div>
+                                            </div>
+                                            <t t-if="review.title">
+                                                <h4 class="eleven_review_title" t-esc="review.title"/>
+                                            </t>
+                                            <p class="eleven_review_comment" t-esc="review.comment"/>
+                                        </div>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <p class="eleven_no_reviews">No reviews yet. Be the first to review this product!</p>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Related Products -->
+                        <t t-if="related_products">
+                            <div class="eleven_related_products">
+                                <h2 class="eleven_section_title">You May Also Like</h2>
+                                <div class="eleven_related_grid">
+                                    <t t-foreach="related_products" t-as="rel_product">
+                                        <div class="eleven_related_card">
+                                            <a t-attf-href="/product/#{rel_product.id}">
+                                                <img t-attf-src="/web/image/product.product/#{rel_product.id}/image_512"
+                                                     t-att-alt="rel_product.display_name"/>
+                                                <h4 t-esc="rel_product.display_name"/>
+                                                <p class="eleven_related_price">
+                                                    <span t-field="rel_product.list_price"
+                                                          t-options="{'widget': 'monetary', 'display_currency': rel_product.currency_id}"/>
+                                                </p>
+                                            </a>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+</odoo>

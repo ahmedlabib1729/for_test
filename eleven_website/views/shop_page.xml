@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Shop Page Template -->
+    <template id="eleven_shop_page" name="Eleven Shop">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Hero Section -->
+                <section class="eleven_shop_hero">
+                    <div class="eleven_shop_hero_overlay"></div>
+                    <div class="eleven_shop_hero_content">
+                        <h1 class="eleven_shop_hero_title">PRODUCT</h1>
+                        <a href="/contactus" class="eleven_btn_shop_hero">CONTACT US</a>
+                    </div>
+                </section>
+
+                <!-- Shop Content -->
+                <section class="eleven_shop_section">
+                    <div class="eleven_shop_container">
+
+                        <!-- Sidebar Filters -->
+                        <div class="eleven_shop_sidebar">
+
+                            <!-- Categories -->
+                            <div class="eleven_filter_box">
+                                <h3 class="eleven_filter_title">Categories</h3>
+                                <ul class="eleven_category_list">
+                                    <li>
+                                        <a t-attf-href="/products?category=all"
+                                           t-attf-class="eleven_category_link #{category == 'all' and 'active' or ''}">
+                                            All Products
+                                        </a>
+                                    </li>
+                                    <t t-foreach="categories" t-as="cat">
+                                        <li>
+                                            <a t-attf-href="/products?category=#{cat.id}"
+                                               t-attf-class="eleven_category_link #{category == str(cat.id) and 'active' or ''}"
+                                               t-esc="cat.name"/>
+                                        </li>
+                                    </t>
+                                </ul>
+
+                                <!-- If no categories -->
+                                <t t-if="not categories or len(categories) == 0">
+                                    <p class="eleven_no_filter">No categories available</p>
+                                </t>
+                            </div>
+
+                            <!-- Color Filter -->
+                            <div class="eleven_filter_box">
+                                <h3 class="eleven_filter_title">Color</h3>
+                                <div class="eleven_color_filters">
+                                    <t t-if="colors">
+                                        <t t-foreach="colors" t-as="color">
+                                            <label class="eleven_color_option">
+                                                <input type="checkbox" class="filter-checkbox" data-filter-type="color" t-att-value="color" name="color"/>
+                                                <span class="eleven_color_label" t-esc="color"/>
+                                            </label>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="eleven_no_filter">No color filters available</p>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Size Filter -->
+                            <div class="eleven_filter_box">
+                                <h3 class="eleven_filter_title">Size</h3>
+                                <div class="eleven_size_filters">
+                                    <t t-if="sizes">
+                                        <t t-foreach="sizes" t-as="size">
+                                            <label class="eleven_size_option">
+                                                <input type="checkbox" class="filter-checkbox" data-filter-type="size" t-att-value="size" name="size"/>
+                                                <span class="eleven_size_label" t-esc="size"/>
+                                            </label>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <p class="eleven_no_filter">No size filters available</p>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <!-- Price Range Filter -->
+                            <div class="eleven_filter_box">
+                                <h3 class="eleven_filter_title">Price Range</h3>
+                                <div class="eleven_price_filters">
+                                    <label class="eleven_price_option">
+                                        <input type="checkbox" class="filter-checkbox" data-filter-type="price" value="0-500"/>
+                                        <span class="eleven_price_label">Under 500 AED</span>
+                                    </label>
+                                    <label class="eleven_price_option">
+                                        <input type="checkbox" class="filter-checkbox" data-filter-type="price" value="500-1000"/>
+                                        <span class="eleven_price_label">500 - 1,000 AED</span>
+                                    </label>
+                                    <label class="eleven_price_option">
+                                        <input type="checkbox" class="filter-checkbox" data-filter-type="price" value="1000-2000"/>
+                                        <span class="eleven_price_label">1,000 - 2,000 AED</span>
+                                    </label>
+                                    <label class="eleven_price_option">
+                                        <input type="checkbox" class="filter-checkbox" data-filter-type="price" value="2000+"/>
+                                        <span class="eleven_price_label">Over 2,000 AED</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div> <!-- Close eleven_shop_sidebar -->
+
+                        <!-- Products Area -->
+                        <div class="eleven_shop_main">
+                            <!-- Toolbar -->
+                            <div class="eleven_shop_toolbar">
+                                <!-- Search -->
+                                <div class="eleven_search_box">
+                                    <input type="text" id="eleven_search_input" placeholder="Search products..." class="eleven_search_input"/>
+                                    <button class="eleven_search_btn">
+                                        <i class="fa fa-search"/>
+                                    </button>
+                                </div>
+
+                                <!-- Sort & View -->
+                                <div class="eleven_toolbar_right">
+                                    <div class="eleven_sort_box">
+                                        <label>Sort By:</label>
+                                        <select class="eleven_sort_select" id="eleven_sort_select">
+                                            <option value="featured">Featured</option>
+                                            <option value="name_asc">Name (A-Z)</option>
+                                            <option value="name_desc">Name (Z-A)</option>
+                                            <option value="price_asc">Price (Low to High)</option>
+                                            <option value="price_desc">Price (High to Low)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="eleven_view_toggle">
+                                        <button class="eleven_view_btn active" data-view="grid">
+                                            <i class="fa fa-th"/>
+                                        </button>
+                                        <button class="eleven_view_btn" data-view="list">
+                                            <i class="fa fa-bars"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Products Grid -->
+
+                            <div class="eleven_products_grid" id="eleven_products_grid">
+                                <t t-foreach="products" t-as="product">
+                                    <div class="eleven_product_card"
+                                         t-att-data-category="','.join([str(c.id) for c in product.public_categ_ids])"
+                                         t-att-data-price="product.list_price"
+                                         t-attf-class="eleven_product_card #{product.qty_available &lt;= 0 and 'out_of_stock' or ''}">
+
+                                        <!-- Out of Stock Badge -->
+                                        <t t-if="product.qty_available &lt;= 0">
+                                            <div class="eleven_out_of_stock_badge">
+                                                <span>OUT OF STOCK</span>
+                                            </div>
+                                        </t>
+
+                                        <!-- Wishlist Heart -->
+                                        <button class="eleven_wishlist_btn" t-att-data-product-id="product.id">
+                                            <i class="fa fa-heart-o"/>
+                                        </button>
+
+                                        <!-- Product Image -->
+                                        <div class="eleven_product_image">
+                                            <a t-attf-href="/product/#{product.id}">
+                                                <img t-attf-src="/web/image/product.product/#{product.id}/image_512"
+                                                     t-att-alt="product.display_name"
+                                                     class="eleven_product_img"/>
+                                            </a>
+                                        </div>
+
+                                        <!-- Product Info -->
+                                        <div class="eleven_product_info">
+                                            <h3 class="eleven_product_name">
+                                                <a t-attf-href="/shop/product/#{slug(product.product_tmpl_id)}"
+                                                   t-esc="product.display_name"/>
+                                            </h3>
+                                            <div class="eleven_product_price">
+                                                <span t-field="product.list_price" t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                                            </div>
+
+                                            <!-- Stock Status Text -->
+                                            <div class="eleven_stock_status">
+                                                <t t-if="product.qty_available > 0">
+                                                    <span class="eleven_in_stock">
+                                                        <i class="fa fa-check-circle"/> In Stock (<t t-esc="int(product.qty_available)"/> available)
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="eleven_out_stock">
+                                                        <i class="fa fa-times-circle"/> Out of Stock
+                                                    </span>
+                                                </t>
+                                            </div>
+
+                                            <!-- Add to Cart Button -->
+                                            <form action="/shop/cart/update" method="POST" class="eleven_add_to_cart_form">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                                <input type="hidden" name="add_qty" value="1"/>
+
+                                                <t t-if="product.qty_available > 0">
+                                                    <button type="submit" class="eleven_btn_add_cart">
+                                                        <i class="fa fa-shopping-cart"/> Add to Cart
+                                                    </button>
+                                                </t>
+                                                <t t-else="">
+                                                    <button type="button" class="eleven_btn_add_cart disabled" disabled="disabled">
+                                                        <i class="fa fa-ban"/> Out of Stock
+                                                    </button>
+                                                </t>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Pagination -->
+                            <t t-if="pager">
+                                <div class="eleven_pagination">
+                                    <t t-if="pager['page']['num'] > 1">
+                                        <a t-attf-href="/products?page=#{pager['page']['num'] - 1}" class="eleven_page_btn">
+                                            <i class="fa fa-chevron-left"/>
+                                        </a>
+                                    </t>
+
+                                    <t t-foreach="pager['pages']" t-as="page">
+                                        <a t-attf-href="/products?page=#{page['num']}"
+                                           t-attf-class="eleven_page_number #{page['num'] == pager['page']['num'] and 'active' or ''}"
+                                           t-esc="page['num']"/>
+                                    </t>
+
+                                    <t t-if="pager['page']['num'] &lt; pager['page_count']">
+                                        <a t-attf-href="/products?page=#{pager['page']['num'] + 1}" class="eleven_page_btn">
+                                            <i class="fa fa-chevron-right"/>
+                                        </a>
+                                    </t>
+                                </div>
+                            </t>
+                        </div> <!-- Close eleven_shop_main -->
+
+                    </div> <!-- Close eleven_shop_container -->
+                </section>
+
+            </div>
+        </t>
+    </template>
+</odoo>
