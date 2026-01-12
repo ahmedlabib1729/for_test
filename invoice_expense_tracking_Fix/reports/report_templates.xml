@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Wizard Form View -->
+    <record id="view_invoice_profitability_wizard" model="ir.ui.view">
+        <field name="name">invoice.profitability.wizard.form</field>
+        <field name="model">invoice.profitability.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Invoice Profitability Analysis">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                        <field name="platform"/>
+                        <field name="state"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_print_report" 
+                            string="Print Report" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button name="action_view_analysis" 
+                            string="View Analysis" 
+                            type="object" 
+                            class="btn-secondary"/>
+                    <button string="Cancel" 
+                            special="cancel" 
+                            class="btn-default"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_invoice_profitability_wizard" model="ir.actions.act_window">
+        <field name="name">Invoice Profitability Report</field>
+        <field name="res_model">invoice.profitability.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_invoice_profitability_wizard"/>
+    </record>
+
+    <!-- Menuitem for Print Report -->
+    <menuitem id="menu_invoice_profitability_print"
+              name="Print Report"
+              parent="menu_invoice_expense_reports"
+              action="action_invoice_profitability_wizard"
+              sequence="20"/>
+
+    <!-- Report Action -->
+    <record id="action_report_invoice_profitability" model="ir.actions.report">
+        <field name="name">Invoice Profitability</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">invoice_expense_tracking.report_invoice_profitability</field>
+        <field name="report_file">invoice_expense_tracking.report_invoice_profitability</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <!-- Report Template -->
+    <template id="report_invoice_profitability">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="text-center">
+                            <h2>Invoice Profitability Report</h2>
+                            <h4 t-field="o.name"/>
+                        </div>
+
+                        <!-- Invoice Information -->
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Customer:</strong>
+                                <p t-field="o.partner_id.name"/>
+                                <strong>Invoice Date:</strong>
+                                <p t-field="o.invoice_date"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Due Date:</strong>
+                                <p t-field="o.invoice_date_due"/>
+                                <strong>Status:</strong>
+                                <p>
+                                    <span t-field="o.state" 
+                                          class="badge badge-info" 
+                                          t-if="o.state == 'draft'">Draft</span>
+                                    <span t-field="o.state" 
+                                          class="badge badge-success" 
+                                          t-if="o.state == 'posted'">Posted</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Invoice Lines -->
+                        <h4>Invoice Lines</h4>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-right">Quantity</th>
+                                    <th class="text-right">Unit Price</th>
+                                    <th class="text-right">Unit Cost</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.invoice_line_ids" t-as="line">
+                                    <tr t-if="line.display_type == 'product'">
+                                        <td><span t-field="line.name"/></td>
+                                        <td class="text-right">
+                                            <span t-field="line.quantity"/>
+                                            <span t-field="line.product_uom_id.name" 
+                                                  groups="uom.group_uom"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-field="line.price_unit"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-esc="line.product_id.standard_price" 
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span t-field="line.price_subtotal"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Related Expenses -->
+                        <h4 class="mt32">Related Expenses</h4>
+                        <t t-if="o.expense_distribution_ids">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Platform</th>
+                                        <th>Description</th>
+                                        <th class="text-right">Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.expense_distribution_ids.filtered(lambda d: d.expense_id.state == 'posted')" 
+                                       t-as="dist">
+                                        <tr>
+                                            <td><span t-field="dist.expense_id.name"/></td>
+                                            <td><span t-field="dist.expense_id.date"/></td>
+                                            <td><span t-field="dist.expense_id.expense_type"/></td>
+                                            <td><span t-field="dist.expense_id.platform"/></td>
+                                            <td><span t-field="dist.expense_id.description"/></td>
+                                            <td class="text-right">
+                                                <span t-field="dist.amount"/>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-success">Posted</span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="5" class="text-right">
+                                            <strong>Total Expenses:</strong>
+                                        </td>
+                                        <td class="text-right">
+                                            <strong t-field="o.total_expenses"/>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </t>
+                        <t t-else="">
+                            <p class="text-muted">No expenses recorded for this invoice.</p>
+                        </t>
+
+                        <!-- Profitability Summary -->
+                        <div class="row mt32">
+                            <div class="col-6 offset-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>Total Sales (Untaxed):</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.amount_untaxed"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Cost of Goods:</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.invoice_cost"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top: 1px solid black;">
+                                        <td><strong>Gross Profit:</strong></td>
+                                        <td class="text-right">
+                                            <strong t-esc="o.amount_untaxed - o.invoice_cost" 
+                                                    t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total Expenses:</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="o.total_expenses"/>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top: 2px solid black;">
+                                        <td><strong>Net Profit:</strong></td>
+                                        <td class="text-right">
+                                            <strong t-field="o.net_profit" 
+                                                    t-att-style="'color: green' if o.net_profit &gt;= 0 else 'color: red'"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Profit Margin:</strong></td>
+                                        <td class="text-right">
+                                            <strong>
+                                                <span t-esc="'%.2f%%' % o.profit_margin" 
+                                                      t-att-style="'color: green' if o.profit_margin &gt;= 0 else 'color: red'"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mt32" t-if="o.narration">
+                            <h5>Notes:</h5>
+                            <p t-field="o.narration"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

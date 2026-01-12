@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="invoice_expense_tracking_Fix.Dashboard">
+    <div class="o_invoice_profitability_dashboard">
+        
+        <!-- Loading State -->
+        <t t-if="state.loading">
+            <div class="text-center p-5">
+                <i class="fa fa-spinner fa-spin fa-3x text-muted"/>
+                <p class="mt-3">Loading dashboard...</p>
+            </div>
+        </t>
+
+        <!-- Dashboard Content -->
+        <t t-elif="state.data">
+            <t t-set="summary" t-value="state.data.summary"/>
+            <t t-set="invoices" t-value="state.data.invoices"/>
+
+            <!-- Filters Section -->
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Search Box -->
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Search</label>
+                            <div class="input-group">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Invoice number or customer..."
+                                       t-model="state.filters.search_term"
+                                       t-on-input="onSearchInput"
+                                       t-on-keypress="onSearchKeypress"/>
+                                <button class="btn btn-primary"
+                                        type="button"
+                                        t-on-click="onSearchClick">
+                                    <i class="fa fa-search"/> Search
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Date From -->
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Date From</label>
+                            <input type="date"
+                                   class="form-control"
+                                   t-att-value="state.filters.date_from || ''"
+                                   t-on-change="onDateFromChange"/>
+                        </div>
+
+                        <!-- Date To -->
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Date To</label>
+                            <input type="date"
+                                   class="form-control"
+                                   t-att-value="state.filters.date_to || ''"
+                                   t-on-change="onDateToChange"/>
+                        </div>
+
+                        <!-- Platform Filter -->
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Platform</label>
+                            <select class="form-select"
+                                    t-on-change="onPlatformChange">
+                                <option value="">All Platforms</option>
+                                <option value="amazon"
+                                        t-att-selected="state.filters.platform === 'amazon'">
+                                    Amazon
+                                </option>
+                                <option value="noon"
+                                        t-att-selected="state.filters.platform === 'noon'">
+                                    Noon
+                                </option>
+                                <option value="other"
+                                        t-att-selected="state.filters.platform === 'other'">
+                                    Other
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Type Filter -->
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Type</label>
+                            <select class="form-select"
+                                    t-on-change="onTypeChange">
+                                <option value="">All Types</option>
+                                <option value="out_invoice"
+                                        t-att-selected="state.filters.move_type === 'out_invoice'">
+                                    Invoice
+                                </option>
+                                <option value="out_refund"
+                                        t-att-selected="state.filters.move_type === 'out_refund'">
+                                    Credit Note
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Filter Actions Row -->
+                    <div class="row">
+                        <!-- Filter Actions -->
+                        <div class="col-12 mb-2">
+                            <button class="btn btn-primary me-2"
+                                    type="button"
+                                    t-on-click="applyFilters">
+                                <i class="fa fa-filter"/> Apply Filters
+                            </button>
+                            <button class="btn btn-secondary"
+                                    type="button"
+                                    t-on-click="clearFilters">
+                                <i class="fa fa-times"/> Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active Filters Info -->
+                    <div class="row mt-2"
+                         t-if="state.filters.date_from or state.filters.date_to or state.filters.platform or state.filters.move_type or state.filters.search_term">
+                        <div class="col-12">
+                            <span class="text-muted">
+                                <i class="fa fa-filter"/> Active filters:
+                                <t t-if="state.filters.date_from">
+                                    <span class="badge bg-info ms-1">From: <t t-esc="state.filters.date_from"/></span>
+                                </t>
+                                <t t-if="state.filters.date_to">
+                                    <span class="badge bg-info ms-1">To: <t t-esc="state.filters.date_to"/></span>
+                                </t>
+                                <t t-if="state.filters.platform">
+                                    <span class="badge bg-info ms-1">Platform: <t t-esc="state.filters.platform"/></span>
+                                </t>
+                                <t t-if="state.filters.move_type">
+                                    <span class="badge bg-info ms-1">Type: <t t-esc="state.filters.move_type === 'out_invoice' ? 'Invoice' : 'Credit Note'"/></span>
+                                </t>
+                                <t t-if="state.filters.search_term">
+                                    <span class="badge bg-info ms-1">Search: <t t-esc="state.filters.search_term"/></span>
+                                </t>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-3">
+                <!-- Total Invoices -->
+                <div class="col-md-2">
+                    <div class="card border-primary">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Total Invoices</h6>
+                            <h2 class="text-primary"><t t-esc="summary.total_invoices"/></h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Sales -->
+                <div class="col-md-2">
+                    <div class="card border-info">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Total Sales</h6>
+                            <h2 class="text-info"><t t-esc="formatCurrency(summary.total_sales)"/></h2>
+                            <small class="text-muted">Net (after returns)</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Cost (NEW!) -->
+                <div class="col-md-2">
+                    <div class="card border-secondary">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Total Cost</h6>
+                            <h2 class="text-secondary"><t t-esc="formatCurrency(summary.total_cost)"/></h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Expenses -->
+                <div class="col-md-2">
+                    <div class="card border-warning">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Total Expenses</h6>
+                            <h2 class="text-warning"><t t-esc="formatCurrency(summary.total_expenses)"/></h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gross Profit -->
+                <div class="col-md-2">
+                    <div class="card" t-att-class="summary.gross_profit >= 0 ? 'border-success' : 'border-danger'">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Gross Profit</h6>
+                            <h2 t-att-class="summary.gross_profit >= 0 ? 'text-success' : 'text-danger'">
+                                <t t-esc="formatCurrency(summary.gross_profit)"/>
+                            </h2>
+                            <small class="text-muted">Sales - Cost</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Net Profit -->
+                <div class="col-md-2">
+                    <div class="card" t-att-class="summary.total_profit >= 0 ? 'border-success' : 'border-danger'">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted">Net Profit (Invoices Only)</h6>
+                            <h2 t-att-class="summary.total_profit >= 0 ? 'text-success' : 'text-danger'">
+                                <t t-esc="formatCurrency(summary.total_profit)"/>
+                            </h2>
+                            <small class="text-muted">
+                                Margin: <t t-esc="formatPercent(summary.avg_profit_margin)"/>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Performance</h6>
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fa fa-check-circle text-success"/> Profitable:</span>
+                                <strong><t t-esc="summary.profitable_count"/></strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span><i class="fa fa-times-circle text-danger"/> Loss:</span>
+                                <strong><t t-esc="summary.loss_count"/></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Platform Distribution</h6>
+                            <t t-if="summary.platform_stats and Object.keys(summary.platform_stats).length > 0">
+                                <t t-foreach="Object.entries(summary.platform_stats)" t-as="platform" t-key="platform[0]">
+                                    <div class="d-flex justify-content-between">
+                                        <span><t t-esc="platform[0]"/>:</span>
+                                        <strong><t t-esc="platform[1].count"/> invoices</strong>
+                                    </div>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted">No platform data</p>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Table -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Invoice Details</h5>
+                    <span class="badge bg-primary">
+                        <t t-esc="invoices.length"/> Invoice<t t-if="invoices.length != 1">s</t>
+                    </span>
+                </div>
+
+
+
+                <div class="card-body p-0">
+                    <t t-if="invoices and invoices.length > 0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Invoice</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Platform</th>
+                                        <th class="text-end">Sales</th>
+                                        <th class="text-end">Cost</th>
+                                        <th class="text-end">Expenses</th>
+                                        <th class="text-end">Net Profit</th>
+                                        <th class="text-end">Margin %</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <t t-foreach="invoices" t-as="inv" t-key="inv.id">
+                                    <tr>
+                                        <td>
+                                            <a href="#" t-on-click="() => this.openInvoice(inv.id)">
+                                                <strong><t t-esc="inv.name"/></strong>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge"
+                                                  t-att-class="inv.move_type === 'out_invoice' ? 'bg-primary' : 'bg-warning'">
+                                                <t t-esc="inv.move_type_label"/>
+                                            </span>
+                                        </td>
+                                        <td><t t-esc="inv.date"/></td>
+                                        <td>
+                                            <t t-esc="inv.partner_name"/>
+                                            <t t-if="inv.partner_ref">
+                                                <br/><small class="text-muted"><t t-esc="inv.partner_ref"/></small>
+                                            </t>
+                                        </td>
+                                        <td>
+                                            <t t-if="inv.platform">
+                                                <span class="badge bg-info"><t t-esc="inv.platform"/></span>
+                                            </t>
+                                        </td>
+                                        <td class="text-end"
+                                            t-att-class="inv.move_type === 'out_refund' ? 'text-danger' : ''">
+                                            <t t-esc="formatCurrency(inv.sales)"/>
+                                        </td>
+                                        <td class="text-end"
+                                            t-att-class="inv.move_type === 'out_refund' ? 'text-danger' : ''">
+                                            <t t-esc="formatCurrency(inv.cost)"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <t t-esc="formatCurrency(inv.expenses)"/>
+                                            <t t-if="inv.expense_count > 0">
+                                                <br/><small class="text-muted">(<t t-esc="inv.expense_count"/> items)</small>
+                                            </t>
+                                        </td>
+                                        <td class="text-end" t-att-class="getProfitClass(inv.net_profit)">
+                                            <strong><t t-esc="formatCurrency(inv.net_profit)"/></strong>
+                                        </td>
+                                        <td class="text-end" t-att-class="getProfitClass(inv.net_profit)">
+                                            <t t-esc="formatPercent(inv.profit_margin)"/>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                    t-on-click="() => this.openInvoice(inv.id)">
+                                                <i class="fa fa-external-link"/>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Expense Breakdown (Expandable) -->
+                                    <t t-if="inv.expense_breakdown and inv.expense_breakdown.length > 0">
+                                        <tr class="table-secondary">
+                                            <td colspan="11">
+                                                <small class="text-muted">
+                                                    <strong>Expense Breakdown:</strong>
+                                                    <t t-foreach="inv.expense_breakdown" t-as="exp" t-key="exp_index">
+                                                        <span class="ms-3">
+                                                            • <t t-esc="exp.expense_type"/>:
+                                                            <strong><t t-esc="formatCurrency(exp.amount)"/></strong>
+                                                            (<t t-esc="exp.expense_ref"/>)
+                                                        </span>
+                                                    </t>
+                                                </small>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="5" class="text-end">TOTAL:</th>
+                                    <th class="text-end"><t t-esc="formatCurrency(summary.total_sales)"/></th>
+                                    <th class="text-end"><t t-esc="formatCurrency(summary.total_cost)"/></th>
+                                    <th class="text-end"><t t-esc="formatCurrency(summary.total_expenses)"/></th>
+                                    <th class="text-end" t-att-class="getProfitClass(summary.total_profit)">
+                                        <strong><t t-esc="formatCurrency(summary.total_profit)"/></strong>
+                                    </th>
+                                    <th class="text-end" t-att-class="getProfitClass(summary.total_profit)">
+                                        <t t-esc="formatPercent(summary.avg_profit_margin)"/>
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="text-center p-5">
+                            <i class="fa fa-inbox fa-3x text-muted mb-3"/>
+                            <p class="text-muted">No invoices with expenses found</p>
+                            <p class="text-muted small">Try adjusting your filters or add expenses to invoices</p>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+        </t>
+    </div>
+</t>
+
+</templates>

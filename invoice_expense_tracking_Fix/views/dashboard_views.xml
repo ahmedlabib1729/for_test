@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Dashboard Action -->
+    <record id="action_invoice_profitability_dashboard" model="ir.actions.client">
+        <field name="name">Profitability Dashboard</field>
+        <field name="tag">invoice_profitability_dashboard</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Dashboard Menu - Under Independent Root -->
+    <menuitem id="menu_invoice_expense_dashboard_action"
+              name="Dashboard"
+              parent="menu_invoice_expense_dashboard"
+              action="action_invoice_profitability_dashboard"
+              sequence="1"/>
+
+</odoo>

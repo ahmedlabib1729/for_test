@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_invoice_expense_tree" model="ir.ui.view">
+        <field name="name">invoice.expense.tree</field>
+        <field name="model">invoice.expense</field>
+        <field name="arch" type="xml">
+            <list string="Invoice Expenses" decoration-muted="state=='cancelled'" 
+                  decoration-success="state=='posted'" decoration-info="state=='draft'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="platform" optional="show"/>
+                <field name="expense_type" readonly="1"/>
+                <field name="description"/>
+                <field name="amount" sum="Total"/>
+                <field name="total_with_tax" optional="hide"/>
+                <field name="calculated_bank_amount" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state=='posted'"
+                       decoration-info="state=='draft'"
+                       decoration-muted="state=='cancelled'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_invoice_expense_form" model="ir.ui.view">
+        <field name="name">invoice.expense.form</field>
+        <field name="model">invoice.expense</field>
+        <field name="arch" type="xml">
+            <form string="Invoice Expense">
+                <header>
+                    <button name="action_post" string="Post" type="object"
+                            invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state != 'posted'"
+                            confirm="Are you sure you want to cancel this expense?"/>
+                    <button name="action_draft" string="Reset to Draft" type="object"
+                            invisible="state != 'cancelled'"/>
+                    <button name="action_view_journal_entry" string="View Journal Entry"
+                            type="object" invisible="not move_id"
+                            class="oe_highlight" icon="fa-book"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_journal_entry" type="object"
+                                class="oe_stat_button" icon="fa-book"
+                                invisible="not move_id">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Journal Entry</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group name="main_info">
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="platform" readonly="state != 'draft'"/>
+                            <field name="expense_type" readonly="1"/>
+                            <field name="statement_reference" readonly="state != 'draft'"/>
+                        </group>
+                        <group name="accounting_info">
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="expense_account_id" readonly="state != 'draft'"
+                                   required="auto_generate_lines"/>
+                            <field name="tax_ids" widget="many2many_tags"
+                                   readonly="state != 'draft'"/>
+                            <field name="bank_account_id" readonly="1"
+                                   invisible="not bank_account_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="description" readonly="state != 'draft'"
+                               placeholder="Enter expense description..."/>
+                    </group>
+
+                    <notebook>
+                        <!-- Invoice Distribution Tab -->
+                        <page string="Invoice Distribution" name="distribution_tab">
+                            <field name="distribution_ids" readonly="state != 'draft'">
+                                <list string="Invoice Distribution" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="invoice_id"
+                                           options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="invoice_type" optional="show"
+                                           decoration-info="invoice_type == 'out_invoice'"
+                                           decoration-warning="invoice_type == 'out_refund'"/>
+                                    <field name="partner_id" readonly="1" optional="show"/>
+                                    <field name="invoice_amount" readonly="1" optional="show"
+                                           string="Invoice Total"/>
+                                    <field name="already_distributed" readonly="1" optional="show"
+                                           decoration-muted="already_distributed == 0"/>
+                                    <field name="remaining_on_invoice" readonly="1" optional="show"
+                                           decoration-info="remaining_on_invoice > 0"
+                                           decoration-warning="remaining_on_invoice == 0"/>
+                                    <field name="amount"
+                                           decoration-danger="amount > remaining_on_invoice"/>
+                                    <field name="notes"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                </list>
+                            </field>
+
+                            <!-- Summary Box -->
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="amount" string="Expense Amount" readonly="1"/>
+                                <field name="total_with_tax" readonly="1"
+                                       invisible="not tax_ids"/>
+                                <field name="total_distributed" readonly="1"
+                                       string="Net Invoices"/>
+                                <field name="calculated_bank_amount" readonly="1"
+                                       class="oe_subtotal_footer_separator"
+                                       decoration-danger="calculated_bank_amount &lt; 0"
+                                       decoration-success="calculated_bank_amount &gt;= 0"
+                                       style="font-weight: bold;"/>
+                            </group>
+
+                            <div class="alert alert-info" role="alert"
+                                 invisible="not distribution_ids">
+                                <strong>ℹ️ Note:</strong>
+                                <ul>
+                                    <li>For <strong>Invoices</strong>: Enter positive amounts (will Credit receivable)</li>
+                                    <li>For <strong>Credit Notes</strong>: Enter positive amounts (will Debit receivable)</li>
+                                    <li>Calculated Bank Amount = Net Invoices - Expense with Tax</li>
+                                </ul>
+                            </div>
+                        </page>
+
+                        <!-- Journal Items Tab -->
+                        <page string="Journal Items" name="journal_items_tab">
+                            <!-- Auto-generation Controls -->
+                            <div class="row" invisible="state != 'draft'">
+                                <div class="col-12">
+                                    <field name="auto_generate_lines" widget="boolean_toggle"/>
+                                    <button name="action_generate_lines"
+                                            string="🔄 Generate Journal Lines"
+                                            type="object"
+                                            class="btn-primary ms-3"
+                                            invisible="not auto_generate_lines"
+                                            confirm="This will delete existing lines and regenerate them. Continue?"/>
+                                    <span class="text-muted ms-3" invisible="not auto_generate_lines">
+                                        Click to auto-generate lines from distributions
+                                    </span>
+                                </div>
+                            </div>
+
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list string="Journal Items" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="account_id"/>
+                                    <field name="name"/>
+                                    <field name="partner_id"/>
+                                    <field name="tax_ids" widget="many2many_tags" optional="hide"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution"
+                                           optional="hide" groups="analytic.group_analytic_accounting"/>
+                                    <field name="debit" sum="Total Debit"/>
+                                    <field name="credit" sum="Total Credit"/>
+                                    <field name="notes" optional="hide"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="total_debit" readonly="1"/>
+                                <field name="total_credit" readonly="1"/>
+                                <field name="balance_difference" readonly="1"
+                                       class="oe_subtotal_footer_separator"
+                                       decoration-danger="balance_difference != 0"
+                                       decoration-success="balance_difference == 0"
+                                       style="font-weight: bold;"/>
+                            </group>
+
+                            <div class="alert alert-warning" role="alert"
+                                 invisible="balance_difference == 0 or not line_ids">
+                                <strong>⚠️ Warning:</strong> Journal entry is not balanced!
+                                Difference: <field name="balance_difference" readonly="1" nolabel="1"/>
+                            </div>
+
+                            <div class="alert alert-info" role="alert"
+                                 invisible="not tax_ids or balance_difference == 0 or not line_ids">
+                                <strong>ℹ️ Note:</strong> The difference equals the tax amount (<field name="total_with_tax" readonly="1" nolabel="1"/> - <field name="amount" readonly="1" nolabel="1"/>).
+                                <br/>Odoo will auto-generate tax lines when you post, and the entry will be balanced.
+                                <br/>This is normal behavior for entries with taxes.
+                            </div>
+                        </page>
+
+                        <!-- Additional Info Tab -->
+                        <page string="Additional Information" name="additional_info_tab">
+                            <group>
+                                <field name="notes" readonly="state != 'draft'"
+                                       placeholder="Any additional notes..."/>
+                            </group>
+                            <group invisible="not move_id">
+                                <field name="move_id" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_invoice_expense_search" model="ir.ui.view">
+        <field name="name">invoice.expense.search</field>
+        <field name="model">invoice.expense</field>
+        <field name="arch" type="xml">
+            <search string="Invoice Expenses">
+                <field name="name" string="Reference"/>
+                <field name="description"/>
+                <field name="statement_reference"/>
+                <field name="distribution_ids" string="Invoice" filter_domain="[('distribution_ids.invoice_id', 'ilike', self)]"/>
+
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Posted" name="posted" domain="[('state','=','posted')]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
+
+                <separator/>
+                <filter string="Amazon" name="amazon" domain="[('platform','=','amazon')]"/>
+                <filter string="Noon" name="noon" domain="[('platform','=','noon')]"/>
+
+                <separator/>
+                <filter string="Commission" name="commission"
+                        domain="[('expense_type','=','commission')]"/>
+                <filter string="Shipping" name="shipping"
+                        domain="[('expense_type','=','shipping')]"/>
+                <filter string="Storage" name="storage"
+                        domain="[('expense_type','=','storage')]"/>
+
+                <separator/>
+
+
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+
+                <group expand="0" string="Group By">
+                    <filter string="Platform" name="group_platform"
+                            context="{'group_by':'platform'}"/>
+                    <filter string="Expense Type" name="group_type"
+                            context="{'group_by':'expense_type'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by':'state'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by':'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_invoice_expense" model="ir.actions.act_window">
+        <field name="name">Invoice Expenses</field>
+        <field name="res_model">invoice.expense</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_invoice_expense_search"/>
+        <field name="context">{'search_default_posted': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first invoice expense
+            </p>
+            <p>
+                Track expenses and distribute them across multiple invoices and credit notes.
+                Auto-generate balanced journal entries with flexible accounting.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items - INDEPENDENT ROOT MENU -->
+    <menuitem id="menu_invoice_expense_root"
+              name="Invoice Expenses"
+              sequence="50"
+              web_icon="invoice_expense_tracking_Fix,static/description/budget-spending_17537120.png"/>
+
+    <menuitem id="menu_invoice_expense_dashboard"
+              name="Dashboard"
+              parent="menu_invoice_expense_root"
+              sequence="5"/>
+
+    <menuitem id="menu_invoice_expense"
+              name="Expenses"
+              parent="menu_invoice_expense_root"
+              action="action_invoice_expense"
+              sequence="10"/>
+
+
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_invoice_expense_config"
+              name="Configuration"
+              parent="menu_invoice_expense_root"
+              sequence="100"
+              groups="base.group_system"/>
+
+    <menuitem id="menu_invoice_expense_settings"
+              name="Settings"
+              parent="menu_invoice_expense_config"
+              sequence="10"
+              groups="base.group_system"/>
+
+    <!-- Sequence -->
+    <record id="seq_invoice_expense" model="ir.sequence">
+        <field name="name">Invoice Expense</field>
+        <field name="code">invoice.expense</field>
+        <field name="prefix">EXP/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>
