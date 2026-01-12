@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== ACTIONS ==================== -->
+    
+    <record id="action_daily_cash_register" model="ir.actions.act_window">
+        <field name="name">Daily Cash/Bank Register</field>
+        <field name="res_model">daily.cash.register</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Daily Register
+            </p>
+            <p>
+                Track your daily cash and bank transactions easily.<br/>
+                The system will automatically balance your entries with the journal account.
+            </p>
+        </field>
+    </record>
+
+    <!-- ==================== MENU ITEMS ==================== -->
+    
+    <!-- Main Menu -->
+    <menuitem id="menu_daily_cash_register_root"
+              name="Daily Register"
+              web_icon="daily_cash_register,static/description/icon.png"
+              sequence="45"/>
+    
+    <!-- Dashboard Menu (First Item) -->
+    <menuitem id="menu_daily_register_dashboard"
+              name="Dashboard"
+              parent="menu_daily_cash_register_root"
+              action="action_daily_register_dashboard"
+              sequence="1"/>
+
+    <!-- Daily Registers -->
+    <menuitem id="menu_daily_cash_register"
+              name="Daily Registers"
+              parent="menu_daily_cash_register_root"
+              action="action_daily_cash_register"
+              sequence="10"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_daily_cash_register_config"
+              name="Configuration"
+              parent="menu_daily_cash_register_root"
+              sequence="100"
+              groups="account.group_account_manager"/>
+
+</odoo>
