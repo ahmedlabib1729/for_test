@@ -1,38 +1,24 @@
-# -*- coding: utf-8 -*-
 {
-    'name': 'Custom Invoice Report - Dot Matrix Style',
-    'version': '18.0.1.5.0',
+    'name': 'Custom Invoice Report',
+    'version': '19.0.1.0.0',
     'category': 'Accounting',
-    'summary': 'Custom Reports: Invoice, Delivery Note, Journal Voucher, Vendor Bill, Payment Receipt',
+    'summary': 'Custom Tax Invoice Report with Original & Duplicate copies',
     'description': """
-        Custom Reports Package - Complete Accounting & Inventory Reports
-        ==================================================================
-        * Custom invoice layout matching dot matrix print style
-        * Custom delivery note layout matching dot matrix print style
-        * Custom journal voucher report with company logo
-        * Custom vendor bill report with company logo
-        * Custom customer payment receipt with company logo
-        * No header or footer in print
-        * VAT summary table
-        * Amount in words (English)
-        * Declaration and signature section
+        Custom Invoice Report Module
+        ============================
+        - Custom designed Tax Invoice
+        - Prints 2 copies: Original & Duplicate
+        - Shows Payment Type (Cash/Credit)
+        - Company logo and name from system
     """,
     'author': 'Your Company',
-    'website': 'https://www.yourcompany.com',
-    'depends': ['account', 'sale', 'stock'],
+    'website': '',
+    'depends': ['account', 'purchase_payment_type'],
     'data': [
-        'views/report_paperformat.xml',
-        'views/report_invoice_custom.xml',
-        'views/report_delivery_note.xml',
-        'views/report_journal_voucher.xml',
-        'views/report_vendor_bill.xml',
-        'views/report_payment_receipt.xml',
-        'views/stock_picking_views.xml',
+        'report/invoice_report_template.xml',
     ],
     'installable': True,
     'application': False,
     'auto_install': False,
     'license': 'LGPL-3',
 }
-
-
