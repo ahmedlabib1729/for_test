@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View للتقرير المحسن -->
+    <record id="view_daily_invoices_wizard" model="ir.ui.view">
+        <field name="name">daily.invoices.wizard.form</field>
+        <field name="model">daily.invoices.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Daily Invoices Report" create="false" edit="false">
+                <header invisible="1"/>
+                <sheet>
+                    <style>
+                        /* ========== RESET BASE ========== */
+                        .o_form_view .o_form_sheet {
+                            max-width: 100% !important;
+                            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+                            padding: 20px !important;
+                            min-height: 100vh;
+                        }
+
+                        /* ========== ANIMATED HEADER ========== */
+                        .report-header {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 35px 40px;
+                            margin-bottom: 30px;
+                            border-radius: 20px;
+                            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .report-header::before {
+                            content: '';
+                            position: absolute;
+                            top: -50%;
+                            right: -50%;
+                            width: 200%;
+                            height: 200%;
+                            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                            animation: pulse 3s ease-in-out infinite;
+                        }
+
+                        @keyframes pulse {
+                            0%, 100% { transform: scale(1); opacity: 0.5; }
+                            50% { transform: scale(1.1); opacity: 0.3; }
+                        }
+
+                        .report-header h1 {
+                            margin: 0;
+                            font-size: 32px;
+                            font-weight: 800;
+                            letter-spacing: -0.5px;
+                            position: relative;
+                            z-index: 1;
+                            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                        }
+
+                        .report-header p {
+                            margin: 12px 0 0 0;
+                            font-size: 15px;
+                            opacity: 0.95;
+                            position: relative;
+                            z-index: 1;
+                        }
+
+                        /* ========== INFO BANNER ========== */
+                        .info-banner {
+                            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                            color: white;
+                            padding: 20px 30px;
+                            border-radius: 15px;
+                            margin-bottom: 25px;
+                            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.25);
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .info-banner::after {
+                            content: '💡';
+                            position: absolute;
+                            right: 20px;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            font-size: 60px;
+                            opacity: 0.2;
+                        }
+
+                        .info-banner h3 {
+                            margin: 0 0 10px 0;
+                            font-size: 18px;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        }
+
+                        .info-banner p {
+                            margin: 0;
+                            font-size: 14px;
+                            line-height: 1.6;
+                        }
+
+                        /* ========== FILTERS CARD ========== */
+                        .filters-container {
+                            background: white;
+                            padding: 30px;
+                            border-radius: 20px;
+                            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+                            margin-bottom: 30px;
+                            border: 2px solid rgba(102, 126, 234, 0.1);
+                            transition: all 0.3s ease;
+                        }
+
+                        .filters-container:hover {
+                            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+                            transform: translateY(-2px);
+                        }
+
+                        /* ========== ENHANCED INPUT FIELDS ========== */
+                        .o_field_widget input,
+                        .o_field_widget select {
+                            border-radius: 10px !important;
+                            border: 2px solid #e1e8ed !important;
+                            padding: 12px 16px !important;
+                            font-size: 14px !important;
+                            background: #f8f9fa !important;
+                            transition: all 0.3s ease !important;
+                            font-weight: 500 !important;
+                        }
+
+                        .o_field_widget input:focus,
+                        .o_field_widget select:focus {
+                            border-color: #667eea !important;
+                            background: white !important;
+                            outline: none !important;
+                            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
+                            transform: scale(1.02);
+                        }
+
+                        .o_field_date input {
+                            font-weight: 700 !important;
+                            color: #2c3e50 !important;
+                        }
+
+                        /* ========== ENHANCED LABELS ========== */
+                        label.o_form_label {
+                            color: #2c3e50 !important;
+                            font-weight: 700 !important;
+                            font-size: 13px !important;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            margin-bottom: 8px !important;
+                            display: block !important;
+                        }
+
+                        /* ========== GROUP SEPARATORS ========== */
+                        .o_horizontal_separator {
+                            color: #667eea !important;
+                            font-weight: 800 !important;
+                            font-size: 16px !important;
+                            margin-bottom: 15px !important;
+                            padding-bottom: 10px !important;
+                            border-bottom: 3px solid #667eea !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            gap: 10px;
+                        }
+
+                        /* ========== ACTION BUTTONS ========== */
+                        .action-buttons {
+                            display: flex;
+                            gap: 15px;
+                            margin-top: 25px;
+                            padding-top: 25px;
+                            border-top: 2px solid #e5e7eb;
+                        }
+
+                        .btn-custom {
+                            flex: 1;
+                            border-radius: 12px;
+                            padding: 14px 24px;
+                            font-weight: 700;
+                            border: none;
+                            cursor: pointer;
+                            font-size: 14px;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 10px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+
+                        .btn-custom:hover {
+                            transform: translateY(-3px);
+                            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+                        }
+
+                        .btn-custom:active {
+                            transform: translateY(-1px);
+                            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+                        }
+
+                        .btn-primary-custom {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                        }
+
+                        .btn-primary-custom:hover {
+                            background: linear-gradient(135deg, #5568d3 0%, #654091 100%);
+                        }
+
+                        .btn-success-custom {
+                            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                            color: white;
+                        }
+
+                        .btn-success-custom:hover {
+                            background: linear-gradient(135deg, #0f8a7e 0%, #30d66b 100%);
+                        }
+
+                        /* ========== RESULTS CONTAINER ========== */
+                        .results-container {
+                            background: transparent;
+                            border-radius: 15px;
+                            padding: 0;
+                        }
+
+                        /* ========== ENHANCED TABLES ========== */
+                        table {
+                            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+                            border-radius: 10px;
+                            overflow: hidden;
+                        }
+
+                        table thead tr {
+                            background: linear-gradient(90deg, #34495e 0%, #2c3e50 100%) !important;
+                        }
+
+                        table tbody tr {
+                            transition: all 0.2s ease;
+                        }
+
+                        table tbody tr:hover {
+                            background: #e8f4f8 !important;
+                            transform: scale(1.01);
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                        }
+
+                        /* ========== ENHANCED LINKS ========== */
+                        a.oe_link {
+                            font-weight: 600 !important;
+                            text-decoration: none !important;
+                            transition: all 0.2s ease;
+                            position: relative;
+                        }
+
+                        a.oe_link:hover {
+                            text-decoration: none !important;
+                            opacity: 0.8;
+                            transform: translateX(3px);
+                        }
+
+                        /* ========== SCROLLBAR ========== */
+                        ::-webkit-scrollbar {
+                            width: 10px;
+                            height: 10px;
+                        }
+
+                        ::-webkit-scrollbar-track {
+                            background: #f1f1f1;
+                            border-radius: 10px;
+                        }
+
+                        ::-webkit-scrollbar-thumb {
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-radius: 10px;
+                        }
+
+                        ::-webkit-scrollbar-thumb:hover {
+                            background: linear-gradient(135deg, #5568d3 0%, #654091 100%);
+                        }
+
+                        /* ========== LOADING ANIMATION ========== */
+                        @keyframes fadeIn {
+                            from { opacity: 0; transform: translateY(20px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+
+                        .results-container > * {
+                            animation: fadeIn 0.6s ease-out;
+                        }
+
+                        /* ========== ODOO 18 COMPATIBILITY ========== */
+                        .o_content {
+                            background: transparent !important;
+                        }
+
+                        .o_form_sheet_bg {
+                            padding: 0 !important;
+                            background: transparent !important;
+                        }
+
+                        /* ========== RESPONSIVE ========== */
+                        @media (max-width: 768px) {
+                            .report-header h1 {
+                                font-size: 24px;
+                            }
+
+                            .action-buttons {
+                                flex-direction: column;
+                            }
+
+                            .btn-custom {
+                                width: 100%;
+                            }
+                        }
+
+                        /* ========== PRINT STYLES ========== */
+                        @media print {
+                            .filters-container,
+                            .action-buttons {
+                                display: none !important;
+                            }
+
+                            .o_form_sheet {
+                                background: white !important;
+                            }
+                        }
+                    </style>
+
+                    <!-- Animated Header -->
+                    <div class="report-header">
+                        <h1>📊 Daily Invoices Report</h1>
+                        <p>Real-time tracking of purchases &amp; sales invoices with comprehensive payment breakdown</p>
+                    </div>
+
+                    <!-- Info Banner -->
+                    <div class="info-banner">
+                        <h3>📋 Report Insights</h3>
+                        <p>
+                            <strong>Purchases:</strong> Complete breakdown of paid vs unpaid invoices with tax calculations<br/>
+                            <strong>Sales:</strong> Detailed payment method analysis (Cash, Bank, Commission) with tax details<br/>
+                            <strong>Other Payments:</strong> Track all expense account transactions
+                        </p>
+                    </div>
+
+                    <!-- Filters Container -->
+                    <div class="filters-container">
+                        <group>
+                            <group string="📅 SELECT DATE RANGE">
+                                <field name="date_from" string="From Date"/>
+                                <field name="date_to" string="To Date"/>
+                            </group>
+                        </group>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button name="action_refresh" type="object" string="🔄 Refresh Report" class="btn-custom btn-primary-custom"/>
+                            <button name="action_export_excel" type="object" string="📥 Export Excel" class="btn-custom btn-success-custom"/>
+                        </div>
+                    </div>
+
+                    <!-- Results Area -->
+                    <div class="results-container">
+                        <field name="report_html" readonly="1" nolabel="1"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_daily_invoices_report" model="ir.actions.act_window">
+        <field name="name">Daily Invoices Report</field>
+        <field name="res_model">daily.invoices.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_daily_invoices_wizard"/>
+        <field name="target">current</field>
+    </record>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_daily_invoices_root" 
+              name="Daily Invoices" 
+              sequence="61" 
+              web_icon="daily_invoices,static/description/icon.png" 
+              groups="account.group_account_user"/>
+
+    <!-- Sub Menu -->
+    <menuitem id="menu_daily_invoices_report" 
+              name="📊 Today's Report" 
+              parent="menu_daily_invoices_root" 
+              action="action_daily_invoices_report" 
+              sequence="10"/>
+
+</odoo>
