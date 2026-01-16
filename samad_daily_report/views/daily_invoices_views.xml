@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Client Action for Dashboard -->
+    <record id="action_daily_invoices_dashboard" model="ir.actions.client">
+        <field name="name">Daily Invoices Report</field>
+        <field name="tag">daily_invoices_dashboard</field>
+    </record>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_daily_invoices_root" 
+              name="Daily Invoices" 
+              sequence="61" 
+              web_icon="samad_daily_report,static/description/icon.png" 
+              groups="account.group_account_user"/>
+
+    <!-- Sub Menu -->
+    <menuitem id="menu_daily_invoices_report" 
+              name="📊 Today's Report" 
+              parent="menu_daily_invoices_root" 
+              action="action_daily_invoices_dashboard" 
+              sequence="10"/>
+
+</odoo>
