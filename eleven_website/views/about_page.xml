@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- About Us Page -->
+    <template id="eleven_about_page" name="Eleven About Us">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Hero Section -->
+                <section class="eleven_about_hero" style="background-image: url('/eleven_website/static/src/img/about-us-banner.jpg');">
+                    <div class="eleven_about_hero_overlay"></div>
+                    <div class="eleven_about_hero_content">
+                        <h1 class="eleven_about_hero_title">ABOUT US</h1>
+                        <p class="eleven_about_hero_subtitle">
+                            Transform your home or office into a space filled with luxurious fragrances with Eleven Scent.
+                        </p>
+                        <p class="eleven_about_hero_text">
+                            Our smart device combines innovation and design to give you a unique, personalized scent experience.
+                        </p>
+                        <a href="/contactus" class="eleven_about_btn">CONTACT US</a>
+                    </div>
+                </section>
+
+                <!-- Main Content -->
+                <section class="eleven_about_content">
+                    <div class="container">
+
+                        <!-- Introduction -->
+                        <div class="eleven_about_intro">
+                            <p>
+                                At Eleven Scent, we believe that every scent tells a story. Our Smart Scent Diffusers turn your home or office into a space full of comfort and luxury.
+                            </p>
+                            <p>
+                                Experience unique fragrances that take your senses on a delightful journey and add a touch of elegance to every moment of your day.
+                            </p>
+                        </div>
+
+                        <!-- Combined Section with Single Image -->
+                        <div class="eleven_about_combined_section">
+
+                            <!-- Who We Are Text Block -->
+                            <div class="eleven_about_text_left">
+                                <div class="eleven_section_icon">
+                                    <i class="fa-solid fa-quote-left"></i>
+                                </div>
+                                <h2 class="eleven_section_title">Who We Are</h2>
+                                <div class="eleven_section_content">
+                                    <p>
+                                        At Eleven Scent, we are more than just a luxury brand; we specialize in creating sophisticated and unique fragrance experiences designed to turn everyday moments into something extraordinary. We craft Smart Scent Diffusers that combine cutting-edge technology with the art of scent, making every fragrance experience personal and distinctive. Our products aim to elevate the value of each moment in your daily life, transforming any space—whether it's your home, office, or a favorite area—into an elegant and luxurious sanctuary.
+                                    </p>
+                                    <p>
+                                        With every breath of the fragrances we offer, a unique story is told, reflecting refined taste and meticulous attention to detail, while providing you with a lasting sense of comfort, beauty, and indulgence
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Main Image -->
+                            <div class="eleven_about_main_image">
+                                <img src="/eleven_website/static/src/img/01.png" alt="Eleven Scent"/>
+                            </div>
+
+                            <!-- Our Story Text Block -->
+                            <div class="eleven_about_text_right">
+                                <div class="eleven_section_icon">
+                                    <i class="fa-solid fa-quote-left"></i>
+                                </div>
+                                <h2 class="eleven_section_title">Our Story</h2>
+                                <div class="eleven_section_content">
+                                    <p>
+                                        The journey of Eleven Scent began with our deep passion for fragrances and a strong belief in their power to transform any space into an unforgettable sensory experience. We combined modern technology with the art of scent to create Smart Scent Diffusers that deliver a sophisticated and unique fragrance experience. Our goal is to make every moment of your daily life feel luxurious and distinctive, turning any space—whether at home or in the office—into an elegant and inspiring sanctuary.
+                                    </p>
+                                    <p>
+                                        With every breath of our fragrances, we aim to craft an exceptional experience that reflects refined taste and meticulous attention to detail, leaving a lasting impact on your everyday life.
+                                    </p>
+                                </div>
+                                <a href="/contactus" class="eleven_about_btn_secondary">CONTACT US</a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Vision, Mission, Values Section -->
+                <section class="eleven_vmv_section">
+                    <div class="container">
+                        <div class="eleven_vmv_grid">
+
+                            <!-- Our Vision -->
+                            <div class="eleven_vmv_card">
+                                <div class="eleven_vmv_icon">
+                                    <i class="fa-solid fa-eye"></i>
+                                </div>
+                                <h3 class="eleven_vmv_title">Our Vision</h3>
+                                <p class="eleven_vmv_text">
+                                    At Eleven Scent, our vision is to redefine the concept of fragrances, making them an essential part of a complete lifestyle experience that goes beyond mere scent to enrich every moment of your day. We aim to transform fragrances into a way to bring vitality, elegance, and enjoyment to your daily life, whether at home, in the office, or any space where you seek comfort and luxury. We believe that fragrance not only delights the senses but also evokes emotions, turning everyday routines into truly unique experiences. Our vision goes beyond simply offering scented products; it is a philosophy of life rooted in creativity, sophistication, and meticulous attention to detail, ensuring an unforgettable and exceptional experience.
+                                </p>
+                            </div>
+
+                            <!-- Our Mission -->
+                            <div class="eleven_vmv_card">
+                                <div class="eleven_vmv_icon">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                                <h3 class="eleven_vmv_title">Our Mission</h3>
+                                <p class="eleven_vmv_text">
+                                    At Eleven Scent, our daily mission is to innovate and make a meaningful impact in the lives of our customers through smart and creative products that combine technology with the art of fragrance. We craft immersive sensory environments, where every spray from our diffusers provides a unique experience that stimulates the senses and adds a touch of luxury and elegance to every moment of your day. We focus on delivering products that blend superior design, superior quality, and smart functionality, ensuring an effortless and enjoyable fragrance experience. Our goal is to transform every space into a distinctive sanctuary filled with refined taste and enriches your daily life in an innovative and remarkable way, making each moment truly exceptional
+                                </p>
+                            </div>
+
+                            <!-- Our Core Values -->
+                            <div class="eleven_vmv_card">
+                                <div class="eleven_vmv_icon">
+                                    <i class="fa-solid fa-gem"></i>
+                                </div>
+                                <h3 class="eleven_vmv_title">Our Core Values</h3>
+                                <p class="eleven_vmv_text">
+                                    At Eleven Scent, our core values represent the fundamental principles that guide every aspect of our work and products. Quality forms the foundation of every innovation we offer, from selecting the finest raw materials to designing products with the highest standards of precision and craftsmanship. Innovation drives us to constantly develop new technologies and make the fragrance experience more interactive, enjoyable, and uniquely personal. Elegance and an exceptional customer experience are at the heart of every decision we make, aiming to deliver experiences that exceed expectations, captivate the senses, and leave a lasting, memorable impact on daily life.
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- Contact Button -->
+                        <div class="eleven_vmv_cta">
+                            <a href="/contactus" class="eleven_about_btn">CONTACT US</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- The Art of Scent Section -->
+                <section class="eleven_art_scent_section" style="background-image: url('/eleven_website/static/src/img/The Art of Scent-01.jpg');">
+                    <div class="eleven_art_scent_overlay"></div>
+                    <div class="container">
+                        <div class="eleven_art_scent_content">
+                            <h2 class="eleven_art_scent_title">THE ART OF SCENT</h2>
+
+                            <p class="eleven_art_scent_text">
+                                At Eleven Scent, we see fragrance as a silent language that speaks directly to the senses and touches the soul. We believe that scent is not just a fleeting aroma, but a holistic experience that can transform a space, elevate the mood, and give it a unique identity filled with elegance and distinction. Our philosophy is rooted in crafting fragrances that tell stories and leave lasting memories, ensuring that each scent is more than just pleasant—it becomes part of the atmosphere itself.
+                            </p>
+
+                            <p class="eleven_art_scent_text">
+                                To complement this artistry, we design and manufacture smart air freshener devices that diffuse our signature scents with precision, consistency, and sophistication. By merging the world of perfumery with cutting-edge technology, we create an immersive experience where fragrance becomes a daily companion that enhances well-being and adds invisible layers of beauty. For us, scent is not an accessory; it is an essential element of design, personality, and lifestyle—turning ordinary spaces into environments that breathe life, warmth, and character.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="eleven_reach_section">
+                    <div class="container">
+                        <div class="eleven_reach_container">
+
+                            <!-- Product Image with Circle -->
+                            <div class="eleven_reach_image">
+                                <div class="eleven_reach_circle"></div>
+                                <img src="/eleven_website/static/src/img/ReachDistribution.png" alt="Eleven Scent Device"/>
+                            </div>
+
+                            <!-- Reach Content -->
+                            <div class="eleven_reach_content">
+                                <h2 class="eleven_reach_title">Reach &amp; Distribution</h2>
+
+                                <p class="eleven_reach_text">
+                                    At Eleven Scent, we are committed to making our products accessible wherever our clients may be, because we believe that the luxury of fragrance combined with smart technology should never be limited by location.
+                                </p>
+
+                                <p class="eleven_reach_text">
+                                    Our services cover the entire United Arab Emirates, offering fast and secure delivery to homes, businesses, hotels, and showrooms. Beyond national borders, we also provide international shipping upon request, ensuring that our smart air fresheners and signature scents reach fragrance lovers across the globe.
+                                </p>
+
+                                <p class="eleven_reach_text">
+                                    We strive to deliver a seamless experience from the moment you select a product until it arrives at your doorstep, with quality, precision, and attention to detail at the core of every distribution process.
+                                </p>
+
+                                <p class="eleven_reach_text">
+                                    Our vision is to make Eleven Scent your companion wherever you are, filling your spaces with aromas designed to match your taste and lifestyle
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+
+            </div>
+        </t>
+    </template>
+
+</odoo>
