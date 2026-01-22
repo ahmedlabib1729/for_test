@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contact Us Page Template -->
+    <template id="eleven_contact_us_page" name="Eleven Contact Us">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Hero Section -->
+                <section class="eleven_contact_hero">
+                    <!-- Background Image -->
+                    <div class="eleven_contact_hero_bg">
+                        <img src="/eleven_website/static/src/img/contact_us.jpg" class="eleven_contact_hero_bg_img" alt="Contact Us Background"/>
+                    </div>
+
+                    <!-- Dark Overlay -->
+                    <div class="eleven_contact_hero_overlay"></div>
+
+                    <div class="eleven_contact_hero_content">
+                        <h1 class="eleven_contact_hero_title">CONTACT US</h1>
+                        <p class="eleven_contact_hero_text">
+                            We love to hear from you on our customer service, merchandise, website or any topics you want to share with us.
+                        </p>
+                        <p class="eleven_contact_hero_subtext">
+                            Your comments and suggestions will be appreciated.
+                        </p>
+                        <a href="#contact-form" class="eleven_btn_contact_hero">CONTACT US</a>
+                    </div>
+                </section>
+
+                <!-- Contact Form Section -->
+                <section class="eleven_contact_form_section" id="contact-form">
+                    <div class="eleven_contact_form_container">
+                        <h2 class="eleven_contact_form_title">
+                            <span class="eleven_text_red">Ask us anything!</span> We're here to help.
+                        </h2>
+
+                        <t t-if="request.params.get('success')">
+                            <div class="alert alert-success text-center" style="margin-bottom: 30px;">
+                                Thank you for contacting us! We will get back to you soon.
+                            </div>
+                        </t>
+
+                        <form action="/contactus" method="POST" class="eleven_contact_form">
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                            <div class="eleven_form_row">
+                                <div class="eleven_form_group">
+                                    <label for="name">Name *</label>
+                                    <input type="text" name="name" id="name" class="eleven_form_input" required="required"/>
+                                </div>
+
+                                <div class="eleven_form_group">
+                                    <label for="email">Email *</label>
+                                    <input type="email" name="email" id="email" class="eleven_form_input" required="required"/>
+                                </div>
+                            </div>
+
+                            <div class="eleven_form_row">
+                                <div class="eleven_form_group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" name="phone" id="phone" class="eleven_form_input" required="required"/>
+                                </div>
+
+                                <div class="eleven_form_group">
+                                    <label for="subject">Subject *</label>
+                                    <input type="text" name="subject" id="subject" class="eleven_form_input" required="required"/>
+                                </div>
+                            </div>
+
+                            <div class="eleven_form_group">
+                                <label for="message">Your Message *</label>
+                                <textarea name="description" id="message" class="eleven_form_textarea" rows="6" required="required"></textarea>
+                            </div>
+
+                            <div class="eleven_form_submit">
+                                <button type="submit" class="eleven_btn_submit">Send Message</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Live Help Section -->
+                <section class="eleven_live_help_section">
+                    <div class="eleven_live_help_container">
+                        <h3 class="eleven_live_help_subtitle">LIVE HELP</h3>
+                        <h2 class="eleven_live_help_title">GET IN TOUCH</h2>
+                        <p class="eleven_live_help_text">
+                            If you have an issue or question that requires immediate assistance, you can click the button below to chat live with a Customer Service representative. If we aren't available, drop us an email to the left and we will get back to you within 20-36 hours!
+                        </p>
+
+                        <a href="https://wa.me/1234567890" target="_blank" class="eleven_btn_whatsapp">
+                            <i class="fa fa-whatsapp"></i> Message us on WhatsApp
+                        </a>
+
+                        <div class="eleven_social_icons">
+                            <a href="#" class="eleven_social_icon" target="_blank">
+                                <i class="fa fa-facebook"></i>
+                            </a>
+                            <a href="#" class="eleven_social_icon" target="_blank">
+                                <i class="fa fa-instagram"></i>
+                            </a>
+                            <a href="#" class="eleven_social_icon" target="_blank">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+</odoo>
