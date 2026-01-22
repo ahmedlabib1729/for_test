@@ -1,6 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_product_product_public,product.product.public,product.model_product_product,,1,0,0,0
-
-access_product_review_public,product.review.public,model_product_review,base.group_public,1,0,1,0
-access_product_review_user,product.review.user,model_product_review,base.group_user,1,1,1,1
-access_product_review_manager,product.review.manager,model_product_review,base.group_system,1,1,1,1
