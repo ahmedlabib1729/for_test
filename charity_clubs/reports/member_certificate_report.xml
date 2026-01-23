@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- قالب QWeb لتقرير شهادة العضوة -->
+     <template id="report_member_certificate_template">
+    <t t-call="web.html_container">
+      <t t-raw="'&lt;meta charset=&quot;utf-8&quot; /&gt;'"/>
+
+      <t t-foreach="docs" t-as="o">
+        <t t-set="base_url" t-value="request.env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
+
+        <style type="text/css">
+          @page { size: A4 landscape; margin: 0; }
+          html, body { margin:0; padding:0; width:297mm; height:210mm; background:transparent !important; }
+
+          /* الخطوط */
+          @font-face {
+            font-family: 'CairoLocal';
+            src: url("<t t-esc='base_url'/>/charity_clubs/static/src/fonts/Cairo-Regular.ttf") format('truetype');
+            font-weight: 400;
+          }
+          @font-face {
+            font-family: 'CairoLocal';
+            src: url("<t t-esc='base_url'/>/charity_clubs/static/src/fonts/Cairo-Bold.ttf") format('truetype');
+            font-weight: 700;
+          }
+
+          .o_report_layout, .o_report_layout .article { padding:0 !important; margin:0 !important; background:transparent !important; }
+          .o_report_footer, .o_footer, footer, .footer { display:none !important; height:0 !important; }
+
+          .page { position:relative; width:297mm; height:210mm; overflow:hidden; background:transparent !important; }
+          .bg { position:absolute; top:-2mm; left:-2mm; right:-2mm; bottom:-2mm; z-index:0; }
+          .bg img { width:100%; height:100%; object-fit:cover; display:block; }
+
+          /* النص في منتصف الصفحة */
+          .center-anchor{
+            position:absolute;
+            top:30%;
+            left:15%;
+            transform:translate(-50%, -50%);
+            width:70%;
+            text-align:center;
+            direction:rtl;
+            z-index:2;
+            font-family:'CairoLocal','Amiri','Noto Naskh Arabic','DejaVu Sans',sans-serif !important;
+            color:#222;
+            line-height:1.9;
+          }
+
+          .cert-title{ font-size:26pt; font-weight:700; color:#B08D57; margin-bottom:6mm; }
+          .cert-line{ font-size:16pt; }
+          .cert-name{ font-size:20pt; font-weight:700; color:#B08D57; display:inline-block; padding:0 3mm; }
+
+          .cert-footer{
+            margin-top:8mm;
+            font-size:13pt;
+            display:flex;
+            justify-content:space-between;
+            text-align:left;
+            color:#333;
+          }
+        </style>
+
+        <div class="page">
+          <div class="bg">
+            <img t-att-src="'%s/charity_clubs/static/src/img/Picture1.jpg' % base_url"/>
+          </div>
+
+          <div class="center-anchor">
+            <div class="cert-title">شهادة مشاركة</div>
+
+            <div class="cert-line">تتقدم جمعية رؤيتي للأسرة بخالص الشكر و التقدير</div>
+
+            <div class="cert-line">
+              للسيدة /
+              <span class="cert-name"><t t-esc="o.full_name"/></span>
+            </div>
+
+            <div class="cert-line">لمشاركتها الفعالة في جلسة العصف الذهبي في شهر الابتكار</div>
+            <div class="cert-line">"الأسرة في مختبر الابتكار الاجتماعي"</div>
+            <div class="cert-line" style="margin-top:4mm;">
+              التي نظمتها الجمعية تماشياً مع عام المجتمع وتحت شعار الأسرة أساس الوطن
+            </div>
+            <div class="cert-line">مع أطيب التمنيات بمزيد من التوفيق والنجاح</div>
+
+          </div>
+        </div>
+
+        <div style="page-break-after: always;" t-if="o != docs[-1]"/>
+      </t>
+    </t>
+  </template>
+
+
+
+
+    <!-- تنسيق الورقة بدون هوامش A4 -->
+    <record id="paperformat_certificate" model="report.paperformat">
+        <field name="name">Certificate A4 No Margin</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">75</field>
+        <field name="css_margins" eval="False"/>
+    </record>
+
+    <!-- تعريف التقرير وربطه بالنموذج -->
+    <record id="action_report_member_certificate" model="ir.actions.report">
+        <field name="name">Member Certificate</field>
+        <field name="model">charity.member.profile</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">charity_clubs.report_member_certificate_template</field>
+        <field name="report_file">charity_clubs.report_member_certificate_template</field>
+        <field name="paperformat_id" ref="charity_clubs.paperformat_certificate"/>
+        <field name="print_report_name">'شهادة - %s' % (object.full_name or '')</field>
+    </record>
+</odoo>

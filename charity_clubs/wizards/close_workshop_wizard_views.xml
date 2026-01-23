@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Wizard Form View -->
+        <record id="view_close_workshop_wizard_form" model="ir.ui.view">
+            <field name="name">close.workshop.wizard.form</field>
+            <field name="model">close.workshop.wizard</field>
+            <field name="arch" type="xml">
+                <form string="إنهاء الورش">
+                    <group>
+                        <field name="workshop_ids" widget="many2many_tags">
+                            <list>
+                                <field name="name"/>
+                                <field name="department_id"/>
+                                <field name="enrollments_count"/>
+                            </list>
+                        </field>
+                        <field name="subscriptions_count" readonly="1"/>
+                        <field name="reason" placeholder="سبب إنهاء الورش (اختياري)..."/>
+                    </group>
+
+                    <div class="alert alert-warning" role="alert">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-warning"/> تنبيه مهم
+                        </h4>
+                        <p>سيتم تنفيذ الإجراءات التالية:</p>
+                        <ul>
+                            <li>تحويل جميع الاشتراكات النشطة في الورش المحددة إلى "منتهية"</li>
+                            <li>تعطيل الورش المحددة (لن تكون متاحة للتسجيل)</li>
+                            <li>هذا الإجراء لا يمكن التراجع عنه</li>
+                        </ul>
+                    </div>
+
+                    <footer>
+                        <button name="action_close_workshops"
+                                string="إنهاء الورش"
+                                type="object"
+                                class="btn-primary"
+                                confirm="هل أنت متأكد من إنهاء الورش المحددة؟ سيتم إنهاء جميع الاشتراكات النشطة."/>
+                        <button string="إلغاء" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action to open wizard -->
+        <record id="action_close_workshop_wizard" model="ir.actions.act_window">
+            <field name="name">إنهاء الورش</field>
+            <field name="res_model">close.workshop.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="binding_model_id" ref="charity_clubs.model_charity_ladies_workshop"/>
+            <field name="binding_view_types">list</field>
+        </record>
+
+
+        <record id="action_server_close_workshops" model="ir.actions.server">
+    <field name="name">إنهاء الورش المحددة</field>
+    <field name="model_id" ref="model_charity_ladies_workshop"/>
+    <field name="binding_model_id" ref="model_charity_ladies_workshop"/>
+    <field name="binding_view_types">list</field>
+    <field name="state">code</field>
+    <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'إنهاء الورش',
+    'res_model': 'close.workshop.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'context': {
+        'default_workshop_ids': [(6, 0, records.ids)] if records else []
+    }
+}
+    </field>
+</record>
+
+<!-- أضف Menu Item إذا أردت -->
+
+
+    </data>
+</odoo>
