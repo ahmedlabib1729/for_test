@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_remark_type_user,product.remark.type.user,model_product_remark_type,base.group_user,1,1,1,1
+access_product_sales_history_wizard,product.sales.history.wizard,model_product_sales_history_wizard,base.group_user,1,1,1,1
+access_product_sales_history_line,product.sales.history.line,model_product_sales_history_line,base.group_user,1,1,1,1

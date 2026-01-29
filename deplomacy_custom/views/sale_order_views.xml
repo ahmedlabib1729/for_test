@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sale Order Form View -->
+    <record id="sale_order_form_profit" model="ir.ui.view">
+        <field name="name">sale.order.form.profit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- إضافة الحقول في order lines -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='price_subtotal']" position="after">
+                <field name="x_qty_available"
+                       string="Available"
+                       decoration-danger="x_qty_available &lt;= 0"
+                       decoration-warning="x_qty_available &lt; product_uom_qty"
+                       optional="show"/>
+                <field name="x_product_cost"
+                       string="Cost"
+                       widget="monetary"
+                       optional="show"
+                       groups="sales_team.group_sale_manager"/>
+                <field name="x_profit_amount"
+                       string="Profit"
+                       widget="monetary"
+                       decoration-success="x_profit_amount &gt; 0"
+                       decoration-danger="x_profit_amount &lt; 0"
+                       optional="show"
+                       groups="sales_team.group_sale_manager"/>
+                <field name="x_profit_margin"
+                       string="Margin %"
+                       decoration-success="x_profit_margin &gt; 20"
+                       decoration-warning="x_profit_margin &lt; 10"
+                       decoration-danger="x_profit_margin &lt; 0"
+                       optional="hide"
+                       groups="sales_team.group_sale_manager"/>
+                <!-- إضافة زر History هنا مباشرة -->
+
+
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//list//field[@name='tax_id']" position="before">
+
+                <!-- إضافة زر History هنا مباشرة -->
+                <button name="action_view_product_sales_history"
+                        type="object"
+                        string=""
+                        title="View Product Sales History"
+                        class="btn-link"
+                        icon="fa-history"/>
+
+            </xpath>
+
+             <xpath expr="//field[@name='order_line']//field[@name='product_template_id']" position="before">
+                            <field name="product_image" widget="image" options="{'size': [40, 40]}" string=" "/>
+
+            </xpath>
+
+            <!-- إضافة Profit Analysis تحت note (Terms and Conditions) -->
+            <xpath expr="//field[@name='note']" position="after">
+                <separator string="📊 Profit Analysis" groups="sales_team.group_sale_manager"/>
+
+                <!-- Row 1: Products & Services -->
+                <group groups="sales_team.group_sale_manager">
+                    <group string="📦 Products">
+                        <field name="x_product_subtotal" widget="monetary" string="Revenue" readonly="1"/>
+                        <field name="x_product_total_cost" widget="monetary" string="Cost" readonly="1"/>
+                        <field name="x_product_total_profit" widget="monetary" string="Profit" readonly="1"
+                               decoration-success="x_product_total_profit &gt; 0"
+                               decoration-danger="x_product_total_profit &lt; 0"/>
+                        <field name="x_product_profit_margin" string="Margin %" readonly="1"/>
+                    </group>
+                    <group string="🔧 Services">
+                        <field name="x_service_subtotal" widget="monetary" string="Revenue" readonly="1"/>
+                        <field name="x_service_total_cost" widget="monetary" string="Cost" readonly="1"/>
+                        <field name="x_service_total_profit" widget="monetary" string="Profit" readonly="1"
+                               decoration-success="x_service_total_profit &gt; 0"
+                               decoration-danger="x_service_total_profit &lt; 0"/>
+                        <field name="x_service_profit_margin" string="Margin %" readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- Row 2: Overall on the right -->
+                <group groups="sales_team.group_sale_manager">
+                    <group></group>
+                    <group string="📊 Overall Total">
+                        <field name="x_total_cost" widget="monetary" string="Total Cost" readonly="1"/>
+                        <field name="x_total_profit" widget="monetary" string="Total Profit" readonly="1"
+                               decoration-success="x_total_profit &gt; 0"
+                               decoration-danger="x_total_profit &lt; 0"/>
+                        <field name="x_profit_margin" string="Overall Margin %" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="traking_num"/>
+            </xpath>
+
+            <!-- استبدال زر Create Invoice بزر مباشر -->
+            <xpath expr="//button[@name='action_quotation_send']" position="before">
+                <button name="action_create_invoice_direct"
+                        string="Create Invoice"
+                        type="object"
+                        class="btn-primary"
+                        invisible="state not in ['sale', 'done'] or invoice_status == 'invoiced'"
+                        groups="sales_team.group_sale_salesman"/>
+            </xpath>
+
+            <!-- إخفاء الزر الأصلي -->
+            <xpath expr="//button[@name='action_create_invoice' or @name='%(sale.action_view_sale_advance_payment_inv)d']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- إضافة الحقول في form view للـ line -->
+            <xpath expr="//field[@name='order_line']//form//field[@name='price_unit']" position="after">
+                <label for="x_product_cost" groups="sales_team.group_sale_manager"/>
+                <div groups="sales_team.group_sale_manager">
+                    <field name="x_product_cost" widget="monetary" readonly="1" class="oe_inline"/>
+                    <span class="oe_inline"> / </span>
+                    <field name="x_qty_available" readonly="1" class="oe_inline"/>
+                    <span class="oe_inline"> available</span>
+                </div>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']//field[@name='price_subtotal']" position="after">
+                <field name="x_profit_amount"
+                       widget="monetary"
+                       readonly="1"
+                       groups="sales_team.group_sale_manager"/>
+                <field name="x_profit_margin"
+                       readonly="1"
+                       groups="sales_team.group_sale_manager"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Sale Order Tree View -->
+    <record id="sale_order_tree_profit" model="ir.ui.view">
+        <field name="name">sale.order.tree.profit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="x_product_total_profit"
+                       string="Products Profit"
+                       widget="monetary"
+                       optional="show"
+                       groups="sales_team.group_sale_manager"/>
+                <field name="x_service_total_profit"
+                       string="Services Profit"
+                       widget="monetary"
+                       optional="show"
+                       groups="sales_team.group_sale_manager"/>
+                <field name="x_total_profit"
+                       string="Total Profit"
+                       widget="monetary"
+                       optional="show"
+                       groups="sales_team.group_sale_manager"/>
+                <field name="x_profit_margin"
+                       string="Margin"
+                       optional="show"
+                       groups="sales_team.group_sale_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search View with profit filters -->
+    <record id="sale_order_search_profit" model="ir.ui.view">
+        <field name="name">sale.order.search.profit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_sale"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_sale_orders_filter']" position="after">
+                <separator/>
+                <filter string="High Profit (&gt;20%)"
+                        name="high_profit"
+                        domain="[('x_profit_margin', '>', 20)]"
+                        groups="sales_team.group_sale_manager"/>
+                <filter string="Low Profit (&lt;10%)"
+                        name="low_profit"
+                        domain="[('x_profit_margin', '&lt;', 10)]"
+                        groups="sales_team.group_sale_manager"/>
+                <filter string="Negative Profit"
+                        name="negative_profit"
+                        domain="[('x_profit_margin', '&lt;', 0)]"
+                        groups="sales_team.group_sale_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Kanban View with profit indicator -->
+    <record id="sale_order_kanban_profit" model="ir.ui.view">
+        <field name="name">sale.order.kanban.profit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sale_order_kanban"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="inside">
+                <field name="x_total_profit"/>
+                <field name="x_profit_margin"/>
+            </xpath>
+        </field>
+    </record>
+
+<record id="product_sales_history_wizard_view" model="ir.ui.view">
+        <field name="name">product.sales.history.wizard.view</field>
+        <field name="model">product.sales.history.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Product Sales History">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="partner_filter_id"/>
+                            <field name="current_partner_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Statistics">
+                        <group>
+                            <field name="total_quantity_sold"/>
+                            <field name="total_sales_amount"/>
+                        </group>
+                        <group>
+                            <field name="average_price"/>
+                            <field name="total_orders"/>
+                            <field name="unique_customers"/>
+                        </group>
+                    </group>
+
+                    <separator string="Sales History"/>
+                    <!-- طريقة بسيطة لعرض الـ lines -->
+                    <field name="history_line_ids" nolabel="1">
+                        <list>
+                            <field name="order_date"/>
+                            <field name="order_name"/>
+                            <field name="partner_name"/>
+                            <field name="quantity"/>
+                            <field name="price_unit"/>
+                            <field name="price_subtotal"/>
+                            <field name="order_state"/>
+                        </list>
+                    </field>
+                </sheet>
+                <footer>
+                    <button string="Close" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Sale Order Form View -->
+    <record id="view_order_form_multi_vendor" model="ir.ui.view">
+        <field name="name">sale.order.form.multi.vendor</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add vendor bills button in stat buttons -->
+            <xpath expr="//button[@name='action_view_invoice']" position="after">
+                <button name="action_view_vendor_bills"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-file-text-o"
+                        invisible="x_vendor_bill_count == 0">
+                    <field name="x_vendor_bill_count" widget="statinfo" string="Vendor Bills"/>
+                </button>
+            </xpath>
+
+            <!-- Add multi-vendor toggle and summary button -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="x_multi_vendor_mode" widget="boolean_toggle"/>
+                <button name="action_view_invoice_summary"
+                        type="object"
+                        string="Invoice Summary"
+                        class="btn-link"
+                        invisible="not x_multi_vendor_mode"/>
+            </xpath>
+
+            <!-- Add vendor information group -->
+            <xpath expr="//sheet" position="inside">
+                <group name="vendor_info" string="Multi-Vendor Information" invisible="not x_multi_vendor_mode">
+                    <group>
+                        <field name="x_vendor_count" readonly="1"/>
+                        <field name="x_customer_line_count" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="x_vendor_line_count" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+
+            <!-- Add vendor field in order lines -->
+            <xpath expr="//field[@name='order_line']//field[@name='product_template_id']" position="before">
+                <field name="x_line_vendor_id"
+                       optional="show"
+                       invisible="not parent.x_multi_vendor_mode"/>
+                <field name="x_invoice_type"
+                       widget="badge"
+                       decoration-info="x_invoice_type == 'customer'"
+                       decoration-warning="x_invoice_type == 'vendor'"
+                       optional="show"
+                       invisible="not parent.x_multi_vendor_mode"/>
+            </xpath>
+
+            <!-- Add vendor field in order line form -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
+                <field name="x_line_vendor_id"
+                       invisible="not parent.x_multi_vendor_mode"
+                       domain="[('supplier_rank', '>', 0)]"/>
+                <field name="x_effective_partner_id"
+                       readonly="1"
+                       invisible="not parent.x_multi_vendor_mode"/>
+                <field name="x_invoice_type"
+                       readonly="1"
+                       invisible="not parent.x_multi_vendor_mode"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Sale Order Tree View -->
+    <record id="view_order_tree_multi_vendor" model="ir.ui.view">
+        <field name="name">sale.order.tree.multi.vendor</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="invoice_status" position="after">
+                <field name="x_multi_vendor_mode"
+                       widget="boolean_toggle"
+                       optional="show"/>
+                <field name="x_vendor_count"
+                       string="Vendors"
+                       optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Search View -->
+
+
+    <!-- Account Move Form View (to show source SO) -->
+    <record id="view_move_form_sale_source" model="ir.ui.view">
+        <field name="name">account.move.form.sale.source</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_origin']" position="after">
+                <field name="x_source_sale_order_id"
+                       readonly="1"
+                       invisible="not x_source_sale_order_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action for creating invoices with multi-vendor -->
+    <record id="action_create_multi_vendor_invoice" model="ir.actions.server">
+        <field name="name">Create Multi-Vendor Invoices</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">form</field>
+        <field name="state">code</field>
+        <field name="code">
+if record.x_multi_vendor_mode:
+    action = record._create_invoices()
+else:
+    action = record.action_create_invoice()
+        </field>
+    </record>
+
+    <record id="view_order_form_delivery_validate" model="ir.ui.view">
+        <field name="name">sale.order.form.delivery.validate</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة الأزرار في الـ Header -->
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <!-- زر Validate Delivery الرئيسي -->
+                <button name="action_validate_delivery"
+                        type="object"
+                        string="Validate Delivery"
+                        class="oe_highlight"
+                        invisible="state not in ['sale'] or delivery_status in ['no_delivery', 'delivered']"
+                        groups="stock.group_stock_user"
+                        confirm="Are you sure you want to validate all pending deliveries?"
+                        help="Validate all pending delivery orders"/>
+
+                <!-- زر Validate with Backorder -->
+                <button name="action_validate_with_backorder"
+                        type="object"
+                        string="Validate (Backorder)"
+                        invisible="state not in ['sale'] or delivery_status in ['no_delivery', 'delivered']"
+                        groups="stock.group_stock_user"
+                        help="Validate delivery with backorder option"/>
+            </xpath>
+
+            <!-- إضافة حقل حالة التسليم -->
+            <xpath expr="//field[@name='date_order']" position="after">
+                <field name="delivery_status"
+                       widget="badge"
+                       decoration-success="delivery_status == 'delivered'"
+                       decoration-warning="delivery_status == 'partially'"
+                       decoration-info="delivery_status == 'to_deliver'"
+                       invisible="delivery_status == 'no_delivery'"/>
+            </xpath>
+
+            <!-- تحديث زر Delivery في stat buttons -->
+            <xpath expr="//button[@name='action_view_delivery']" position="attributes">
+                <attribute name="class">oe_stat_button</attribute>
+            </xpath>
+
+            <xpath expr="//button[@name='action_view_delivery']" position="after">
+                <!-- زر سريع للـ Validate في الـ stat buttons -->
+                <button name="action_validate_delivery"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-check-square-o"
+                        invisible="state not in ['sale'] or delivery_status in ['no_delivery', 'delivered']"
+                        groups="stock.group_stock_user">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Quick</span>
+                        <span class="o_stat_text">Validate</span>
+                    </div>
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+
+
+
+
+
+
+</odoo>

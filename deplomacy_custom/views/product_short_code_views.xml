@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Sale Order Line - إضافة context لعرض Short Code -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_order_form_short_code" model="ir.ui.view">
+        <field name="name">sale.order.form.short.code</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_id']" position="attributes">
+                <attribute name="context">{'display_item_short_code': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Sale Order Line (Tree Editable) -->
+    <record id="view_order_form_short_code_2" model="ir.ui.view">
+        <field name="name">sale.order.form.short.code.2</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">101</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_template_id']" position="attributes">
+                <attribute name="context">{'display_item_short_code': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Purchase Order Line - إضافة context لعرض Short Code -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <record id="view_purchase_order_form_short_code" model="ir.ui.view">
+        <field name="name">purchase.order.form.short.code</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']//field[@name='product_id']" position="attributes">
+                <attribute name="context">{'display_item_short_code': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

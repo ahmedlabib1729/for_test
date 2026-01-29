@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- views/product_views.xml -->
+<odoo>
+    <!-- Product Template Form View -->
+    <record id="product_template_form_view_inherit_auto_ref" model="ir.ui.view">
+        <field name="name">product.template.form.auto.ref.remark</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <!-- Make Reference field readonly -->
+            <xpath expr="//field[@name='default_code']" position="attributes">
+                <attribute name="readonly">0</attribute>
+                <attribute name="force_save">1</attribute>
+                <attribute name="placeholder">Will be generated automatically</attribute>
+            </xpath>
+
+            <!-- Add Remark field after Reference field -->
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="x_remark" placeholder="Enter any remarks or additional notes..."/>
+            </xpath>
+
+            <!-- Alternative: Add Remark in a separate group/section -->
+            <xpath expr="//page[@name='general_information']" position="inside">
+                <group string="Additional Information">
+                    <field name="x_remark"
+                           widget="text"
+                           nolabel="1"
+                           placeholder="Enter remarks, special instructions, or any additional notes about this product..."
+                           colspan="2"/>
+
+                </group>
+            </xpath>
+
+        <xpath expr="//field[@name='x_remark']" position="after">
+                <field name="remark_type_id"
+                       options="{'no_create': True, 'no_create_edit': True}"/>
+
+            <field name="item_short_code"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Product Variant Form View -->
+    <record id="product_product_form_view_inherit_auto_ref" model="ir.ui.view">
+        <field name="name">product.product.form.auto.ref.remark</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+            <!-- Make Reference field readonly -->
+            <xpath expr="//field[@name='default_code']" position="attributes">
+                <attribute name="readonly">1</attribute>
+                <attribute name="force_save">1</attribute>
+                <attribute name="placeholder">Will be generated automatically</attribute>
+            </xpath>
+
+            <!-- Add Remark field -->
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="x_remark" placeholder="Enter any remarks..."/>
+                <field name="item_short_code"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View - Add Remark as optional column -->
+    <record id="product_template_tree_view_inherit_remark" model="ir.ui.view">
+        <field name="name">product.template.tree.remark</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <!-- Add Remark in tree view as optional column -->
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="x_remark" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+    <!-- Search View - Add Remark to search -->
+    <record id="product_template_search_view_inherit_remark" model="ir.ui.view">
+        <field name="name">product.template.search.remark</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <!-- Add search by remark -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="x_remark" string="Remark"
+                       filter_domain="[('x_remark', 'ilike', self)]"/>
+            </xpath>
+
+            <!-- Add filter for products with remarks -->
+            <xpath expr="//filter[@name='filter_to_sell']" position="after">
+                <separator/>
+                <filter string="Has Remarks"
+                        name="filter_has_remarks"
+                        domain="[('x_remark', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Server Action to Regenerate References -->
+    <record id="action_regenerate_product_reference" model="ir.actions.server">
+        <field name="name">Regenerate Product Reference</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.with_context(force_regenerate=True).action_regenerate_reference()
+        </field>
+    </record>
+
+    <record id="view_product_remark_type_tree" model="ir.ui.view">
+        <field name="name">product.remark.type.tree</field>
+        <field name="model">product.remark.type</field>
+        <field name="arch" type="xml">
+            <list string="Remark Types" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_product_remark_type_form" model="ir.ui.view">
+        <field name="name">product.remark.type.form</field>
+        <field name="model">product.remark.type</field>
+        <field name="arch" type="xml">
+            <form string="Remark Type">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_product_remark_type" model="ir.actions.act_window">
+        <field name="name">Remark Types</field>
+        <field name="res_model">product.remark.type</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first remark type
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem
+        id="menu_product_remark_type"
+        name="Remark Types"
+        parent="sale.prod_config_main"
+        action="action_product_remark_type"
+        sequence="50"/>
+</odoo>

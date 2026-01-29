@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data noupdate="1">
+        <!-- Product Reference Sequence -->
+        <record id="seq_product_reference" model="ir.sequence">
+            <field name="name">Product Reference Sequence</field>
+            <field name="code">product.reference</field>
+            <field name="prefix">DK-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">False</field>
+        </record>
+
+
+         <record id="seq_partner_customer_reference" model="ir.sequence">
+            <field name="name">Customer Reference Sequence</field>
+            <field name="code">partner.customer.reference</field>
+            <field name="prefix">CUST-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">False</field>
+        </record>
+
+        <!-- Supplier Reference Sequence -->
+        <record id="seq_partner_supplier_reference" model="ir.sequence">
+            <field name="name">Supplier Reference Sequence</field>
+            <field name="code">partner.supplier.reference</field>
+            <field name="prefix">SUPP-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">False</field>
+        </record>
+
+        <!-- General Partner Reference Sequence -->
+        <record id="seq_partner_general_reference" model="ir.sequence">
+            <field name="name">Partner Reference Sequence</field>
+            <field name="code">partner.general.reference</field>
+            <field name="prefix">PART-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">False</field>
+        </record>
+
+        <record id="seq_partner_both_reference" model="ir.sequence">
+            <field name="name">Partner Reference Sequence</field>
+            <field name="code">partner.both.reference</field>
+            <field name="prefix">cus-SUPP-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+            <field name="use_date_range">False</field>
+        </record>
+    </data>
+</odoo>

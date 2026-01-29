@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Purchase Order Form - Complete with all features -->
+    <record id="purchase_order_form_complete" model="ir.ui.view">
+        <field name="name">purchase.order.form.complete</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- إضافة Multi-vendor mode و Auto validate -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <!-- ✅ رصيد المورد -->
+                <field name="vendor_balance"
+                       widget="monetary"
+                       decoration-danger="vendor_balance &gt; 0"
+                       decoration-success="vendor_balance &lt; 0"
+                       decoration-info="vendor_balance == 0"/>
+
+                <field name="x_multi_vendor_mode" widget="boolean_toggle"/>
+                <field name="x_auto_validate_picking" widget="boolean_toggle"/>
+                <field name="x_has_landed_cost" invisible="1"/>
+            </xpath>
+
+            <!-- إضافة Landed Cost buttons في header -->
+            <!-- ✅ الأزرار تظهر بس لما يكون في فاتورة AND مفيش landed cost اتعمل -->
+            <xpath expr="//button[@name='action_create_invoice']" position="after">
+                <button name="action_create_landed_cost"
+                        string="Create Landed Cost"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="not (x_has_landed_cost and state == 'purchase' and invoice_count > 0 and x_landed_cost_count == 0)"
+                        help="Create landed cost for service products marked as landed cost"/>
+
+                <button name="action_create_and_validate_landed_cost"
+                        string="Create &amp; Validate LC"
+                        type="object"
+                        invisible="not (x_has_landed_cost and state == 'purchase' and invoice_count > 0 and x_landed_cost_count == 0)"
+                        help="Create and automatically validate landed cost"/>
+            </xpath>
+
+            <!-- إضافة الأزرار في button box -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <!-- Vendor Balance Button -->
+
+
+                <!-- Multi-vendor button -->
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_view_vendor_summary"
+                        icon="fa-users"
+                        invisible="not x_multi_vendor_mode">
+                    <field name="x_vendor_count" widget="statinfo" string="Vendors"/>
+                </button>
+
+                <!-- Landed Cost button -->
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_view_landed_costs"
+                        icon="fa-ship"
+                        invisible="x_landed_cost_count == 0">
+                    <field name="x_landed_cost_count" widget="statinfo" string="Landed Costs"/>
+                </button>
+            </xpath>
+
+              <xpath expr="//field[@name='order_line']//field[@name='product_id']" position="before">
+                <field name="product_image" widget="image" options="{'size': [40, 40]}" string=" "/>
+
+            </xpath>
+
+            <!-- إضافة vendor في الأسطر + landed cost indicator -->
+            <xpath expr="//field[@name='order_line']//field[@name='product_id']" position="after">
+
+                <field name="x_line_vendor_id"
+                       string="Line Vendor"
+                       optional="show"
+                       invisible="not parent.x_multi_vendor_mode"/>
+                <field name="x_is_landed_cost" string="LC" readonly="1"/>
+
+                <!-- ✅ إضافة الكمية الموجودة في المخزن -->
+                <field name="qty_on_hand"
+                       string="📦 On Hand"
+                       optional="show"
+                       readonly="1"
+                       decoration-danger="qty_on_hand &lt;= 0"
+                       decoration-success="qty_on_hand &gt; 0"/>
+            </xpath>
+
+            <!-- إضافة settings section -->
+            <xpath expr="//group[@name='other_info']" position="inside">
+                <group string="Auto Settings" name="auto_settings">
+                    <field name="x_auto_validate_picking" string="Auto Validate Receipt"/>
+                    <field name="x_multi_vendor_mode" string="Multi-Vendor Mode"/>
+                    <div invisible="not x_has_landed_cost" class="text-warning">
+                        <i class="fa fa-info-circle"/> This order contains landed cost products
+                    </div>
+                </group>
+            </xpath>
+
+            <!-- Warning messages -->
+            <xpath expr="//sheet" position="before">
+                <!-- Multi-vendor warning -->
+                <div class="alert alert-info" invisible="not x_multi_vendor_mode" role="alert">
+                    <h4>Multi-Vendor Mode Active</h4>
+                    <ul>
+                        <li>Each line can have a different vendor</li>
+                        <li>Separate invoice will be created for each vendor</li>
+                        <li>Current vendors: <field name="x_vendor_count" readonly="1"/></li>
+                    </ul>
+                </div>
+
+                <!-- Landed cost info -->
+                <div class="alert alert-warning" invisible="not x_has_landed_cost" role="alert">
+                    <h4>Landed Cost Products Detected</h4>
+                    <p>This order contains service products marked as landed cost.
+                       After confirming and receiving, you can create landed cost document.</p>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Stock Picking Form -->
+    <record id="view_picking_form_auto_validated" model="ir.ui.view">
+        <field name="name">stock.picking.form.auto.validated</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_auto_status"
+                        class="oe_stat_button"
+                        type="object"
+                        icon="fa-check-circle"
+                        invisible="not x_auto_validated">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Auto Validated</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Stock Picking Tree -->
+    <record id="view_picking_tree_auto_validated" model="ir.ui.view">
+        <field name="name">stock.picking.tree.auto.validated</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="x_auto_validated" string="Auto" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Landed Cost Form - Add PO reference -->
+    <record id="view_stock_landed_cost_form_po" model="ir.ui.view">
+        <field name="name">stock.landed.cost.form.po</field>
+        <field name="model">stock.landed.cost</field>
+        <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <!-- Add PO reference -->
+            <xpath expr="//field[@name='vendor_bill_id']" position="after">
+                <field name="x_purchase_order_id" readonly="1"/>
+                <field name="x_auto_validated" invisible="1"/>
+            </xpath>
+
+            <!-- Add auto validated indicator -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button"
+                        icon="fa-check-circle"
+                        invisible="not x_auto_validated">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Auto Validated</span>
+                    </div>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Purchase Order Tree - Show indicators -->
+    <record id="purchase_order_tree_complete" model="ir.ui.view">
+        <field name="name">purchase.order.tree.complete</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="before">
+                <!-- ✅ رصيد المورد -->
+                <field name="vendor_balance"
+                       widget="monetary"
+                       optional="show"
+                       decoration-danger="vendor_balance &gt; 0"
+                       decoration-success="vendor_balance &lt; 0"/>
+
+                <field name="x_multi_vendor_mode" string="Multi" widget="boolean_toggle" optional="show"/>
+                <field name="x_auto_validate_picking" string="Auto" widget="boolean_toggle" optional="show"/>
+                <field name="x_has_landed_cost" string="LC" widget="boolean_toggle" optional="show"/>
+                <field name="x_vendor_count" string="#Vendors" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

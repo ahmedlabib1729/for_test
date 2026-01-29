@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة صور المنتجات في فواتير العملاء -->
+    <record id="invoice_form_product_image" model="ir.ui.view">
+        <field name="name">account.move.form.product.image</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة الصورة في tree view للسطور -->
+            <xpath expr="//field[@name='invoice_line_ids']//field[@name='product_id']" position="before">
+                <field name="product_image"
+                       widget="image"
+                       options="{'size': [40, 40]}"
+                       string="Image"
+                       readonly="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_move_form_inherit_balance_simple" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.balance.simple</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+
+            <!-- إضافة notebook جديد للرصيد -->
+            <xpath expr="//notebook" position="inside">
+                <page string="رصيد العميل" name="partner_balance_tab">
+                    <group>
+                        <group string="الرصيد الحالي">
+                            <field name="partner_balance" readonly="1"/>
+                        </group>
+                        <group string="الرصيد المتوقع">
+                            <field name="balance_after_invoice" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+            <xpath expr="//field[@name='move_type']" position="after">
+                <group>
+                    <field name="partner_balance" readonly="1"/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_move_form_product_history" model="ir.ui.view">
+        <field name="name">account.move.form.product.history</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- إضافة زر History في invoice_line_ids -->
+            <xpath expr="//field[@name='invoice_line_ids']//field[@name='product_id']" position="after">
+                <!-- إضافة has_product field (مخفي) -->
+                <field name="has_product" invisible="1"/>
+
+                <!-- إضافة زر History -->
+                <button name="action_view_product_sales_history"
+                        type="object"
+                        string=""
+                        title="View Product Sales History"
+                        class="btn-link"
+                        icon="fa-history"
+                        invisible="not has_product or parent.move_type not in ('out_invoice', 'out_refund')"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
