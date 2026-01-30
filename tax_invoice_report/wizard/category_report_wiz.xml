@@ -1,0 +1,37 @@
+<odoo>
+    <data>
+        <record id="view_category_report_wizard_form" model="ir.ui.view">
+            <field name="name">category.report.wizard.form</field>
+            <field name="model">category.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Category Report Wizard">
+                    <group>
+                        <field name="category_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Generate Report" name="generate_report" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="category_report_wizard_action" model="ir.actions.act_window">
+            <field name="name">Category Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">category.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="category_report_menu" name="Product Category Report" parent="account.menu_finance_reports"
+                  action="category_report_wizard_action" sequence="0"/>
+    </data>
+</odoo>

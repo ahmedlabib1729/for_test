@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@id='header_right_group']" position="after">
+                    <group name="other_info" string="Other Info">
+                        <field name="inv_datetime"/>
+                        <field name="employee_id"/>
+                        <field name="token"/>
+                        <field name="show_related_contact"/>
+                    </group>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field [@ name='quantity']" position="before">
+                    <field name="fee_partner_id" optional="show"/>
+                    <field name="app_no" optional="show"/>
+                    <field name="gov_fee" optional="show" force_save="1"/>
+                    <field name="price_total" string="Unit Price" optional="show"/>
+                </xpath>
+                <xpath expr="//field[@name='line_ids']/tree/field [@ name='debit']" position="before">
+                    <field name="fee_partner_id" invisible="1"/>
+                    <field name="app_no" invisible="1"/>
+                    <field name="gov_fee" force_save="1"  invisible="1"/>
+                    <field name="is_gov_fee_line" force_save="1"  invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field [@ name='quantity']" position="attributes">
+                    <attribute name="sum">quantity</attribute>
+                </xpath>
+<!--                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">-->
+<!--                    <attribute name="domain">[('display_type', 'in', ('product', 'line_section', 'line_note')),('is_gov_fee_line','=',False)]</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field [@ name='price_unit']" position="attributes">
+                    <attribute name="string">Typing Fee</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
