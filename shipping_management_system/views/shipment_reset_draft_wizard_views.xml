@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard Form View -->
+    <record id="view_shipment_reset_draft_wizard_form" model="ir.ui.view">
+        <field name="name">shipment.reset.draft.wizard.form</field>
+        <field name="model">shipment.reset.draft.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reset to Draft Confirmation">
+                <!-- Warning Alert -->
+                <div class="alert alert-danger" role="alert" invisible="not has_items_to_delete">
+                    <h4 class="alert-heading">
+                        <i class="fa fa-exclamation-triangle"/> ⚠️ Warning: Data Will Be Deleted!
+                    </h4>
+                    <p>You are about to reset this shipment to Draft. This will permanently delete the following:</p>
+                </div>
+
+                <div class="alert alert-info" role="alert" invisible="has_items_to_delete">
+                    <h4 class="alert-heading">
+                        <i class="fa fa-info-circle"/> ℹ️ No Data to Delete
+                    </h4>
+                    <p>No invoices or payments found. The shipment will be reset to Draft safely.</p>
+                </div>
+
+                <group>
+                    <group string="Shipment Info">
+                        <field name="shipment_id" invisible="1"/>
+                        <field name="order_number" readonly="1"/>
+                        <field name="current_state" readonly="1"/>
+                    </group>
+                </group>
+
+                <!-- Items to Delete -->
+                <group invisible="not has_items_to_delete">
+                    <group string="📄 Customer Invoices">
+                        <field name="invoice_count" readonly="1" string="Count"/>
+                        <field name="total_invoice_amount" readonly="1" string="Total Amount" widget="monetary"/>
+                        <field name="invoice_details" readonly="1" nolabel="1" widget="text"
+                               invisible="invoice_count == 0"/>
+                    </group>
+                    <group string="📋 Vendor Bills">
+                        <field name="vendor_bill_count" readonly="1" string="Count"/>
+                        <field name="total_bill_amount" readonly="1" string="Total Amount" widget="monetary"/>
+                        <field name="bill_details" readonly="1" nolabel="1" widget="text"
+                               invisible="vendor_bill_count == 0"/>
+                    </group>
+                </group>
+
+                <group invisible="not has_items_to_delete">
+                    <group string="💰 Advance Payments" colspan="2">
+                        <field name="advance_payment_count" readonly="1" string="Count"/>
+                        <field name="total_advance_amount" readonly="1" string="Total Amount" widget="monetary"/>
+                        <field name="advance_details" readonly="1" nolabel="1" widget="text"
+                               invisible="advance_payment_count == 0"/>
+                    </group>
+                </group>
+
+                <!-- Warning Message -->
+                <group invisible="not has_items_to_delete">
+                    <div class="alert alert-warning" style="margin-top: 20px;">
+                        <field name="warning_message" readonly="1" nolabel="1" widget="text"
+                               style="white-space: pre-wrap; font-weight: bold;"/>
+                    </div>
+                </group>
+
+                <footer>
+                    <button name="action_confirm_reset"
+                            string="🗑️ Yes, Delete All &amp; Reset to Draft"
+                            type="object"
+                            class="btn-danger"
+                            invisible="not has_items_to_delete"/>
+                    <button name="action_confirm_reset"
+                            string="✓ Reset to Draft"
+                            type="object"
+                            class="btn-primary"
+                            invisible="has_items_to_delete"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open wizard -->
+    <record id="action_shipment_reset_draft_wizard" model="ir.actions.act_window">
+        <field name="name">Reset to Draft</field>
+        <field name="res_model">shipment.reset.draft.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
