@@ -142,54 +142,288 @@ class CODCustomerPayment(models.Model):
             if invoice_ids:
                 self.invoice_ids = [(6, 0, invoice_ids.ids)]
 
+    def action_confirm(self):
+        """تأكيد الدفعة"""
+        self.state = 'confirmed'
+
     def action_mark_paid(self):
-        """تسجيل الدفع للعميل مع خصم الفواتير"""
+        """تسجيل الدفع للعميل مع خصم الفواتير تلقائياً - يراعي الدفعات المقدمة والمبالغ السالبة"""
         self.ensure_one()
 
-        # أولاً: خصم الفواتير إن وجدت
-        if self.invoice_ids:
-            self._reconcile_invoices()
+        # تأكد من إعادة حساب المبالغ بالنظام الجديد
+        for shipment in self.shipment_ids:
+            shipment._compute_cod_amounts()
 
-        # ثانياً: إذا كان هناك مبلغ متبقي، سجله كرصيد دائن
-        if self.remaining_credit > 0:
-            self._create_customer_credit()
+        # إعادة حساب إجماليات الدفعة
+        self.total_cod = sum(self.shipment_ids.mapped('cod_amount_sheet_excel'))
+        self.total_deductions = sum(self.shipment_ids.mapped('total_deductions'))
+        self.net_amount = sum(self.shipment_ids.mapped('cod_net_for_customer'))
 
-        # تحديث الشحنات
+        # ===== التحقق من المبلغ السالب =====
+        has_negative_amount = self.net_amount < 0
+        negative_warning = ""
+
+        if has_negative_amount:
+            negative_warning = f"""
+            <div style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                <b style="color: #856404;">⚠️ تحذير: المبلغ الصافي سالب!</b><br/>
+                <span style="color: #856404;">
+                    صافي المبلغ للعميل: {self.net_amount:.2f} EGP<br/>
+                    هذا يعني أن العميل مديون للشركة بمبلغ {abs(self.net_amount):.2f} EGP<br/>
+                    تم إتمام التسوية وتسجيل المبلغ المستحق على العميل.
+                </span>
+            </div>
+            """
+
+        # البحث عن فواتير العميل المفتوحة من الشحنات
+        customer_invoices = self.env['account.move'].search([
+            ('move_type', '=', 'out_invoice'),
+            ('partner_id', '=', self.customer_id.id),
+            ('shipment_id', 'in', self.shipment_ids.ids),
+            ('state', '=', 'posted'),
+            ('payment_state', '!=', 'paid')
+        ])
+
+        total_paid_to_invoices = 0
+        invoices_details = []
+
+        # ===== معالجة الفواتير فقط إذا كان المبلغ موجب =====
+        if customer_invoices and self.net_amount > 0:
+            # amount_residual = المتبقي الفعلي بعد خصم أي دفعات سابقة
+            total_invoices_residual = sum(customer_invoices.mapped('amount_residual'))
+
+            if total_invoices_residual > 0:
+                # المبلغ المتاح للخصم من صافي COD
+                available_for_invoices = min(self.net_amount, total_invoices_residual)
+
+                # إنشاء دفعة لخصم الفواتير
+                payment_journal = self.env['account.journal'].search([
+                    ('type', 'in', ['cash', 'bank'])
+                ], limit=1)
+
+                if not payment_journal:
+                    raise UserError(_('Please configure a payment journal!'))
+
+                payment_vals = {
+                    'payment_type': 'inbound',
+                    'partner_type': 'customer',
+                    'partner_id': self.customer_id.id,
+                    'amount': available_for_invoices,
+                    'currency_id': self.env.company.currency_id.id,
+                    'journal_id': payment_journal.id,
+                    'payment_method_id': self.env.ref('account.account_payment_method_manual_in').id,
+                }
+
+                payment = self.env['account.payment'].create(payment_vals)
+
+                # إضافة المرجع
+                if hasattr(payment, 'memo'):
+                    payment.memo = f'COD Settlement - Batch {self.batch_id.name}'
+
+                # ترحيل الدفعة
+                payment.action_post()
+
+                # ===== مطابقة الفواتير - كل فاتورة حسب المتبقي فيها =====
+                remaining_payment = available_for_invoices
+
+                for invoice in customer_invoices:
+                    # المتبقي الفعلي في هذه الفاتورة (بعد أي دفعات مقدمة)
+                    invoice_residual = invoice.amount_residual
+
+                    if invoice_residual > 0 and remaining_payment > 0:
+                        # المبلغ الذي سيتم دفعه لهذه الفاتورة
+                        amount_for_this_invoice = min(invoice_residual, remaining_payment)
+
+                        # تسجيل التفاصيل للرسالة
+                        advance_paid = invoice.amount_total - invoice_residual
+                        invoices_details.append({
+                            'name': invoice.name,
+                            'total': invoice.amount_total,
+                            'advance_paid': advance_paid,
+                            'residual_before': invoice_residual,
+                            'paid_now': amount_for_this_invoice
+                        })
+
+                        # سطور الدفعة
+                        payment_lines = payment.move_id.line_ids.filtered(
+                            lambda l: l.account_id.account_type == 'asset_receivable'
+                                      and l.partner_id == self.customer_id
+                                      and not l.reconciled
+                        )
+
+                        # سطور الفاتورة
+                        invoice_lines = invoice.line_ids.filtered(
+                            lambda l: l.account_id.account_type == 'asset_receivable'
+                                      and not l.reconciled
+                        )
+
+                        if payment_lines and invoice_lines:
+                            try:
+                                (payment_lines + invoice_lines).reconcile()
+                                total_paid_to_invoices += amount_for_this_invoice
+                                remaining_payment -= amount_for_this_invoice
+                            except Exception as e:
+                                # لو فشل الـ Reconcile لفاتورة معينة، كمّل للباقي
+                                pass
+
+                # حساب المبلغ المتبقي بعد خصم الفواتير
+                remaining_after_invoices = self.net_amount - total_paid_to_invoices
+            else:
+                # كل الفواتير مدفوعة بالكامل (من دفعات مقدمة)
+                remaining_after_invoices = self.net_amount
+        elif has_negative_amount:
+            # المبلغ سالب - لا نعمل payment ولكن نكمل التسوية
+            remaining_after_invoices = self.net_amount
+        else:
+            remaining_after_invoices = self.net_amount
+
+        # إذا كان هناك مبلغ متبقي موجب بعد سداد الفواتير
+        if remaining_after_invoices > 0:
+            # إنشاء إشعار دائن أو تسجيل كرصيد للعميل
+            self._create_customer_credit(remaining_after_invoices)
+
+        # ===== إذا كان المبلغ سالب - إنشاء فاتورة مدين للعميل =====
+        if has_negative_amount:
+            self._create_customer_debit(abs(self.net_amount))
+
+        # تحديث حالة الشحنات
         self.shipment_ids.write({
             'cod_status': 'settled',
             'cod_settled_date': fields.Datetime.now()
         })
 
+        # تحديث حالة الدفعة
         self.write({
             'state': 'paid',
             'payment_date': fields.Date.today()
         })
 
-        # رسالة تفصيلية
+        # ===== رسالة تفصيلية محسنة =====
         message = f"""
         <b>COD Settlement Complete</b><br/>
         Customer: {self.customer_id.name}<br/>
-        Net COD Amount: {self.net_amount:.2f} EGP<br/>
+        {negative_warning}
+        <br/>
+        <b>COD Summary:</b><br/>
+        Total COD Amount: {self.total_cod:.2f} EGP<br/>
+        Total Deductions: {self.total_deductions:.2f} EGP<br/>
+        Net Amount for Customer: {self.net_amount:.2f} EGP<br/>
         """
 
-        if self.invoice_ids:
-            message += f"Invoices Settled: {len(self.invoice_ids)}<br/>"
-            message += f"Invoice Amount: {self.total_invoice_amount:.2f} EGP<br/>"
+        # تفاصيل الفواتير مع الدفعات المقدمة
+        if invoices_details:
+            message += f"""
+            <br/>
+            <b>Invoices Settlement Details:</b><br/>
+            <table style="border-collapse: collapse; width: 100%;">
+            <tr style="background-color: #f0f0f0;">
+                <th style="border: 1px solid #ddd; padding: 5px;">Invoice</th>
+                <th style="border: 1px solid #ddd; padding: 5px;">Total</th>
+                <th style="border: 1px solid #ddd; padding: 5px;">Advance Paid</th>
+                <th style="border: 1px solid #ddd; padding: 5px;">Was Due</th>
+                <th style="border: 1px solid #ddd; padding: 5px;">Paid Now</th>
+            </tr>
+            """
+            for inv in invoices_details:
+                message += f"""
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['name']}</td>
+                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['total']:.2f}</td>
+                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['advance_paid']:.2f}</td>
+                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['residual_before']:.2f}</td>
+                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['paid_now']:.2f}</td>
+                </tr>
+                """
+            message += f"""
+            </table>
+            <br/>
+            <b>Total Paid to Invoices: {total_paid_to_invoices:.2f} EGP</b><br/>
+            """
 
-        if self.remaining_credit > 0:
-            message += f"<b>Credit Balance: {self.remaining_credit:.2f} EGP</b><br/>"
+        if remaining_after_invoices > 0:
+            message += f"""
+            <br/>
+            <b style="color: green;">✓ Credit Balance Created: {remaining_after_invoices:.2f} EGP</b><br/>
+            """
 
-        self.message_post(body=message, subject="COD Settlement")
+        if has_negative_amount:
+            message += f"""
+            <br/>
+            <b style="color: red;">⚠ Customer Owes: {abs(self.net_amount):.2f} EGP</b><br/>
+            <span style="color: #666;">A debit note has been created for this amount.</span>
+            """
 
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Success'),
-                'message': _(f'Settlement complete. Net: {self.net_amount:.2f} EGP'),
-                'type': 'success',
+        self.message_post(body=message, subject="COD Customer Settlement")
+
+        # ===== Notification مختلف حسب الحالة =====
+        if has_negative_amount:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Settlement Complete - Negative Balance'),
+                    'message': _(
+                        f'Settlement complete. Customer owes: {abs(self.net_amount):.2f} EGP. A debit note has been created.'),
+                    'type': 'warning',
+                    'sticky': True,
+                }
             }
-        }
+        else:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Success'),
+                    'message': _(
+                        f'Settlement complete. Net: {self.net_amount:.2f} EGP. Paid to invoices: {total_paid_to_invoices:.2f} EGP'),
+                    'type': 'success',
+                    'sticky': True,
+                }
+            }
+
+    def _create_customer_debit(self, amount):
+        """إنشاء فاتورة مدين للعميل (المبلغ المستحق عليه)"""
+        if amount <= 0:
+            return
+
+        journal = self.env['account.journal'].search([
+            ('type', '=', 'sale')
+        ], limit=1)
+
+        if not journal:
+            return
+
+        # الحصول على حساب الإيرادات
+        income_account = self._get_income_account()
+
+        # إنشاء فاتورة مدين (Invoice) للمبلغ المستحق على العميل
+        debit_invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.customer_id.id,
+            'invoice_date': fields.Date.today(),
+            'journal_id': journal.id,
+            'ref': f'COD Debit - Batch {self.batch_id.name}',
+            'invoice_line_ids': [(0, 0, {
+                'name': f'COD Settlement Debit - {len(self.shipment_ids)} shipments\n'
+                        f'Batch: {self.batch_id.name}\n'
+                        f'Customer owes this amount due to deductions exceeding COD',
+                'quantity': 1,
+                'price_unit': amount,
+                'account_id': income_account.id if income_account else False,
+            })]
+        })
+
+        debit_invoice.action_post()
+
+        self.message_post(
+            body=f"""
+            <b style="color: orange;">⚠ Debit Invoice Created</b><br/>
+            Invoice: {debit_invoice.name}<br/>
+            Amount Due from Customer: {amount:.2f} EGP<br/>
+            <i>This amount is owed by the customer because deductions exceeded the COD amount.</i>
+            """,
+            subject="Customer Debit Invoice"
+        )
 
     def _reconcile_invoices(self):
         """خصم الفواتير من مبلغ COD"""
@@ -291,200 +525,6 @@ class CODCustomerPayment(models.Model):
     def _compute_counts(self):
         for record in self:
             record.shipment_count = len(record.shipment_ids)
-
-    def action_confirm(self):
-        """تأكيد الدفعة"""
-        self.state = 'confirmed'
-
-    def action_mark_paid(self):
-        """تسجيل الدفع للعميل مع خصم الفواتير تلقائياً - يراعي الدفعات المقدمة"""
-        self.ensure_one()
-
-        # تأكد من إعادة حساب المبالغ بالنظام الجديد
-        for shipment in self.shipment_ids:
-            shipment._compute_cod_amounts()
-
-        # إعادة حساب إجماليات الدفعة
-        self.total_cod = sum(self.shipment_ids.mapped('cod_amount_sheet_excel'))
-        self.total_deductions = sum(self.shipment_ids.mapped('total_deductions'))
-        self.net_amount = sum(self.shipment_ids.mapped('cod_net_for_customer'))
-
-        # البحث عن فواتير العميل المفتوحة من الشحنات
-        customer_invoices = self.env['account.move'].search([
-            ('move_type', '=', 'out_invoice'),
-            ('partner_id', '=', self.customer_id.id),
-            ('shipment_id', 'in', self.shipment_ids.ids),
-            ('state', '=', 'posted'),
-            ('payment_state', '!=', 'paid')
-        ])
-
-        total_paid_to_invoices = 0
-        invoices_details = []
-
-        if customer_invoices:
-            # ===== حساب المبلغ المتبقي فعلياً في الفواتير (بعد أي دفعات مقدمة) =====
-            # amount_residual = المتبقي الفعلي بعد خصم أي دفعات سابقة
-            total_invoices_residual = sum(customer_invoices.mapped('amount_residual'))
-
-            if total_invoices_residual > 0:
-                # المبلغ المتاح للخصم من صافي COD
-                available_for_invoices = min(self.net_amount, total_invoices_residual)
-
-                # إنشاء دفعة لخصم الفواتير
-                payment_journal = self.env['account.journal'].search([
-                    ('type', 'in', ['cash', 'bank'])
-                ], limit=1)
-
-                if not payment_journal:
-                    raise UserError(_('Please configure a payment journal!'))
-
-                payment_vals = {
-                    'payment_type': 'inbound',
-                    'partner_type': 'customer',
-                    'partner_id': self.customer_id.id,
-                    'amount': available_for_invoices,
-                    'currency_id': self.env.company.currency_id.id,
-                    'journal_id': payment_journal.id,
-                    'payment_method_id': self.env.ref('account.account_payment_method_manual_in').id,
-                }
-
-                payment = self.env['account.payment'].create(payment_vals)
-
-                # إضافة المرجع
-                if hasattr(payment, 'memo'):
-                    payment.memo = f'COD Settlement - Batch {self.batch_id.name}'
-
-                # ترحيل الدفعة
-                payment.action_post()
-
-                # ===== مطابقة الفواتير - كل فاتورة حسب المتبقي فيها =====
-                remaining_payment = available_for_invoices
-
-                for invoice in customer_invoices:
-                    # المتبقي الفعلي في هذه الفاتورة (بعد أي دفعات مقدمة)
-                    invoice_residual = invoice.amount_residual
-
-                    if invoice_residual > 0 and remaining_payment > 0:
-                        # المبلغ الذي سيتم دفعه لهذه الفاتورة
-                        amount_for_this_invoice = min(invoice_residual, remaining_payment)
-
-                        # تسجيل التفاصيل للرسالة
-                        advance_paid = invoice.amount_total - invoice_residual
-                        invoices_details.append({
-                            'name': invoice.name,
-                            'total': invoice.amount_total,
-                            'advance_paid': advance_paid,
-                            'residual_before': invoice_residual,
-                            'paid_now': amount_for_this_invoice
-                        })
-
-                        # سطور الدفعة
-                        payment_lines = payment.move_id.line_ids.filtered(
-                            lambda l: l.account_id.account_type == 'asset_receivable'
-                                      and l.partner_id == self.customer_id
-                                      and not l.reconciled
-                        )
-
-                        # سطور الفاتورة
-                        invoice_lines = invoice.line_ids.filtered(
-                            lambda l: l.account_id.account_type == 'asset_receivable'
-                                      and not l.reconciled
-                        )
-
-                        if payment_lines and invoice_lines:
-                            try:
-                                (payment_lines + invoice_lines).reconcile()
-                                total_paid_to_invoices += amount_for_this_invoice
-                                remaining_payment -= amount_for_this_invoice
-                            except Exception as e:
-                                # لو فشل الـ Reconcile لفاتورة معينة، كمّل للباقي
-                                pass
-
-                # حساب المبلغ المتبقي بعد خصم الفواتير
-                remaining_after_invoices = self.net_amount - total_paid_to_invoices
-            else:
-                # كل الفواتير مدفوعة بالكامل (من دفعات مقدمة)
-                remaining_after_invoices = self.net_amount
-        else:
-            remaining_after_invoices = self.net_amount
-
-        # إذا كان هناك مبلغ متبقي بعد سداد الفواتير
-        if remaining_after_invoices > 0:
-            # إنشاء إشعار دائن أو تسجيل كرصيد للعميل
-            self._create_customer_credit(remaining_after_invoices)
-
-        # تحديث حالة الشحنات
-        self.shipment_ids.write({
-            'cod_status': 'settled',
-            'cod_settled_date': fields.Datetime.now()
-        })
-
-        # تحديث حالة الدفعة
-        self.write({
-            'state': 'paid',
-            'payment_date': fields.Date.today()
-        })
-
-        # ===== رسالة تفصيلية محسنة =====
-        message = f"""
-        <b>COD Settlement Complete</b><br/>
-        Customer: {self.customer_id.name}<br/>
-        <br/>
-        <b>COD Summary:</b><br/>
-        Total COD Amount: {self.total_cod:.2f} EGP<br/>
-        Total Deductions: {self.total_deductions:.2f} EGP<br/>
-        Net Amount for Customer: {self.net_amount:.2f} EGP<br/>
-        """
-
-        # تفاصيل الفواتير مع الدفعات المقدمة
-        if invoices_details:
-            message += f"""
-            <br/>
-            <b>Invoices Settlement Details:</b><br/>
-            <table style="border-collapse: collapse; width: 100%;">
-            <tr style="background-color: #f0f0f0;">
-                <th style="border: 1px solid #ddd; padding: 5px;">Invoice</th>
-                <th style="border: 1px solid #ddd; padding: 5px;">Total</th>
-                <th style="border: 1px solid #ddd; padding: 5px;">Advance Paid</th>
-                <th style="border: 1px solid #ddd; padding: 5px;">Was Due</th>
-                <th style="border: 1px solid #ddd; padding: 5px;">Paid Now</th>
-            </tr>
-            """
-            for inv in invoices_details:
-                message += f"""
-                <tr>
-                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['name']}</td>
-                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['total']:.2f}</td>
-                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['advance_paid']:.2f}</td>
-                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['residual_before']:.2f}</td>
-                    <td style="border: 1px solid #ddd; padding: 5px;">{inv['paid_now']:.2f}</td>
-                </tr>
-                """
-            message += f"""
-            </table>
-            <br/>
-            <b>Total Paid to Invoices: {total_paid_to_invoices:.2f} EGP</b><br/>
-            """
-
-        if remaining_after_invoices > 0:
-            message += f"""
-            <br/>
-            <b style="color: green;">✓ Credit Balance Created: {remaining_after_invoices:.2f} EGP</b><br/>
-            """
-
-        self.message_post(body=message, subject="COD Customer Settlement")
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Success'),
-                'message': _(
-                    f'Settlement complete. Net: {self.net_amount:.2f} EGP. Paid to invoices: {total_paid_to_invoices:.2f} EGP'),
-                'type': 'success',
-                'sticky': True,
-            }
-        }
 
     def _create_journal_entry(self):
         """إنشاء قيد محاسبي للدفع"""

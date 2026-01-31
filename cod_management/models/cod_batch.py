@@ -87,7 +87,7 @@ class CODBatch(models.Model):
         'batch_id',
         'shipment_id',
         string='Shipments',
-        domain="[('payment_method', '=', 'cod'), ('cod_status', '=', 'collected_at_courier')]"
+        domain="[('state', '=', 'delivered'), ('cod_status', '!=', 'settled')]"
     )
 
     shipment_count = fields.Integer(
@@ -416,8 +416,8 @@ class CODBatch(models.Model):
             'view_mode': 'list',
             'target': 'current',
             'domain': [
-                ('payment_method', '=', 'cod'),
-                ('cod_status', '=', 'collected_at_courier'),
+                ('state', '=', 'delivered'),
+                ('cod_status', '!=', 'settled'),
                 ('shipping_company_id', '=', self.shipping_company_id.id),
                 ('id', 'not in', self.shipment_ids.ids)
             ],
@@ -450,9 +450,8 @@ class CODBatch(models.Model):
         # جمع الشحنات المؤهلة
         shipments = self.env['shipment.order'].search([
             ('shipping_company_id', '=', company_id),
-            ('payment_method', '=', 'cod'),
-            ('cod_status', '=', 'collected_at_courier'),
-            ('state', '=', 'delivered')
+            ('state', '=', 'delivered'),
+            ('cod_status', '!=', 'settled')
         ])
 
         if not shipments:
@@ -704,9 +703,8 @@ class CODBatch(models.Model):
                 # جمع الشحنات المؤهلة
                 shipments = self.env['shipment.order'].search([
                     ('shipping_company_id', '=', company.id),
-                    ('payment_method', '=', 'cod'),
-                    ('cod_status', '=', 'collected_at_courier'),
-                    ('state', '=', 'delivered')
+                    ('state', '=', 'delivered'),
+                    ('cod_status', '!=', 'settled')
                 ])
 
                 if not shipments:
@@ -755,9 +753,8 @@ class CODBatch(models.Model):
 
         # البحث عن الشحنات المتأخرة
         overdue_shipments = self.env['shipment.order'].search([
-            ('payment_method', '=', 'cod'),
-            ('cod_status', '=', 'collected_at_courier'),
             ('state', '=', 'delivered'),
+            ('cod_status', '!=', 'settled'),
             ('cod_collected_date', '<=', cutoff_date)
         ])
 
