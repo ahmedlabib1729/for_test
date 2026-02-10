@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Report Action for Invoice Profitability -->
+    <record id="action_report_invoice_profitability" model="ir.actions.report">
+        <field name="name">Invoice Profitability Report</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">invoice_expense_tracking.report_invoice_profitability</field>
+        <field name="report_file">invoice_expense_tracking.report_invoice_profitability</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Invoice Profitability - %s' % object.name</field>
+    </record>
+
+    <!-- Wizard for Profitability Analysis Report -->
+    <record id="view_invoice_profitability_wizard" model="ir.ui.view">
+        <field name="name">invoice.profitability.wizard.form</field>
+        <field name="model">invoice.profitability.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Invoice Profitability Analysis">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="partner_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <field name="platform"/>
+                        <field name="state"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Print Report" name="action_print_report" 
+                            type="object" class="btn-primary"/>
+                    <button string="View Analysis" name="action_view_analysis" 
+                            type="object" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_invoice_profitability_wizard" model="ir.actions.act_window">
+        <field name="name">Profitability Analysis</field>
+        <field name="res_model">invoice.profitability.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+
+    <!-- Pivot View for Analysis -->
+    <record id="view_invoice_move_profitability_pivot" model="ir.ui.view">
+        <field name="name">account.move.profitability.pivot</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <pivot string="Invoice Profitability Analysis" sample="1">
+                <field name="partner_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="amount_untaxed" type="measure"/>
+                <field name="invoice_cost" type="measure"/>
+                <field name="total_expenses" type="measure"/>
+                <field name="net_profit" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View for Analysis -->
+    <record id="view_invoice_move_profitability_graph" model="ir.ui.view">
+        <field name="name">account.move.profitability.graph</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <graph string="Invoice Profitability Analysis" type="bar" sample="1">
+                <field name="date" interval="month"/>
+                <field name="amount_untaxed" type="measure"/>
+                <field name="net_profit" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action for Profitability Analysis -->
+    <record id="action_invoice_profitability_report" model="ir.actions.act_window">
+        <field name="name">Invoice Profitability Analysis</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+        <field name="domain">[('move_type','=','out_invoice'),('state','=','posted')]</field>
+        <field name="context">{
+            'search_default_group_by_partner': 1,
+        }</field>
+        <field name="view_ids" 
+                eval="[(5, 0, 0),
+                      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_invoice_move_profitability_pivot')}),
+                      (0, 0, {'view_mode': 'graph', 'view_id': ref('view_invoice_move_profitability_graph')})]"/>
+    </record>
+
+
+
+</odoo>

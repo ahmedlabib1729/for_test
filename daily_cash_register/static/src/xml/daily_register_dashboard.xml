@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="daily_cash_register.Dashboard">
+        <div class="o_action">
+            <div class="dcr-dashboard">
+                <!-- Loading Spinner -->
+                <div t-if="state.isLoading" class="dashboard-loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div t-else="" class="dashboard-container">
+                    <!-- Header -->
+                    <div class="dashboard-header">
+                        <h2 class="dashboard-title">
+                            <i class="fa fa-bar-chart"/>
+                            Daily Register Report
+                        </h2>
+                    </div>
+
+                    <!-- Filters Section -->
+                    <div class="filters-section">
+                        <!-- Period Filter -->
+                        <div class="filter-row">
+                            <span class="filter-label">
+                                <i class="fa fa-calendar"/>
+                                Period
+                            </span>
+                            <div class="btn-group" role="group">
+                                <button type="button"
+                                        t-att-class="'btn ' + (state.period === 'today' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('today')">
+                                    Today
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn ' + (state.period === 'week' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('week')">
+                                    This Week
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn ' + (state.period === 'month' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('month')">
+                                    This Month
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn ' + (state.period === 'year' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('year')">
+                                    This Year
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn ' + (state.period === 'custom' ? 'btn-primary' : 'btn-outline-primary')">
+                                    Custom
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Date Range -->
+                        <div class="filter-row">
+                            <span class="filter-label">
+                                <i class="fa fa-clock-o"/>
+                                From
+                            </span>
+                            <input type="date"
+                                   class="form-control date-input"
+                                   t-att-value="state.dateFrom"
+                                   t-on-change="onChangeDateFrom"/>
+                            <span class="filter-label">
+                                To
+                            </span>
+                            <input type="date"
+                                   class="form-control date-input"
+                                   t-att-value="state.dateTo"
+                                   t-on-change="onChangeDateTo"/>
+                        </div>
+
+                        <!-- Journal Filter -->
+                        <div class="filter-row">
+                            <span class="filter-label">
+                                <i class="fa fa-university"/>
+                                Journals
+                            </span>
+                            <div class="journal-checkboxes">
+                                <t t-foreach="state.journals" t-as="journal" t-key="journal.id">
+                                    <label class="journal-checkbox">
+                                        <input type="checkbox"
+                                               t-att-value="journal.id"
+                                               t-att-checked="isJournalSelected(journal.id)"
+                                               t-on-change="onChangeJournal"/>
+                                        <span t-att-class="'badge ' + (journal.type === 'bank' ? 'bg-primary' : 'bg-success')">
+                                            <t t-esc="journal.name"/>
+                                        </span>
+                                    </label>
+                                </t>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="filter-row">
+                            <button class="btn btn-primary" t-on-click="onRefresh">
+                                <i class="fa fa-refresh"/> Refresh
+                            </button>
+                            <button class="btn btn-success" t-on-click="onExportExcel">
+                                <i class="fa fa-file-excel-o"/> Export
+                            </button>
+                            <button class="btn btn-secondary" t-on-click="onPrint">
+                                <i class="fa fa-print"/> Print
+                            </button>
+                            <button class="btn btn-info" t-on-click="createNewRegister">
+                                <i class="fa fa-plus"/> New
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="kpi-row">
+                        <div class="kpi-card">
+                            <div class="kpi-icon">📋</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="state.totalRegisters"/>
+                                <div class="kpi-label">Registers</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-debit">
+                            <div class="kpi-icon">📈</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="formatNumber(state.totalDebit)"/>
+                                <div class="kpi-label">Total Debit</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-credit">
+                            <div class="kpi-icon">📉</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="formatNumber(state.totalCredit)"/>
+                                <div class="kpi-label">Total Credit</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-tax">
+                            <div class="kpi-icon">💰</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="formatNumber(state.totalTax)"/>
+                                <div class="kpi-label">Total Tax</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-balance">
+                            <div class="kpi-icon">⚖️</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="formatNumber(state.netBalance)"/>
+                                <div class="kpi-label">Net Balance</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Table -->
+                    <div class="report-table-container">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-description">Description</th>
+                                    <th class="col-date">Date</th>
+                                    <th class="col-amount">Debit</th>
+                                    <th class="col-amount">Credit</th>
+                                    <th class="col-amount">Tax</th>
+                                    <th class="col-amount">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- No Data -->
+                                <tr t-if="!state.reportData.journals.length">
+                                    <td colspan="6" class="text-center text-muted">
+                                        <i class="fa fa-inbox fa-4x mb-3 d-block"/>
+                                        <strong>No Data Found</strong>
+                                        <p class="mt-2 mb-0">No posted registers found for the selected period.</p>
+                                    </td>
+                                </tr>
+
+                                <!-- Journal Rows -->
+                                <t t-foreach="state.reportData.journals" t-as="journal" t-key="journal.id">
+                                    <!-- Journal Header Row -->
+                                    <tr class="row-journal" t-on-click="() => this.toggleJournal(journal.id)">
+                                        <td class="col-description">
+                                            <span class="toggle-icon">
+                                                <i t-att-class="'fa ' + (isJournalExpanded(journal.id) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                            </span>
+                                            <span class="journal-icon">
+                                                <t t-if="journal.type === 'bank'">🏦</t>
+                                                <t t-else="">💵</t>
+                                            </span>
+                                            <span class="journal-name" t-esc="journal.name"/>
+                                        </td>
+                                        <td class="col-date"/>
+                                        <td class="col-amount" t-esc="formatNumber(journal.totals.debit)"/>
+                                        <td class="col-amount" t-esc="formatNumber(journal.totals.credit)"/>
+                                        <td class="col-amount" t-esc="formatNumber(journal.totals.tax)"/>
+                                        <td class="col-amount col-balance" t-esc="formatNumber(journal.totals.balance)"/>
+                                    </tr>
+
+                                    <!-- Register Rows -->
+                                    <t t-if="isJournalExpanded(journal.id)">
+                                        <t t-foreach="journal.registers" t-as="reg" t-key="reg.id">
+                                            <!-- Register Row -->
+                                            <tr class="row-register" t-on-click="(ev) => { ev.stopPropagation(); this.toggleRegister(reg.id); }">
+                                                <td class="col-description">
+                                                    <span class="indent-1"/>
+                                                    <span class="toggle-icon">
+                                                        <i t-att-class="'fa ' + (isRegisterExpanded(reg.id) ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                                    </span>
+                                                    <span class="register-icon">📄</span>
+                                                    <a class="register-link" t-on-click.stop="() => this.openRegister(reg.id)">
+                                                        <t t-esc="reg.name"/>
+                                                    </a>
+                                                </td>
+                                                <td class="col-date" t-esc="reg.date"/>
+                                                <td class="col-amount text-success" t-esc="formatNumber(reg.debit)"/>
+                                                <td class="col-amount text-danger" t-esc="formatNumber(reg.credit)"/>
+                                                <td class="col-amount text-warning" t-esc="formatNumber(reg.tax)"/>
+                                                <td class="col-amount col-balance" t-esc="formatNumber(reg.balance)"/>
+                                            </tr>
+
+                                            <!-- Line Rows -->
+                                            <t t-if="isRegisterExpanded(reg.id)">
+                                                <t t-foreach="reg.lines" t-as="line" t-key="line.id">
+                                                    <tr class="row-line">
+                                                        <td class="col-description">
+                                                            <span class="indent-2"/>
+                                                            <span class="line-icon">├─</span>
+                                                            <span class="account-code" t-esc="line.account_code"/>
+                                                            <span class="line-desc" t-esc="line.description"/>
+                                                        </td>
+                                                        <td class="col-date"/>
+                                                        <td class="col-amount">
+                                                            <t t-if="line.debit" t-esc="formatNumber(line.debit)"/>
+                                                            <t t-else=""><span class="text-muted">-</span></t>
+                                                        </td>
+                                                        <td class="col-amount">
+                                                            <t t-if="line.credit" t-esc="formatNumber(line.credit)"/>
+                                                            <t t-else=""><span class="text-muted">-</span></t>
+                                                        </td>
+                                                        <td class="col-amount">
+                                                            <t t-if="line.tax_amount" t-esc="formatNumber(line.tax_amount)"/>
+                                                            <t t-else=""><span class="text-muted">-</span></t>
+                                                        </td>
+                                                        <td class="col-amount col-balance" t-esc="formatNumber(line.balance)"/>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </t>
+                                    </t>
+                                </t>
+                            </tbody>
+                            <!-- Grand Total -->
+                            <tfoot t-if="state.reportData.journals.length">
+                                <tr class="row-total">
+                                    <td class="col-description">
+                                        <span class="total-icon">📊</span>
+                                        <strong>GRAND TOTAL</strong>
+                                    </td>
+                                    <td class="col-date"/>
+                                    <td class="col-amount" t-esc="formatNumber(state.reportData.totals.debit)"/>
+                                    <td class="col-amount" t-esc="formatNumber(state.reportData.totals.credit)"/>
+                                    <td class="col-amount" t-esc="formatNumber(state.reportData.totals.tax)"/>
+                                    <td class="col-amount col-balance" t-esc="formatNumber(state.reportData.totals.balance)"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

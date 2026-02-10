@@ -1,0 +1,1851 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================ -->
+        <!-- صفحة البحث عن الطالب برقم الهوية -->
+        <!-- ============================================ -->
+        <template id="club_search_student" name="البحث عن الطالب">
+            <t t-call="website.layout">
+                <t t-set="no_header" t-value="True"/>
+                <t t-set="no_footer" t-value="True"/>
+                <t t-set="is_arabic" t-value="'ar' in request.env.lang"/>
+                <t t-if="is_arabic">
+                    <t t-set="title">البحث عن الطالب</t>
+                </t>
+                <t t-else="">
+                    <t t-set="title">Search for Student</t>
+                </t>
+
+                <div class="charity-registration-page" t-att-dir="is_arabic and 'rtl' or 'ltr'">
+                    <!-- Language Switcher -->
+                    <div class="header-right">
+                        <div class="lang-switcher">
+                            <t t-if="is_arabic">
+                                <a href="javascript:void(0)" onclick="switchToEnglish()" class="lang-btn-flag">
+                                    <span class="flag">🇬🇧</span>
+                                    <span class="text">English</span>
+                                    <i class="fa fa-chevron-right arrow"></i>
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <a href="javascript:void(0)" onclick="switchToArabic()" class="lang-btn-flag">
+                                    <span class="flag">🇦🇪</span>
+                                    <span class="text">العربية</span>
+                                    <i class="fa fa-chevron-left arrow"></i>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+
+                    <script>
+                    function switchToEnglish() {
+                        document.cookie = "frontend_lang=en_US;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+
+                    function switchToArabic() {
+                        document.cookie = "frontend_lang=ar_001;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+                    </script>
+
+                    <!-- Timeline Breadcrumb -->
+                    <section class="timeline-breadcrumb">
+                        <div class="container">
+                            <div class="breadcrumb-timeline">
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <a href="/registration">
+                                            <t t-if="is_arabic">المقر</t>
+                                            <t t-else="">Headquarters</t>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-line"></div>
+
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <a t-attf-href="/registration/headquarters/#{headquarters.id}">
+                                            <t t-esc="headquarters.name"/>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-line"></div>
+
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <a t-attf-href="/registration/clubs/#{department.id}">
+                                            <t t-esc="club.name"/>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-line"></div>
+
+                                <div class="timeline-item active">
+                                    <div class="timeline-icon">
+                                        <span>4</span>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <span>
+                                            <t t-if="is_arabic">البحث عن الطالب</t>
+                                            <t t-else="">Search for Student</t>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Search Section -->
+                    <section class="search-section py-5">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8">
+                                    <div class="search-card">
+                                        <div class="search-header text-center mb-4">
+                                            <div class="search-icon mb-3">
+                                                <i class="fa fa-search fa-3x text-primary"></i>
+                                            </div>
+                                            <h2>
+                                                <t t-if="is_arabic">البحث عن بيانات الطالب</t>
+                                                <t t-else="">Search for Student Data</t>
+                                            </h2>
+                                            <p class="text-muted">
+                                                <t t-if="is_arabic">أدخل رقم الهوية الإماراتية للبحث عن بيانات الطالب</t>
+                                                <t t-else="">Enter Emirates ID to search for student data</t>
+                                            </p>
+                                        </div>
+
+                                        <div id="searchStudentForm" t-att-data-club-id="club.id" t-att-data-lang="is_arabic and 'ar' or 'en'">
+                                            <div class="form-group mb-4">
+                                                <label for="search_id_number" class="form-label fw-bold">
+                                                    <i class="fa fa-id-card me-2"></i>
+                                                    <t t-if="is_arabic">رقم الهوية الإماراتية</t>
+                                                    <t t-else="">Emirates ID Number</t>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="text"
+                                                       id="search_id_number"
+                                                       name="id_number"
+                                                       class="form-control form-control-lg text-center"
+                                                       placeholder="784-YYYY-XXXXXXX-X"
+                                                       dir="ltr"
+                                                       maxlength="18"
+                                                       required="required"/>
+                                                <div class="form-text text-center">
+                                                    <t t-if="is_arabic">مثال: 784-1990-1234567-1</t>
+                                                    <t t-else="">Example: 784-1990-1234567-1</t>
+                                                </div>
+                                                <div id="id_error" class="invalid-feedback"></div>
+                                            </div>
+
+                                            <div class="text-center">
+                                                <button type="button"
+                                                        id="searchBtn"
+                                                        class="btn btn-primary btn-lg px-5">
+                                                    <i class="fa fa-search me-2"></i>
+                                                    <t t-if="is_arabic">بحث</t>
+                                                    <t t-else="">Search</t>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Search Result Container -->
+                                        <div id="searchResult" style="display: none;" class="mt-4"></div>
+
+                                        <!-- Not Found Message -->
+                                        <div id="notFoundMessage" style="display: none;" class="mt-4">
+                                            <div class="alert alert-warning">
+                                                <h5>
+                                                    <i class="fa fa-info-circle me-2"></i>
+                                                    <t t-if="is_arabic">لم يتم العثور على بيانات</t>
+                                                    <t t-else="">No Data Found</t>
+                                                </h5>
+                                                <p>
+                                                    <t t-if="is_arabic">لم يتم العثور على طالب مسجل بهذا الرقم.</t>
+                                                    <t t-else="">No registered student found with this ID.</t>
+                                                </p>
+                                                <hr/>
+                                                <p class="mb-0">
+                                                    <t t-if="is_arabic">سيتم توجيهك لصفحة التسجيل الجديد...</t>
+                                                    <t t-else="">You will be redirected to new registration page...</t>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Loading -->
+                                        <div id="searchLoading" class="text-center py-4" style="display: none;">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">
+                                                    <t t-if="is_arabic">جاري البحث...</t>
+                                                    <t t-else="">Searching...</t>
+                                                </span>
+                                            </div>
+                                            <p class="mt-2 text-muted">
+                                                <t t-if="is_arabic">جاري البحث...</t>
+                                                <t t-else="">Searching...</t>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Styles -->
+                <style>
+                    /* Language Switcher Styles */
+                    .header-right {
+                        position: fixed;
+                        top: 20px;
+                        left: 20px;
+                        z-index: 1000;
+                    }
+                    [dir="ltr"] .header-right {
+                        left: auto;
+                        right: 20px;
+                    }
+                    .lang-btn-flag {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 10px 18px;
+                        background: white;
+                        border-radius: 25px;
+                        text-decoration: none;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                        transition: all 0.3s ease;
+                    }
+                    .lang-btn-flag:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+                    }
+                    .lang-btn-flag .flag {
+                        font-size: 20px;
+                    }
+                    .lang-btn-flag .text {
+                        color: #333;
+                        font-weight: 500;
+                        font-size: 14px;
+                    }
+                    .lang-btn-flag .arrow {
+                        color: #667eea;
+                        font-size: 12px;
+                    }
+
+                    .search-card {
+                        background: white;
+                        border-radius: 15px;
+                        padding: 40px;
+                        box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+                    }
+                    .search-icon {
+                        width: 80px;
+                        height: 80px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto;
+                    }
+                    .search-icon i {
+                        color: white !important;
+                    }
+                    #search_id_number {
+                        font-size: 1.5rem;
+                        letter-spacing: 2px;
+                        font-family: monospace;
+                    }
+                    .student-info-card {
+                        background: #f8f9fa;
+                        border-radius: 10px;
+                        padding: 20px;
+                        margin-top: 20px;
+                    }
+                    .info-row {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 10px 0;
+                        border-bottom: 1px solid #eee;
+                    }
+                    .info-row:last-child {
+                        border-bottom: none;
+                    }
+                    .info-label {
+                        font-weight: bold;
+                        color: #666;
+                    }
+                    .previous-clubs-list {
+                        max-height: 200px;
+                        overflow-y: auto;
+                    }
+                </style>
+            </t>
+        </template>
+
+        <!-- ============================================ -->
+        <!-- صفحة التسجيل للطالب الموجود (اختيار الترم فقط) -->
+        <!-- ============================================ -->
+        <template id="club_existing_student_form" name="تسجيل طالب موجود">
+            <t t-call="website.layout">
+                <t t-set="no_header" t-value="True"/>
+                <t t-set="no_footer" t-value="True"/>
+                <t t-set="is_arabic" t-value="'ar' in request.env.lang"/>
+                <t t-if="is_arabic">
+                    <t t-set="title">تسجيل في النادي</t>
+                </t>
+                <t t-else="">
+                    <t t-set="title">Club Registration</t>
+                </t>
+
+                <div class="charity-registration-page" t-att-dir="is_arabic and 'rtl' or 'ltr'">
+                    <!-- Language Switcher -->
+                    <div class="header-right">
+                        <div class="lang-switcher">
+                            <t t-if="is_arabic">
+                                <a href="javascript:void(0)" onclick="switchToEnglish()" class="lang-btn-flag">
+                                    <span class="flag">🇬🇧</span>
+                                    <span class="text">English</span>
+                                    <i class="fa fa-chevron-right arrow"></i>
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <a href="javascript:void(0)" onclick="switchToArabic()" class="lang-btn-flag">
+                                    <span class="flag">🇦🇪</span>
+                                    <span class="text">العربية</span>
+                                    <i class="fa fa-chevron-left arrow"></i>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+
+                    <script>
+                    function switchToEnglish() {
+                        document.cookie = "frontend_lang=en_US;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+
+                    function switchToArabic() {
+                        document.cookie = "frontend_lang=ar_001;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+                    </script>
+
+                    <!-- Timeline Breadcrumb -->
+                    <section class="timeline-breadcrumb">
+                        <div class="container">
+                            <div class="breadcrumb-timeline">
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon"><i class="fa fa-check"></i></div>
+                                    <div class="timeline-content">
+                                        <a href="/registration">
+                                            <t t-if="is_arabic">المقر</t>
+                                            <t t-else="">Headquarters</t>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="timeline-line"></div>
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon"><i class="fa fa-check"></i></div>
+                                    <div class="timeline-content">
+                                        <t t-esc="club.name"/>
+                                    </div>
+                                </div>
+                                <div class="timeline-line"></div>
+                                <div class="timeline-item completed">
+                                    <div class="timeline-icon"><i class="fa fa-check"></i></div>
+                                    <div class="timeline-content">
+                                        <a t-attf-href="/registration/club/#{club.id}/search">
+                                            <t t-if="is_arabic">البحث</t>
+                                            <t t-else="">Search</t>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="timeline-line"></div>
+                                <div class="timeline-item active">
+                                    <div class="timeline-icon"><span>4</span></div>
+                                    <div class="timeline-content">
+                                        <t t-if="is_arabic">اختيار الترم</t>
+                                        <t t-else="">Select Term</t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Student Info & Registration -->
+                    <section class="registration-section py-5">
+                        <div class="container">
+                            <div class="row">
+                                <!-- بيانات الطالب (العمود الأيسر) -->
+                                <div class="col-lg-4 mb-4">
+                                    <!-- بطاقة الطالب -->
+                                    <div class="student-profile-card mb-4">
+                                        <div class="profile-header">
+                                            <div class="profile-avatar">
+                                                <i class="fa fa-user"></i>
+                                            </div>
+                                            <h4 t-esc="student.full_name"/>
+                                            <span class="badge bg-success">
+                                                <t t-if="is_arabic">طالب مسجل</t>
+                                                <t t-else="">Registered Student</t>
+                                            </span>
+                                        </div>
+                                        <div class="profile-body">
+                                            <div class="info-item">
+                                                <i class="fa fa-id-card"></i>
+                                                <span t-esc="student.id_number"/>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fa fa-birthday-cake"></i>
+                                                <span>
+                                                    <t t-esc="student.age"/>
+                                                    <t t-if="is_arabic"> سنة</t>
+                                                    <t t-else=""> years</t>
+                                                </span>
+                                            </div>
+                                            <div class="info-item">
+                                                <i class="fa fa-venus-mars"></i>
+                                                <t t-if="student.gender == 'male'">
+                                                    <span>
+                                                        <t t-if="is_arabic">ذكر</t>
+                                                        <t t-else="">Male</t>
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span>
+                                                        <t t-if="is_arabic">أنثى</t>
+                                                        <t t-else="">Female</t>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                            <div class="info-item" t-if="student.nationality">
+                                                <i class="fa fa-globe"></i>
+                                                <span t-esc="student.nationality.name"/>
+                                            </div>
+                                            <t t-if="student.student_code">
+                                                <div class="info-item">
+                                                    <i class="fa fa-hashtag"></i>
+                                                    <span t-esc="student.student_code"/>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+
+                                    <!-- بيانات العائلة -->
+                                    <div class="family-card mb-4" t-if="family">
+                                        <h5 class="card-title">
+                                            <i class="fa fa-users me-2"></i>
+                                            <t t-if="is_arabic">بيانات العائلة</t>
+                                            <t t-else="">Family Information</t>
+                                        </h5>
+                                        <div class="family-info">
+                                            <div class="info-row">
+                                                <span class="label">
+                                                    <t t-if="is_arabic">الأب:</t>
+                                                    <t t-else="">Father:</t>
+                                                </span>
+                                                <span t-esc="family.father_name"/>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="label">
+                                                    <t t-if="is_arabic">هاتف الأب:</t>
+                                                    <t t-else="">Father's Phone:</t>
+                                                </span>
+                                                <span dir="ltr" t-esc="family.father_mobile"/>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="label">
+                                                    <t t-if="is_arabic">الأم:</t>
+                                                    <t t-else="">Mother:</t>
+                                                </span>
+                                                <span t-esc="family.mother_name"/>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="label">
+                                                    <t t-if="is_arabic">هاتف الأم:</t>
+                                                    <t t-else="">Mother's Phone:</t>
+                                                </span>
+                                                <span dir="ltr" t-esc="family.mother_mobile"/>
+                                            </div>
+                                            <div class="info-row" t-if="family.email">
+                                                <span class="label">
+                                                    <t t-if="is_arabic">البريد:</t>
+                                                    <t t-else="">Email:</t>
+                                                </span>
+                                                <span t-esc="family.email"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- النوادي السابقة -->
+                                    <div class="previous-clubs-card" t-if="previous_registrations">
+                                        <h5 class="card-title">
+                                            <i class="fa fa-history me-2"></i>
+                                            <t t-if="is_arabic">التسجيلات السابقة</t>
+                                            <t t-else="">Previous Registrations</t>
+                                        </h5>
+                                        <div class="previous-list">
+                                            <t t-foreach="previous_registrations" t-as="reg">
+                                                <div class="prev-item">
+                                                    <div class="prev-club">
+                                                        <i class="fa fa-futbol-o"></i>
+                                                        <t t-esc="reg.club_id.name"/>
+                                                    </div>
+                                                    <div class="prev-term text-muted">
+                                                        <small t-esc="reg.term_id.name"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- اختيار الترم (العمود الأيمن) -->
+                                <div class="col-lg-8">
+                                    <div class="term-selection-card">
+                                        <h3 class="mb-4">
+                                            <i class="fa fa-calendar me-2"></i>
+                                            <t t-if="is_arabic">
+                                                اختر الترم للتسجيل في
+                                                <span class="text-primary" t-esc="club.name"/>
+                                            </t>
+                                            <t t-else="">
+                                                Select Term for Registration in
+                                                <span class="text-primary" t-esc="club.name"/>
+                                            </t>
+                                        </h3>
+
+                                        <form id="existingStudentForm"
+                                              t-att-data-student-id="student.id"
+                                              t-att-data-club-id="club.id"
+                                              t-att-data-lang="is_arabic and 'ar' or 'en'">
+
+                                            <!-- اختيار الترم -->
+                                            <div class="terms-grid mb-4">
+                                                <t t-foreach="terms" t-as="term">
+                                                    <div t-attf-class="term-card #{term.id in registered_term_ids and 'disabled' or ''}">
+                                                        <input type="radio"
+                                                               class="term-radio"
+                                                               name="term_id"
+                                                               t-att-id="'term_%s' % term.id"
+                                                               t-att-value="term.id"
+                                                               t-att-disabled="term.id in registered_term_ids and 'disabled' or None"
+                                                               required="required"/>
+                                                        <label class="term-label" t-att-for="'term_%s' % term.id">
+                                                            <div class="term-name" t-esc="term.name"/>
+                                                            <div class="term-dates">
+                                                                <i class="fa fa-calendar-o me-1"></i>
+                                                                <t t-esc="term.date_from"/> - <t t-esc="term.date_to"/>
+                                                            </div>
+                                                            <div class="term-price">
+                                                                <t t-esc="term.price"/>
+                                                                <t t-if="is_arabic"> درهم</t>
+                                                                <t t-else=""> AED</t>
+                                                            </div>
+                                                            <t t-if="term.id in registered_term_ids">
+                                                                <div class="already-registered badge bg-warning text-dark">
+                                                                    <i class="fa fa-check-circle me-1"></i>
+                                                                    <t t-if="is_arabic">مسجل مسبقاً</t>
+                                                                    <t t-else="">Already Registered</t>
+                                                                </div>
+                                                            </t>
+                                                        </label>
+                                                    </div>
+                                                </t>
+                                            </div>
+
+                                            <!-- اختيار الصف الدراسي -->
+                                            <div class="grade-section mb-4">
+                                                <label class="form-label fw-bold">
+                                                    <i class="fa fa-graduation-cap me-1"></i>
+                                                    <t t-if="is_arabic">الصف الدراسي</t>
+                                                    <t t-else="">School Grade</t>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <select class="form-select" id="student_grade_id" name="student_grade_id" required="required">
+                                                    <option value="">
+                                                        <t t-if="is_arabic">-- اختر الصف الدراسي --</t>
+                                                        <t t-else="">-- Select Grade --</t>
+                                                    </option>
+                                                    <t t-foreach="request.env['school.grade'].sudo().search([])" t-as="grade">
+                                                        <option t-att-value="grade.id" t-esc="grade.name"/>
+                                                    </t>
+                                                </select>
+                                            </div>
+
+                                            <!-- خصم إسعاد (اختياري) -->
+                                            <div class="esaad-section mb-4">
+                                                <div class="form-check">
+                                                    <input type="checkbox"
+                                                           class="form-check-input"
+                                                           id="esaad_discount"
+                                                           name="esaad_discount"/>
+                                                    <label class="form-check-label" for="esaad_discount">
+                                                        <i class="fa fa-percent me-1"></i>
+                                                        <t t-if="is_arabic">لدي بطاقة إسعاد (خصم خاص)</t>
+                                                        <t t-else="">I have Esaad Card (Special Discount)</t>
+                                                    </label>
+                                                </div>
+
+                                                <div id="esaad_file_section" class="mt-3" style="display: none;">
+                                                    <label class="form-label">
+                                                        <t t-if="is_arabic">صورة بطاقة إسعاد</t>
+                                                        <t t-else="">Esaad Card Photo</t>
+                                                    </label>
+                                                    <input type="file"
+                                                           class="form-control"
+                                                           id="esaad_card_file"
+                                                           name="esaad_card_file"
+                                                           accept="image/*,.pdf"/>
+                                                </div>
+                                            </div>
+
+                                            <!-- زر التسجيل -->
+                                            <div class="submit-section">
+                                                <button type="submit"
+                                                        class="btn btn-primary btn-lg w-100"
+                                                        t-att-disabled="not terms and 'disabled' or None">
+                                                    <i class="fa fa-check-circle me-2"></i>
+                                                    <t t-if="is_arabic">تأكيد التسجيل</t>
+                                                    <t t-else="">Confirm Registration</t>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Styles -->
+                <style>
+                    /* Language Switcher Styles */
+                    .header-right {
+                        position: fixed;
+                        top: 20px;
+                        left: 20px;
+                        z-index: 1000;
+                    }
+                    [dir="ltr"] .header-right {
+                        left: auto;
+                        right: 20px;
+                    }
+                    .lang-btn-flag {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 10px 18px;
+                        background: white;
+                        border-radius: 25px;
+                        text-decoration: none;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                        transition: all 0.3s ease;
+                    }
+                    .lang-btn-flag:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+                    }
+                    .lang-btn-flag .flag {
+                        font-size: 20px;
+                    }
+                    .lang-btn-flag .text {
+                        color: #333;
+                        font-weight: 500;
+                        font-size: 14px;
+                    }
+                    .lang-btn-flag .arrow {
+                        color: #667eea;
+                        font-size: 12px;
+                    }
+
+                    .student-profile-card {
+                        background: white;
+                        border-radius: 15px;
+                        overflow: hidden;
+                        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+                    }
+                    .profile-header {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        padding: 25px;
+                        text-align: center;
+                    }
+                    .profile-avatar {
+                        width: 70px;
+                        height: 70px;
+                        background: rgba(255,255,255,0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 15px;
+                        font-size: 30px;
+                    }
+                    .profile-body {
+                        padding: 20px;
+                    }
+                    .info-item {
+                        display: flex;
+                        align-items: center;
+                        padding: 10px 0;
+                        border-bottom: 1px solid #eee;
+                    }
+                    .info-item:last-child {
+                        border-bottom: none;
+                    }
+                    .info-item i {
+                        width: 30px;
+                        color: #667eea;
+                    }
+                    .family-card, .previous-clubs-card {
+                        background: white;
+                        border-radius: 15px;
+                        padding: 20px;
+                        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+                    }
+                    .card-title {
+                        color: #333;
+                        margin-bottom: 15px;
+                        padding-bottom: 10px;
+                        border-bottom: 2px solid #667eea;
+                    }
+                    .info-row {
+                        display: flex;
+                        justify-content: space-between;
+                        padding: 8px 0;
+                    }
+                    .info-row .label {
+                        color: #666;
+                    }
+                    .prev-item {
+                        padding: 10px;
+                        background: #f8f9fa;
+                        border-radius: 8px;
+                        margin-bottom: 10px;
+                    }
+                    .term-selection-card {
+                        background: white;
+                        border-radius: 15px;
+                        padding: 30px;
+                        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+                    }
+                    .terms-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                        gap: 15px;
+                    }
+                    .term-card {
+                        position: relative;
+                    }
+                    .term-card.disabled {
+                        opacity: 0.6;
+                    }
+                    .term-radio {
+                        position: absolute;
+                        opacity: 0;
+                    }
+                    .term-label {
+                        display: block;
+                        padding: 20px;
+                        border: 2px solid #e0e0e0;
+                        border-radius: 12px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        text-align: center;
+                    }
+                    .term-radio:checked + .term-label {
+                        border-color: #667eea;
+                        background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);
+                    }
+                    .term-card.disabled .term-label {
+                        cursor: not-allowed;
+                    }
+                    .term-name {
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                        color: #333;
+                        margin-bottom: 10px;
+                    }
+                    .term-price {
+                        font-size: 1.3rem;
+                        color: #667eea;
+                        font-weight: bold;
+                        margin: 10px 0;
+                    }
+                    .already-registered {
+                        margin-top: 10px;
+                    }
+                    .esaad-section {
+                        padding: 15px;
+                        background: #f8f9fa;
+                        border-radius: 10px;
+                    }
+                </style>
+
+                <!-- JavaScript للتحكم في الفورم -->
+                <script type="text/javascript">
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var form = document.getElementById('existingStudentForm');
+                        if (!form) return;
+
+                        var isArabic = form.dataset.lang === 'ar';
+                        console.log('✅ Existing Student Form initialized, Language:', isArabic ? 'Arabic' : 'English');
+
+                        // إظهار/إخفاء حقل إسعاد
+                        var esaadCheckbox = document.getElementById('esaad_discount');
+                        var esaadFileSection = document.getElementById('esaad_file_section');
+
+                        if (esaadCheckbox &amp;&amp; esaadFileSection) {
+                            esaadCheckbox.addEventListener('change', function() {
+                                if (this.checked) {
+                                    esaadFileSection.style.display = 'block';
+                                } else {
+                                    esaadFileSection.style.display = 'none';
+                                }
+                            });
+                        }
+
+                        // معالجة إرسال الفورم
+                        form.addEventListener('submit', function(e) {
+                            e.preventDefault();
+
+                            var studentId = form.dataset.studentId;
+                            var clubId = form.dataset.clubId;
+
+                            // التحقق من اختيار الترم
+                            var selectedTerm = document.querySelector('input[name="term_id"]:checked');
+                            if (!selectedTerm) {
+                                alert(isArabic ? 'يجب اختيار الترم' : 'Please select a term');
+                                return;
+                            }
+
+                            // التحقق من الصف الدراسي
+                            var gradeSelect = document.getElementById('student_grade_id');
+                            if (gradeSelect &amp;&amp; !gradeSelect.value) {
+                                alert(isArabic ? 'يجب اختيار الصف الدراسي' : 'Please select the grade');
+                                return;
+                            }
+
+                            // تجهيز البيانات
+                            var requestData = {
+                                student_id: parseInt(studentId),
+                                club_id: parseInt(clubId),
+                                term_id: parseInt(selectedTerm.value),
+                                esaad_discount: esaadCheckbox ? esaadCheckbox.checked : false
+                            };
+
+                            // إضافة الصف الدراسي
+                            if (gradeSelect &amp;&amp; gradeSelect.value) {
+                                requestData.student_grade_id = parseInt(gradeSelect.value);
+                            }
+
+                            // دالة إرسال الطلب
+                            function sendRequest(data) {
+                                var submitBtn = form.querySelector('button[type="submit"]');
+                                submitBtn.disabled = true;
+                                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> ' + (isArabic ? 'جاري التسجيل...' : 'Registering...');
+
+                                fetch('/registration/submit/club/existing', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        jsonrpc: "2.0",
+                                        method: "call",
+                                        params: data,
+                                        id: Date.now()
+                                    })
+                                })
+                                .then(function(response) {
+                                    return response.json();
+                                })
+                                .then(function(data) {
+                                    console.log('Response:', data);
+
+                                    if (data.error) {
+                                        alert(data.error.data ? data.error.data.message : (isArabic ? 'حدث خطأ' : 'Error occurred'));
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerHTML = '<i class="fa fa-check-circle me-2"></i>' + (isArabic ? 'تأكيد التسجيل' : 'Confirm Registration');
+                                        return;
+                                    }
+
+                                    var result = data.result;
+
+                                    if (!result.success) {
+                                        alert(result.error || (isArabic ? 'حدث خطأ في التسجيل' : 'Registration error'));
+                                        submitBtn.disabled = false;
+                                        submitBtn.innerHTML = '<i class="fa fa-check-circle me-2"></i>' + (isArabic ? 'تأكيد التسجيل' : 'Confirm Registration');
+                                        return;
+                                    }
+
+                                    // التوجيه حسب النتيجة
+                                    if (result.payment_url) {
+                                        window.location.href = result.payment_url;
+                                    } else if (result.needs_review) {
+                                        window.location.href = '/registration/pending/club/' + result.registration_id;
+                                    } else {
+                                        window.location.href = '/registration/success/club/' + result.registration_id;
+                                    }
+                                })
+                                .catch(function(error) {
+                                    console.error('Error:', error);
+                                    alert(isArabic ? 'حدث خطأ في الاتصال' : 'Connection error');
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerHTML = '<i class="fa fa-check-circle me-2"></i>' + (isArabic ? 'تأكيد التسجيل' : 'Confirm Registration');
+                                });
+                            }
+
+                            // التحقق من وجود ملف إسعاد
+                            var esaadFile = document.getElementById('esaad_card_file');
+                            if (esaadCheckbox &amp;&amp; esaadCheckbox.checked &amp;&amp; esaadFile &amp;&amp; esaadFile.files.length > 0) {
+                                var file = esaadFile.files[0];
+                                var reader = new FileReader();
+
+                                reader.onload = function(e) {
+                                    var base64 = e.target.result.split(',')[1];
+                                    requestData.esaad_card_file = base64;
+                                    requestData.esaad_card_filename = file.name;
+                                    sendRequest(requestData);
+                                };
+
+                                reader.readAsDataURL(file);
+                            } else {
+                                sendRequest(requestData);
+                            }
+                        });
+                    });
+                </script>
+            </t>
+        </template>
+
+        <!-- ==================== صفحة التسجيل قيد المراجعة ==================== -->
+        <template id="registration_pending" name="Registration Pending Review">
+            <t t-call="website.layout">
+                <t t-set="is_arabic" t-value="'ar' in request.env.lang"/>
+                <div class="pending-page" t-att-dir="is_arabic and 'rtl' or 'ltr'">
+                    <!-- Language Switcher -->
+                    <div class="header-right" style="position: absolute; top: 20px; left: 20px; z-index: 100;">
+                        <div class="lang-switcher">
+                            <t t-if="is_arabic">
+                                <a href="javascript:void(0)" onclick="switchToEnglish()" class="lang-btn-flag" style="background: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <span class="flag">🇬🇧</span>
+                                    <span class="text" style="color: #333;">English</span>
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <a href="javascript:void(0)" onclick="switchToArabic()" class="lang-btn-flag" style="background: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <span class="flag">🇦🇪</span>
+                                    <span class="text" style="color: #333;">العربية</span>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+
+                    <script>
+                    function switchToEnglish() {
+                        document.cookie = "frontend_lang=en_US;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+
+                    function switchToArabic() {
+                        document.cookie = "frontend_lang=ar_001;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+                    </script>
+
+                    <style>
+                        .pending-page {
+                            min-height: 100vh;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            padding: 40px 20px;
+                            position: relative;
+                        }
+
+                        .pending-container {
+                            max-width: 700px;
+                            margin: 0 auto;
+                        }
+
+                        .pending-card {
+                            background: white;
+                            border-radius: 24px;
+                            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                            overflow: hidden;
+                            animation: slideUp 0.6s ease-out;
+                        }
+
+                        @keyframes slideUp {
+                            from { opacity: 0; transform: translateY(30px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+
+                        .pending-header {
+                            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                            padding: 40px 30px;
+                            text-align: center;
+                        }
+
+                        .pending-icon {
+                            width: 100px;
+                            height: 100px;
+                            background: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 0 auto 20px;
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                            animation: pulse 2s infinite;
+                        }
+
+                        @keyframes pulse {
+                            0%, 100% { transform: scale(1); }
+                            50% { transform: scale(1.05); }
+                        }
+
+                        .pending-icon i {
+                            font-size: 50px;
+                            color: #f59e0b;
+                        }
+
+                        .pending-header h1 {
+                            color: white;
+                            font-size: 28px;
+                            font-weight: 700;
+                            margin: 0;
+                        }
+
+                        .pending-body {
+                            padding: 30px;
+                        }
+
+                        .reason-box {
+                            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+                            border-radius: 12px;
+                            padding: 20px;
+                            margin-bottom: 25px;
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 15px;
+                        }
+
+                        [dir="ltr"] .reason-box {
+                            border-left: 5px solid #f59e0b;
+                        }
+
+                        [dir="rtl"] .reason-box {
+                            border-right: 5px solid #f59e0b;
+                        }
+
+                        .reason-box i {
+                            font-size: 24px;
+                            color: #d97706;
+                        }
+
+                        .reason-content h4 {
+                            margin: 0 0 5px;
+                            color: #92400e;
+                            font-size: 16px;
+                        }
+
+                        .reason-content p {
+                            margin: 0;
+                            color: #a16207;
+                            font-size: 14px;
+                        }
+
+                        .info-section {
+                            background: #f8fafc;
+                            border-radius: 16px;
+                            padding: 25px;
+                            margin-bottom: 25px;
+                        }
+
+                        .info-section h3 {
+                            color: #1e293b;
+                            font-size: 18px;
+                            margin: 0 0 20px;
+                            padding-bottom: 12px;
+                            border-bottom: 2px solid #e2e8f0;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .info-section h3 i {
+                            color: #667eea;
+                        }
+
+                        .info-grid {
+                            display: grid;
+                            gap: 15px;
+                        }
+
+                        .info-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 12px 15px;
+                            background: white;
+                            border-radius: 10px;
+                            border: 1px solid #e2e8f0;
+                        }
+
+                        .info-label {
+                            color: #64748b;
+                            font-size: 14px;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+
+                        .info-label i {
+                            color: #94a3b8;
+                            width: 18px;
+                        }
+
+                        .info-value {
+                            color: #1e293b;
+                            font-weight: 600;
+                            font-size: 15px;
+                        }
+
+                        .steps-section {
+                            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+                            border-radius: 16px;
+                            padding: 25px;
+                            margin-bottom: 25px;
+                        }
+
+                        .steps-section h3 {
+                            color: #1e40af;
+                            font-size: 18px;
+                            margin: 0 0 20px;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .steps-list {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                        }
+
+                        .steps-list li {
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 15px;
+                            padding: 12px 0;
+                            border-bottom: 1px dashed #bfdbfe;
+                        }
+
+                        .steps-list li:last-child {
+                            border-bottom: none;
+                        }
+
+                        .step-number {
+                            width: 32px;
+                            height: 32px;
+                            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                            color: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 700;
+                            font-size: 14px;
+                            flex-shrink: 0;
+                        }
+
+                        .step-text {
+                            color: #1e40af;
+                            font-size: 14px;
+                            padding-top: 5px;
+                        }
+
+                        .contact-box {
+                            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+                            border-radius: 16px;
+                            padding: 25px;
+                            text-align: center;
+                        }
+
+                        .contact-box h4 {
+                            color: #047857;
+                            font-size: 16px;
+                            margin: 0 0 15px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 10px;
+                        }
+
+                        .contact-buttons {
+                            display: flex;
+                            gap: 15px;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                        }
+
+                        .contact-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            padding: 12px 24px;
+                            border-radius: 10px;
+                            font-weight: 600;
+                            font-size: 14px;
+                            text-decoration: none;
+                            transition: all 0.3s ease;
+                        }
+
+                        .contact-btn.phone {
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            color: white;
+                        }
+
+                        .contact-btn.whatsapp {
+                            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+                            color: white;
+                        }
+
+                        .pending-footer {
+                            padding: 25px 30px;
+                            background: #f8fafc;
+                            border-top: 1px solid #e2e8f0;
+                            text-align: center;
+                        }
+
+                        .home-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 10px;
+                            padding: 14px 35px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border-radius: 12px;
+                            font-weight: 600;
+                            font-size: 15px;
+                            text-decoration: none;
+                            transition: all 0.3s ease;
+                        }
+
+                        .home-btn:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+                            color: white;
+                        }
+
+                        .reg-number-badge {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            padding: 8px 20px;
+                            border-radius: 30px;
+                            font-size: 14px;
+                            margin-top: 15px;
+                        }
+
+                        .reg-number-badge strong {
+                            font-size: 18px;
+                        }
+                    </style>
+
+                    <div class="pending-container">
+                        <div class="pending-card">
+                            <!-- Header -->
+                            <div class="pending-header">
+                                <div class="pending-icon">
+                                    <i class="fa fa-clock-o"></i>
+                                </div>
+                                <h1>
+                                    <t t-if="is_arabic">التسجيل قيد المراجعة</t>
+                                    <t t-else="">Registration Under Review</t>
+                                </h1>
+                                <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0;">
+                                    <t t-if="is_arabic">تم استلام طلب التسجيل بنجاح وهو الآن قيد المراجعة</t>
+                                    <t t-else="">Registration request received successfully and is now under review</t>
+                                </p>
+                                <div class="reg-number-badge">
+                                    <i class="fa fa-hashtag"></i>
+                                    <t t-if="is_arabic">رقم التسجيل:</t>
+                                    <t t-else="">Registration #:</t>
+                                    <strong t-esc="registration.id"/>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="pending-body">
+                                <!-- سبب المراجعة -->
+                                <t t-if="registration.review_reason">
+                                    <div class="reason-box">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                        <div class="reason-content">
+                                            <h4>
+                                                <t t-if="is_arabic">سبب المراجعة</t>
+                                                <t t-else="">Review Reason</t>
+                                            </h4>
+                                            <p t-esc="registration.review_reason"/>
+                                        </div>
+                                    </div>
+                                </t>
+
+                                <!-- معلومات التسجيل -->
+                                <div class="info-section">
+                                    <h3>
+                                        <i class="fa fa-info-circle"></i>
+                                        <t t-if="is_arabic">معلومات التسجيل</t>
+                                        <t t-else="">Registration Information</t>
+                                    </h3>
+                                    <div class="info-grid">
+                                        <div class="info-row">
+                                            <span class="info-label">
+                                                <i class="fa fa-user"></i>
+                                                <t t-if="is_arabic">اسم الطالب</t>
+                                                <t t-else="">Student Name</t>
+                                            </span>
+                                            <span class="info-value" t-esc="registration.full_name"/>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">
+                                                <i class="fa fa-futbol-o"></i>
+                                                <t t-if="is_arabic">النادي</t>
+                                                <t t-else="">Club</t>
+                                            </span>
+                                            <span class="info-value" t-esc="registration.club_id.name"/>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">
+                                                <i class="fa fa-calendar"></i>
+                                                <t t-if="is_arabic">الترم</t>
+                                                <t t-else="">Term</t>
+                                            </span>
+                                            <span class="info-value" t-esc="registration.term_id.name"/>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="info-label">
+                                                <i class="fa fa-clock-o"></i>
+                                                <t t-if="is_arabic">تاريخ التسجيل</t>
+                                                <t t-else="">Registration Date</t>
+                                            </span>
+                                            <span class="info-value" t-esc="registration.create_date" t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy hh:mm'}"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- الخطوات القادمة -->
+                                <div class="steps-section">
+                                    <h3>
+                                        <i class="fa fa-list-ol"></i>
+                                        <t t-if="is_arabic">الخطوات القادمة</t>
+                                        <t t-else="">Next Steps</t>
+                                    </h3>
+                                    <ul class="steps-list">
+                                        <li>
+                                            <span class="step-number">1</span>
+                                            <span class="step-text">
+                                                <t t-if="is_arabic">سيقوم فريق الإدارة بمراجعة بيانات التسجيل</t>
+                                                <t t-else="">Management team will review the registration data</t>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span class="step-number">2</span>
+                                            <span class="step-text">
+                                                <t t-if="is_arabic">قد يتم التواصل معك للتحقق من بعض المعلومات</t>
+                                                <t t-else="">You may be contacted to verify some information</t>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span class="step-number">3</span>
+                                            <span class="step-text">
+                                                <t t-if="is_arabic">سيتم إشعارك بقرار الإدارة (الموافقة أو طلب تعديل البيانات)</t>
+                                                <t t-else="">You will be notified of the decision (approval or data modification request)</t>
+                                            </span>
+                                        </li>
+                                        <li>
+                                            <span class="step-number">4</span>
+                                            <span class="step-text">
+                                                <t t-if="is_arabic">في حال الموافقة، يمكنك إتمام عملية الدفع</t>
+                                                <t t-else="">If approved, you can complete the payment process</t>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- معلومات التواصل -->
+                                <div class="contact-box">
+                                    <h4>
+                                        <i class="fa fa-headphones"></i>
+                                        <t t-if="is_arabic">للاستفسارات</t>
+                                        <t t-else="">For Inquiries</t>
+                                    </h4>
+                                    <div class="contact-buttons">
+                                        <a href="tel:+97123456789" class="contact-btn phone">
+                                            <i class="fa fa-phone"></i>
+                                            <t t-if="is_arabic">اتصل بنا</t>
+                                            <t t-else="">Call Us</t>
+                                        </a>
+                                        <a href="https://wa.me/97123456789" target="_blank" class="contact-btn whatsapp">
+                                            <i class="fa fa-whatsapp"></i>
+                                            <t t-if="is_arabic">واتساب</t>
+                                            <t t-else="">WhatsApp</t>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="pending-footer">
+                                <a href="/" class="home-btn">
+                                    <i class="fa fa-home"></i>
+                                    <t t-if="is_arabic">العودة للرئيسية</t>
+                                    <t t-else="">Back to Home</t>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- ==================== صفحة نجاح التسجيل ==================== -->
+        <template id="registration_success" name="Registration Success">
+            <t t-call="website.layout">
+                <t t-set="is_arabic" t-value="'ar' in request.env.lang"/>
+                <div class="success-page" t-att-dir="is_arabic and 'rtl' or 'ltr'">
+                    <!-- Language Switcher -->
+                    <div class="header-right" style="position: absolute; top: 20px; left: 20px; z-index: 100;">
+                        <div class="lang-switcher">
+                            <t t-if="is_arabic">
+                                <a href="javascript:void(0)" onclick="switchToEnglish()" class="lang-btn-flag" style="background: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <span class="flag">🇬🇧</span>
+                                    <span class="text" style="color: #333;">English</span>
+                                </a>
+                            </t>
+                            <t t-else="">
+                                <a href="javascript:void(0)" onclick="switchToArabic()" class="lang-btn-flag" style="background: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                                    <span class="flag">🇦🇪</span>
+                                    <span class="text" style="color: #333;">العربية</span>
+                                </a>
+                            </t>
+                        </div>
+                    </div>
+
+                    <script>
+                    function switchToEnglish() {
+                        document.cookie = "frontend_lang=en_US;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+
+                    function switchToArabic() {
+                        document.cookie = "frontend_lang=ar_001;path=/;SameSite=Lax";
+                        window.location.reload();
+                    }
+                    </script>
+
+                    <style>
+                        .success-page {
+                            min-height: 100vh;
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            padding: 40px 20px;
+                            position: relative;
+                        }
+
+                        .success-container {
+                            max-width: 700px;
+                            margin: 0 auto;
+                        }
+
+                        .success-card {
+                            background: white;
+                            border-radius: 24px;
+                            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                            overflow: hidden;
+                            animation: slideUp 0.6s ease-out;
+                        }
+
+                        @keyframes slideUp {
+                            from { opacity: 0; transform: translateY(30px); }
+                            to { opacity: 1; transform: translateY(0); }
+                        }
+
+                        .success-header {
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            padding: 50px 30px;
+                            text-align: center;
+                            position: relative;
+                            overflow: hidden;
+                        }
+
+                        .success-header::before,
+                        .success-header::after {
+                            content: '🎉';
+                            position: absolute;
+                            font-size: 40px;
+                            animation: confetti 2s ease-in-out infinite;
+                        }
+
+                        .success-header::before { left: 20%; top: 20px; }
+                        .success-header::after { right: 20%; top: 30px; animation-delay: 0.5s; }
+
+                        @keyframes confetti {
+                            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                            100% { transform: translateY(-20px) rotate(360deg); opacity: 0; }
+                        }
+
+                        .success-icon {
+                            width: 120px;
+                            height: 120px;
+                            background: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 0 auto 25px;
+                            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+                            animation: checkmark 0.8s ease-out;
+                        }
+
+                        @keyframes checkmark {
+                            0% { transform: scale(0); }
+                            50% { transform: scale(1.2); }
+                            100% { transform: scale(1); }
+                        }
+
+                        .success-icon i {
+                            font-size: 60px;
+                            color: #10b981;
+                        }
+
+                        .success-header h1 {
+                            color: white;
+                            font-size: 32px;
+                            font-weight: 700;
+                            margin: 0;
+                        }
+
+                        .success-body {
+                            padding: 35px;
+                        }
+
+                        .congrats-message {
+                            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+                            border-radius: 16px;
+                            padding: 25px;
+                            text-align: center;
+                            margin-bottom: 30px;
+                        }
+
+                        .congrats-message h3 {
+                            color: #047857;
+                            font-size: 20px;
+                            margin: 0 0 10px;
+                        }
+
+                        .congrats-message p {
+                            color: #065f46;
+                            margin: 0;
+                            font-size: 15px;
+                        }
+
+                        .success-info-section {
+                            background: #f8fafc;
+                            border-radius: 16px;
+                            padding: 25px;
+                            margin-bottom: 25px;
+                        }
+
+                        .success-info-section h3 {
+                            color: #1e293b;
+                            font-size: 18px;
+                            margin: 0 0 20px;
+                            padding-bottom: 12px;
+                            border-bottom: 2px solid #e2e8f0;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .success-info-section h3 i {
+                            color: #10b981;
+                        }
+
+                        .success-info-grid {
+                            display: grid;
+                            gap: 12px;
+                        }
+
+                        .success-info-row {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 14px 18px;
+                            background: white;
+                            border-radius: 12px;
+                            border: 1px solid #e2e8f0;
+                        }
+
+                        .success-info-label {
+                            color: #64748b;
+                            font-size: 14px;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .success-info-label i {
+                            color: #10b981;
+                            width: 20px;
+                        }
+
+                        .success-info-value {
+                            color: #1e293b;
+                            font-weight: 600;
+                            font-size: 15px;
+                        }
+
+                        .next-steps-success {
+                            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                            border-radius: 16px;
+                            padding: 25px;
+                        }
+
+                        [dir="rtl"] .next-steps-success {
+                            border-right: 5px solid #10b981;
+                        }
+
+                        [dir="ltr"] .next-steps-success {
+                            border-left: 5px solid #10b981;
+                        }
+
+                        .next-steps-success h3 {
+                            color: #166534;
+                            font-size: 18px;
+                            margin: 0 0 15px;
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                        }
+
+                        .next-steps-success ul {
+                            list-style: none;
+                            padding: 0;
+                            margin: 0;
+                        }
+
+                        .next-steps-success li {
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 10px 0;
+                            color: #15803d;
+                            font-size: 14px;
+                        }
+
+                        .next-steps-success li i {
+                            color: #10b981;
+                            font-size: 16px;
+                        }
+
+                        .success-footer {
+                            padding: 30px 35px;
+                            background: #f8fafc;
+                            border-top: 1px solid #e2e8f0;
+                            display: flex;
+                            gap: 15px;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                        }
+
+                        .success-btn {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 10px;
+                            padding: 15px 30px;
+                            border-radius: 12px;
+                            font-weight: 600;
+                            font-size: 15px;
+                            text-decoration: none;
+                            transition: all 0.3s ease;
+                        }
+
+                        .success-btn.primary {
+                            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                            color: white;
+                        }
+
+                        .success-btn.secondary {
+                            background: white;
+                            color: #374151;
+                            border: 2px solid #e5e7eb;
+                        }
+
+                        .success-badge {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 10px;
+                            background: rgba(255,255,255,0.2);
+                            color: white;
+                            padding: 12px 25px;
+                            border-radius: 30px;
+                            font-size: 16px;
+                            margin-top: 20px;
+                        }
+
+                        .success-badge strong {
+                            font-size: 22px;
+                        }
+                    </style>
+
+                    <div class="success-container">
+                        <div class="success-card">
+                            <!-- Header -->
+                            <div class="success-header">
+                                <div class="success-icon">
+                                    <i class="fa fa-check"></i>
+                                </div>
+                                <h1>
+                                    <t t-if="is_arabic">تم التسجيل بنجاح! 🎉</t>
+                                    <t t-else="">Registration Successful! 🎉</t>
+                                </h1>
+                                <p style="color: rgba(255,255,255,0.95); margin: 15px 0 0; font-size: 18px;">
+                                    <t t-if="is_arabic">مبروك! تم تسجيل الطالب في النادي بنجاح</t>
+                                    <t t-else="">Congratulations! Student has been registered successfully</t>
+                                </p>
+                                <div class="success-badge">
+                                    <i class="fa fa-ticket"></i>
+                                    <t t-if="is_arabic">رقم التسجيل:</t>
+                                    <t t-else="">Registration #:</t>
+                                    <strong t-esc="registration.id"/>
+                                </div>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="success-body">
+                                <!-- رسالة تهنئة -->
+                                <div class="congrats-message">
+                                    <h3>
+                                        <t t-if="is_arabic">🌟 أهلاً بك في عائلتنا!</t>
+                                        <t t-else="">🌟 Welcome to Our Family!</t>
+                                    </h3>
+                                    <p>
+                                        <t t-if="is_arabic">نتطلع لرؤية</t>
+                                        <t t-else="">We look forward to seeing</t>
+                                        <strong t-esc="registration.full_name"/>
+                                        <t t-if="is_arabic"> في النادي قريباً</t>
+                                        <t t-else=""> at the club soon</t>
+                                    </p>
+                                </div>
+
+                                <!-- معلومات التسجيل -->
+                                <div class="success-info-section">
+                                    <h3>
+                                        <i class="fa fa-info-circle"></i>
+                                        <t t-if="is_arabic">تفاصيل التسجيل</t>
+                                        <t t-else="">Registration Details</t>
+                                    </h3>
+                                    <div class="success-info-grid">
+                                        <div class="success-info-row">
+                                            <span class="success-info-label">
+                                                <i class="fa fa-user"></i>
+                                                <t t-if="is_arabic">اسم الطالب</t>
+                                                <t t-else="">Student Name</t>
+                                            </span>
+                                            <span class="success-info-value" t-esc="registration.full_name"/>
+                                        </div>
+                                        <div class="success-info-row">
+                                            <span class="success-info-label">
+                                                <i class="fa fa-futbol-o"></i>
+                                                <t t-if="is_arabic">النادي</t>
+                                                <t t-else="">Club</t>
+                                            </span>
+                                            <span class="success-info-value" t-esc="registration.club_id.name"/>
+                                        </div>
+                                        <div class="success-info-row">
+                                            <span class="success-info-label">
+                                                <i class="fa fa-calendar"></i>
+                                                <t t-if="is_arabic">الترم</t>
+                                                <t t-else="">Term</t>
+                                            </span>
+                                            <span class="success-info-value" t-esc="registration.term_id.name"/>
+                                        </div>
+                                        <div class="success-info-row">
+                                            <span class="success-info-label">
+                                                <i class="fa fa-clock-o"></i>
+                                                <t t-if="is_arabic">تاريخ التسجيل</t>
+                                                <t t-else="">Registration Date</t>
+                                            </span>
+                                            <span class="success-info-value" t-esc="registration.create_date" t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy'}"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- الخطوات القادمة -->
+                                <div class="next-steps-success">
+                                    <h3>
+                                        <i class="fa fa-rocket"></i>
+                                        <t t-if="is_arabic">ماذا بعد؟</t>
+                                        <t t-else="">What's Next?</t>
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            <i class="fa fa-check-circle"></i>
+                                            <t t-if="is_arabic">سيتم إرسال تأكيد التسجيل على البريد الإلكتروني</t>
+                                            <t t-else="">Registration confirmation will be sent to your email</t>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check-circle"></i>
+                                            <t t-if="is_arabic">سيتم التواصل معك لتأكيد موعد البدء</t>
+                                            <t t-else="">You will be contacted to confirm the start date</t>
+                                        </li>
+                                        <li>
+                                            <i class="fa fa-check-circle"></i>
+                                            <t t-if="is_arabic">يرجى الحضور قبل موعد الحصة بـ 10 دقائق</t>
+                                            <t t-else="">Please arrive 10 minutes before the session</t>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="success-footer">
+                                <a href="/" class="success-btn primary">
+                                    <i class="fa fa-home"></i>
+                                    <t t-if="is_arabic">العودة للرئيسية</t>
+                                    <t t-else="">Back to Home</t>
+                                </a>
+                                <a t-attf-href="/registration/club/#{registration.club_id.id}/search" class="success-btn secondary">
+                                    <i class="fa fa-plus"></i>
+                                    <t t-if="is_arabic">تسجيل طالب آخر</t>
+                                    <t t-else="">Register Another Student</t>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

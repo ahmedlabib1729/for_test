@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="category_report_main">
+        <t t-call="tax_invoice_report.tax_invoice_custom_header_footer">
+            <!--            <t t-call="web.html_container">-->
+            <!--                <t t-call="web.basic_layout">-->
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com"/>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500&amp;display=swap"
+                  rel="stylesheet"/>
+            <div class="page" style="font-family: certification-serif;margin-top:50px !important;">
+                <table style="width:100%;border-right:0px;border-left:0px;border-to:0px;border-bottom:0px;"
+                       border="0">
+                    <tbody>
+
+                        <tr style="border-right:0px;border-left:0px;border-to:0px;border-bottom:0px;">
+                            <td style="width:50%;border-right:0px;border-left:0px;border-to:0px;border-bottom:0px;"
+                                class="text-left" t-if="form['date_from']">
+                                From Date :
+                                <span t-esc="form['date_from']" style="margin-left:5px;"/>
+
+                            </td>
+                            <td style="width:50%;border-right:0px;border-left:0px;border-to:0px;border-bottom:0px;"
+                                class="text-left" t-if="form['date_to']">
+                                To Date :
+                                <span t-esc="form['date_to']" style="margin-left:5px;"/>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="invoice_table" style="margin-top:50px;border:1px solid black;width:100%;">
+                    <thead>
+                        <tr class="text-center" style="font-size:16px;vertical-align: middle;background:#EFECEC;">
+                            <th style="border:1px solid black;width:40%;vertical-align: middle;">DEPARTMENT
+                            </th>
+                            <th style="border:1px solid black;width:20%;vertical-align: middle;">TOTAL GOV FEE
+                            </th>
+                            <th style="border:1px solid black;width:20%;vertical-align: middle;">TOTAL TYPING FEE
+                            </th>
+                            <th style="border:1px solid black;width:10%;vertical-align: middle;">TOTAL VAT
+                            </th>
+                            <th style="border:1px solid black;width:10%;vertical-align: middle;">ITEMS COUNT
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 16px;">
+                        <t t-set="total_gov_fee" t-value="0"/>
+                        <t t-set="total_type_fee" t-value="0"/>
+                        <t t-set="total_vat" t-value="0"/>
+                        <t t-set="total_count" t-value="0"/>
+                        <tr class="text-center" style="font-size: 16px;" t-foreach="lines" t-as="line">
+                            <td style="border: 1px solid black;">
+                                <span t-esc="line[0]"/>
+                            </td>
+                            <td style="border: 1px solid black;">
+                                <t>
+                                    <span t-esc="round(line[1],2)"/>
+                                </t>
+                            </td>
+                            <td style="border: 1px solid black;">
+                                <span t-esc="round(line[2],2)"/>
+                            </td>
+                            <td style="border: 1px solid black;">
+                                <t>
+                                    <span t-esc="round(line[3],2)"/>
+
+                                </t>
+                            </td>
+                            <td style="border: 1px solid black;">
+                                <span t-esc="line[4]"/>
+                            </td>
+                            <t t-set="total_gov_fee" t-value="total_gov_fee + line[1]"/>
+                            <t t-set="total_type_fee" t-value="total_type_fee + line[2]"/>
+                            <t t-set="total_vat" t-value="total_vat + line[3]"/>
+                            <t t-set="total_count" t-value="total_count + line[4]"/>
+                        </tr>
+                        <tr class="text-center" style="font-size: 16px;">
+                            <td>
+
+                            </td>
+                            <td class="text-center">
+                                <span t-esc="round(total_gov_fee,2)"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-esc="round(total_type_fee,2)"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-esc="round(total_vat,2)"/>
+                            </td>
+                            <td class="text-center">
+                                <span t-esc="total_count"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+        <style>
+            table, th, td {
+            border: 1px solid black;
+            }
+        </style>
+        <!--            </t>-->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Changa:wght@800&amp;family=Noto+Kufi+Arabic:wght@500&amp;display=swap');
+            table.invoice_table { width: 100%; background-color: #ffffff; border-collapse: collapse; border-width:
+            1px; border-color: #000000; border-style: solid #304899; color: #000000; padding:3px; margin-top:10px }
+            table.invoice_table td, table.invoice_table th { border-width: 1px; border-color: #000000; border-style:
+            solid #304899; padding: 0px; padding:3px; } table.invoice_table thead { background-color: #eeeeec;
+            padding:3px;
+            }
+        </style>
+        <!--        </t>-->
+    </template>
+
+    <template id="get_lang_temp">
+        <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name"
+             t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-raw="0"/>
+        </div>
+    </template>
+
+    <template id="category_report_template_id">
+        <t t-call="web.html_container">
+            <t t-call="tax_invoice_report.category_report_main">
+            </t>
+        </t>
+    </template>
+    <record id="paperformat_category_report" model="report.paperformat">
+        <field name="name">Report Format</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="orientation">Portrait</field>
+        <field name="page_height">400</field>
+        <field name="page_width">300</field>
+        <field name="margin_top">80</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">70</field>
+        <field name="dpi">90</field>
+    </record>
+    <record id="category_report_analysis" model="ir.actions.report">
+        <field name="name">category Report</field>
+        <field name="model">category.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tax_invoice_report.category_report_template_id</field>
+        <field name="report_file">tax_invoice_report.category_report_template_id</field>
+        <field name="binding_model_id" ref="tax_invoice_report.model_category_report_wizard"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tax_invoice_report.paperformat_category_report"/>
+    </record>
+</odoo>

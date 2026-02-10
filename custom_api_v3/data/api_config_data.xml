@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Default API Configuration -->
+        <record id="default_api_config" model="api.config">
+            <field name="name">Default API Configuration</field>
+            <field name="is_active">True</field>
+            <field name="rate_limit">60</field>
+            <field name="notes">Default API configuration. Please regenerate the API key and share it securely with external systems.</field>
+        </record>
+    </data>
+</odoo>

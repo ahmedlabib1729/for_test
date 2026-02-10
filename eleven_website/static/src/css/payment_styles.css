@@ -1,0 +1,1062 @@
+/* ==========================================
+   PAYMENT METHOD SECTION - CUSTOM STYLING
+   ========================================== */
+
+/* Override Odoo's default payment form styling */
+#eleven_payment_form_container {
+    background: transparent;
+}
+
+#eleven_payment_form_container .o_payment_form {
+    background: transparent;
+    padding: 0;
+}
+
+/* Section Title */
+#eleven_payment_form_container h4,
+#eleven_payment_form_container .h4,
+#eleven_payment_form_container h3 {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #666 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 2px solid #f0f0f0 !important;
+}
+
+/* Payment Method Cards Container */
+#eleven_payment_form_container .list-group,
+#eleven_payment_form_container [name="o_payment_radio"] {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Each Payment Method Card */
+#eleven_payment_form_container .list-group-item,
+#eleven_payment_form_container .o_payment_option_card {
+    background: #ffffff !important;
+    border: 2px solid #e8e8e8 !important;
+    border-radius: 16px !important;
+    padding: 20px 24px !important;
+    margin: 0 !important;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+#eleven_payment_form_container .list-group-item::before,
+#eleven_payment_form_container .o_payment_option_card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: transparent;
+    transition: background 0.3s ease;
+}
+
+#eleven_payment_form_container .list-group-item:hover,
+#eleven_payment_form_container .o_payment_option_card:hover {
+    border-color: #c8a165 !important;
+    box-shadow: 0 4px 20px rgba(200, 161, 101, 0.15) !important;
+    transform: translateY(-2px);
+}
+
+/* Selected Payment Method */
+#eleven_payment_form_container .list-group-item.active,
+#eleven_payment_form_container .list-group-item:has(input:checked),
+#eleven_payment_form_container .o_payment_option_card.active,
+#eleven_payment_form_container .o_payment_option_card:has(input:checked) {
+    border-color: #c8a165 !important;
+    background: linear-gradient(135deg, #fffbf5 0%, #fff9f0 100%) !important;
+    box-shadow: 0 4px 20px rgba(200, 161, 101, 0.2) !important;
+}
+
+#eleven_payment_form_container .list-group-item.active::before,
+#eleven_payment_form_container .list-group-item:has(input:checked)::before,
+#eleven_payment_form_container .o_payment_option_card.active::before,
+#eleven_payment_form_container .o_payment_option_card:has(input:checked)::before {
+    background: linear-gradient(180deg, #c8a165, #b8956a);
+}
+
+/* Radio Button Styling */
+#eleven_payment_form_container input[type="radio"] {
+    width: 22px !important;
+    height: 22px !important;
+    border: 2px solid #d0d0d0 !important;
+    border-radius: 50% !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0;
+}
+
+#eleven_payment_form_container input[type="radio"]:checked {
+    border-color: #c8a165 !important;
+    background: #c8a165 !important;
+}
+
+#eleven_payment_form_container input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* Payment Method Label/Name */
+#eleven_payment_form_container .o_payment_option_label,
+#eleven_payment_form_container label {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #1a1a2e !important;
+    margin-left: 15px !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Payment Method Icon/Logo */
+#eleven_payment_form_container .o_payment_option_label img,
+#eleven_payment_form_container img[src*="payment"] {
+    width: 50px !important;
+    height: 32px !important;
+    object-fit: contain !important;
+    border-radius: 6px;
+    background: #f8f9fa;
+    padding: 4px;
+}
+
+/* Provider Logo on the right */
+#eleven_payment_form_container .float-end,
+#eleven_payment_form_container .ms-auto {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#eleven_payment_form_container .float-end img,
+#eleven_payment_form_container .ms-auto img {
+    width: 45px !important;
+    height: 30px !important;
+    object-fit: contain !important;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 5px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Secured By Text */
+#eleven_payment_form_container .text-muted,
+#eleven_payment_form_container small {
+    font-size: 12px !important;
+    color: #28a745 !important;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#eleven_payment_form_container .text-muted::before,
+#eleven_payment_form_container small::before {
+    content: '\f023';
+    font-family: 'Font Awesome 5 Free', 'FontAwesome';
+    font-weight: 900;
+    font-size: 10px;
+}
+
+/* Warning Icon for Demo */
+#eleven_payment_form_container .fa-warning,
+#eleven_payment_form_container .fa-exclamation-triangle {
+    color: #ffc107 !important;
+    font-size: 14px;
+}
+
+/* Pay Button */
+#eleven_payment_form_container button[type="submit"],
+#eleven_payment_form_container .o_payment_submit,
+#eleven_payment_form_container #o_payment_submit_button {
+    background: linear-gradient(135deg, #c8a165 0%, #b8956a 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 16px 40px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+    text-transform: none !important;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 15px rgba(200, 161, 101, 0.3) !important;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#eleven_payment_form_container button[type="submit"]:hover,
+#eleven_payment_form_container .o_payment_submit:hover,
+#eleven_payment_form_container #o_payment_submit_button:hover {
+    background: linear-gradient(135deg, #b8956a 0%, #a88559 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(200, 161, 101, 0.4) !important;
+}
+
+#eleven_payment_form_container button[type="submit"]:active,
+#eleven_payment_form_container .o_payment_submit:active {
+    transform: translateY(0);
+}
+
+/* Inline Form (Card Details) */
+#eleven_payment_form_container .o_payment_inline_form,
+#eleven_payment_form_container .card-body {
+    background: #f8f9fa !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    margin-top: 15px !important;
+    border: 1px solid #e8e8e8 !important;
+}
+
+#eleven_payment_form_container .o_payment_inline_form label {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #666 !important;
+    margin-bottom: 6px !important;
+    margin-left: 0 !important;
+}
+
+#eleven_payment_form_container .o_payment_inline_form input,
+#eleven_payment_form_container .o_payment_inline_form select {
+    border: 2px solid #e0e0e0 !important;
+    border-radius: 10px !important;
+    padding: 12px 15px !important;
+    font-size: 15px !important;
+    transition: all 0.3s ease !important;
+    background: white !important;
+}
+
+#eleven_payment_form_container .o_payment_inline_form input:focus,
+#eleven_payment_form_container .o_payment_inline_form select:focus {
+    border-color: #c8a165 !important;
+    box-shadow: 0 0 0 3px rgba(200, 161, 101, 0.15) !important;
+    outline: none !important;
+}
+
+/* Token/Saved Cards */
+#eleven_payment_form_container .o_payment_token_card {
+    background: #f0f7ff !important;
+    border: 2px solid #b8daff !important;
+    border-radius: 12px !important;
+    padding: 15px 20px !important;
+}
+
+/* Error Messages */
+#eleven_payment_form_container .alert-danger {
+    background: #fff5f5 !important;
+    border: 1px solid #ffcdd2 !important;
+    border-radius: 10px !important;
+    color: #c62828 !important;
+    padding: 12px 16px !important;
+}
+
+/* Loading State */
+#eleven_payment_form_container .o_payment_submit.disabled,
+#eleven_payment_form_container button[disabled] {
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #eleven_payment_form_container .list-group-item,
+    #eleven_payment_form_container .o_payment_option_card {
+        padding: 15px 18px !important;
+    }
+
+    #eleven_payment_form_container .o_payment_option_label,
+    #eleven_payment_form_container label {
+        font-size: 14px !important;
+    }
+
+    #eleven_payment_form_container button[type="submit"] {
+        padding: 14px 30px !important;
+        font-size: 15px !important;
+    }
+}
+
+/* ==========================================
+   ADDITIONAL CHECKOUT STYLING
+   ========================================== */
+
+/* Progress Steps Enhancement */
+.eleven_checkout_steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    padding: 25px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.eleven_step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.eleven_step .step_number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8e8e8, #d8d8d8);
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.eleven_step .step_label {
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.eleven_step.active .step_number {
+    background: linear-gradient(135deg, #c8a165, #b8956a);
+    color: white;
+    box-shadow: 0 5px 20px rgba(200, 161, 101, 0.4);
+    transform: scale(1.05);
+}
+
+.eleven_step.active .step_label {
+    color: #c8a165;
+    font-weight: 600;
+}
+
+.eleven_step.completed .step_number {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.eleven_step.completed .step_label {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.eleven_step_line {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #e8e8e8, #d8d8d8);
+    margin: 0 20px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.eleven_step_line.completed {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+.eleven_step_line.completed::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    100% { left: 100%; }
+}
+
+/* Address Summary Box */
+.eleven_address_summary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    border: 1px solid #e8e8e8 !important;
+}
+
+.eleven_address_preview {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.eleven_address_preview strong {
+    font-size: 16px;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.eleven_address_preview p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.eleven_change_link {
+    color: #c8a165;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.eleven_change_link:hover {
+    color: #b8956a;
+    text-decoration: none;
+}
+
+.eleven_change_link::after {
+    content: '→';
+    transition: transform 0.3s ease;
+}
+
+.eleven_change_link:hover::after {
+    transform: translateX(3px);
+}
+
+
+
+
+
+
+
+
+
+/* ==========================================
+   ORDER CONFIRMATION PAGE STYLES
+   ========================================== */
+
+.eleven_confirmation_section {
+    padding: 40px 0 80px;
+    background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+    min-height: 100vh;
+}
+
+/* Main Confirmation Card */
+.eleven_confirmation_card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 10px 60px rgba(0, 0, 0, 0.08);
+    padding: 50px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.eleven_confirmation_card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #28a745, #20c997, #c8a165);
+}
+
+/* Success Animation */
+.eleven_success_animation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.eleven_success_checkmark {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    position: relative;
+    box-shadow: 0 10px 40px rgba(40, 167, 69, 0.3);
+    animation: scaleIn 0.5s ease-out;
+}
+
+.eleven_checkmark_circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: transparent;
+    border: 4px solid rgba(255,255,255,0.3);
+}
+
+.eleven_checkmark_stem {
+    position: absolute;
+    width: 4px;
+    height: 30px;
+    background: white;
+    left: 55px;
+    top: 35px;
+    transform: rotate(45deg);
+    border-radius: 2px;
+    animation: stemGrow 0.3s ease-out 0.3s both;
+}
+
+.eleven_checkmark_kick {
+    position: absolute;
+    width: 4px;
+    height: 15px;
+    background: white;
+    left: 35px;
+    top: 50px;
+    transform: rotate(-45deg);
+    border-radius: 2px;
+    animation: kickGrow 0.3s ease-out 0.5s both;
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes stemGrow {
+    0% { height: 0; }
+    100% { height: 30px; }
+}
+
+@keyframes kickGrow {
+    0% { height: 0; }
+    100% { height: 15px; }
+}
+
+/* Thank You Message */
+.eleven_thank_you {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.eleven_thank_you h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+    animation: fadeInUp 0.5s ease-out 0.3s both;
+}
+
+.eleven_thank_you .eleven_subtitle {
+    font-size: 18px;
+    color: #666;
+    animation: fadeInUp 0.5s ease-out 0.4s both;
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Order Number Badge */
+.eleven_order_badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 16px;
+    padding: 20px 40px;
+    margin: 0 auto 30px;
+    width: fit-content;
+    animation: fadeInUp 0.5s ease-out 0.5s both;
+}
+
+.eleven_badge_label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.eleven_badge_value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #c8a165;
+    letter-spacing: 2px;
+}
+
+/* Email Notice */
+.eleven_email_notice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border: 1px solid #c8e6c9;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.5s ease-out 0.6s both;
+}
+
+.eleven_email_notice i {
+    font-size: 20px;
+    color: #28a745;
+}
+
+.eleven_email_notice p {
+    margin: 0;
+    font-size: 14px;
+    color: #2e7d32;
+}
+
+.eleven_email_notice strong {
+    color: #1b5e20;
+}
+
+/* Info Cards Grid */
+.eleven_confirmation_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.eleven_info_card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+}
+
+.eleven_info_card:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+}
+
+.eleven_info_header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e8e8e8;
+}
+
+.eleven_info_icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+}
+
+.eleven_info_icon.shipping {
+    background: linear-gradient(135deg, #2196F3, #1976D2);
+}
+
+.eleven_info_icon.payment {
+    background: linear-gradient(135deg, #c8a165, #b8956a);
+}
+
+.eleven_info_header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+}
+
+.eleven_info_content p {
+    margin: 0 0 5px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.eleven_customer_name {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #1a1a2e !important;
+    margin-bottom: 10px !important;
+}
+
+.eleven_phone {
+    margin-top: 10px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.eleven_phone i {
+    color: #28a745;
+}
+
+.eleven_payment_method {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #1a1a2e !important;
+}
+
+.eleven_status_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.eleven_status_badge.success {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Order Items Card */
+.eleven_order_items_card {
+    background: #ffffff;
+    border: 2px solid #e8e8e8;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 40px;
+}
+
+.eleven_items_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-bottom: 2px solid #e8e8e8;
+}
+
+.eleven_items_header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eleven_items_header h3 i {
+    color: #c8a165;
+}
+
+.eleven_items_count {
+    font-size: 14px;
+    color: #888;
+    background: #e8e8e8;
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.eleven_items_list {
+    padding: 10px 0;
+}
+
+.eleven_order_item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.3s ease;
+}
+
+.eleven_order_item:last-child {
+    border-bottom: none;
+}
+
+.eleven_order_item:hover {
+    background: #fafafa;
+}
+
+.eleven_order_item .eleven_item_image {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8f9fa;
+    flex-shrink: 0;
+}
+
+.eleven_order_item .eleven_item_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.eleven_order_item .eleven_item_info {
+    flex: 1;
+}
+
+.eleven_order_item .eleven_item_info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 5px;
+}
+
+.eleven_item_variant {
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 5px !important;
+}
+
+.eleven_item_qty {
+    font-size: 14px;
+    color: #666;
+    margin: 0 !important;
+}
+
+.eleven_order_item .eleven_item_price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #c8a165;
+}
+
+/* Order Totals */
+.eleven_order_totals {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    border-top: 2px solid #e8e8e8;
+}
+
+.eleven_total_line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    font-size: 15px;
+    color: #666;
+}
+
+.eleven_total_line.eleven_grand_total {
+    padding-top: 15px;
+    margin-top: 10px;
+    border-top: 2px dashed #e0e0e0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a2e;
+}
+
+.eleven_total_line.eleven_grand_total span:last-child {
+    color: #c8a165;
+    font-size: 24px;
+}
+
+.eleven_free {
+    color: #28a745 !important;
+    font-weight: 600;
+}
+
+/* What's Next Section */
+.eleven_whats_next {
+    background: linear-gradient(135deg, #f0f7ff, #e8f4fd);
+    border: 1px solid #b8daff;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+}
+
+.eleven_whats_next h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eleven_whats_next h3 i {
+    color: #2196F3;
+}
+
+.eleven_next_steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.eleven_next_step {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.eleven_next_step .eleven_step_icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #2196F3;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+}
+
+.eleven_next_step .eleven_step_text h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0 0 5px;
+}
+
+.eleven_next_step .eleven_step_text p {
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Action Buttons */
+.eleven_confirmation_actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.eleven_confirmation_actions .eleven_btn {
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.eleven_confirmation_actions .eleven_btn_primary {
+    background: linear-gradient(135deg, #c8a165, #b8956a);
+    color: white;
+    box-shadow: 0 4px 15px rgba(200, 161, 101, 0.3);
+}
+
+.eleven_confirmation_actions .eleven_btn_primary:hover {
+    background: linear-gradient(135deg, #b8956a, #a88559);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(200, 161, 101, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.eleven_confirmation_actions .eleven_btn_secondary {
+    background: white;
+    color: #1a1a2e;
+    border: 2px solid #e0e0e0;
+}
+
+.eleven_confirmation_actions .eleven_btn_secondary:hover {
+    border-color: #c8a165;
+    color: #c8a165;
+    text-decoration: none;
+}
+
+/* Support Notice */
+.eleven_support_notice {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.eleven_support_notice p {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.eleven_support_notice i {
+    color: #c8a165;
+}
+
+.eleven_support_notice a {
+    color: #c8a165;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.eleven_support_notice a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .eleven_confirmation_card {
+        padding: 30px 20px;
+        margin: 0 15px;
+        border-radius: 20px;
+    }
+
+    .eleven_thank_you h1 {
+        font-size: 24px;
+    }
+
+    .eleven_confirmation_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eleven_next_steps {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .eleven_confirmation_actions {
+        flex-direction: column;
+    }
+
+    .eleven_confirmation_actions .eleven_btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .eleven_order_item {
+        flex-wrap: wrap;
+    }
+
+    .eleven_order_item .eleven_item_price {
+        width: 100%;
+        text-align: right;
+        margin-top: 10px;
+    }
+
+    .eleven_badge_value {
+        font-size: 22px;
+    }
+}

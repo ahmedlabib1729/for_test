@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Override Default Homepage -->
+    <template id="eleven_homepage" name="Eleven Homepage" inherit_id="website.homepage" priority="99">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="eleven_wrap">
+                
+                <!-- Hero Section / Banner -->
+                <section class="eleven_hero_section">
+                    <div class="eleven_hero_bg">
+                        <img src="/eleven_website/static/src/img/banner.jpg" alt="Hero Background" class="eleven_hero_img"/>
+                    </div>
+                    <div class="eleven_hero_content">
+                        <h1 class="eleven_hero_title">SMART SCENT DIFFUSERS</h1>
+                        <p class="eleven_hero_text">
+                            With elegant design and high efficiency, Eleven Scent diffusers<br/>
+                            transform any space, home, office, or commercial into a refreshing<br/>
+                            and inviting environment.
+                        </p>
+                        <a href="/contactus" class="eleven_btn_contact">CONTACT US</a>
+                    </div>
+                </section>
+                
+                <!-- Category Section -->
+                <section class="eleven_category_section">
+                    <div class="eleven_container">
+                        <!-- Category Header -->
+                        <div class="eleven_category_header">
+                            <h2 class="eleven_category_title">CATEGORY</h2>
+                            <h3 class="eleven_category_subtitle">SHOP BY CATEGORY</h3>
+                        </div>
+                        
+                        <!-- Category Grid -->
+                        <div class="eleven_category_grid">
+                            
+                            <!-- Scent Diffusers -->
+                            <div class="eleven_category_card">
+                                <div class="eleven_category_image">
+                                    <img src="/eleven_website/static/src/img/Scent-Diffusers.jpg" alt="Scent Diffusers"/>
+                                </div>
+                                <h4 class="eleven_category_name">Scent Diffusers</h4>
+                                <a href="/shop/category/scent-diffusers" class="eleven_btn_shop">SHOP NOW</a>
+                            </div>
+                            
+                            <!-- Fragrance Oils -->
+                            <div class="eleven_category_card">
+                                <div class="eleven_category_image">
+                                    <img src="/eleven_website/static/src/img/Fragrance-Oils.jpg" alt="Fragrance Oils"/>
+                                </div>
+                                <h4 class="eleven_category_name">Fragrance Oils</h4>
+                                <a href="/shop/category/fragrance-oils" class="eleven_btn_shop">SHOP NOW</a>
+                            </div>
+                            
+                            <!-- Car Diffusers -->
+                            <div class="eleven_category_card">
+                                <div class="eleven_category_image">
+                                    <img src="/eleven_website/static/src/img/Car-Diffusers.jpg" alt="Car Diffusers"/>
+                                </div>
+                                <h4 class="eleven_category_name">Car Diffusers</h4>
+                                <a href="/shop/category/car-diffusers" class="eleven_btn_shop">SHOP NOW</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </section>
+
+                <!-- About Section -->
+                <section class="eleven_about_section">
+                    <!-- Animated Background Circles -->
+                    <div class="eleven_animated_bg">
+                        <div class="eleven_circle eleven_circle_1"></div>
+                        <div class="eleven_circle eleven_circle_2"></div>
+                        <div class="eleven_circle eleven_circle_3"></div>
+                        <div class="eleven_circle eleven_circle_4"></div>
+                        <div class="eleven_circle eleven_circle_5"></div>
+                    </div>
+
+                    <div class="eleven_about_container">
+                        <!-- Left: Image -->
+                        <div class="eleven_about_image">
+                            <img src="/eleven_website/static/src/img/1.png" alt="Eleven Scent Product"/>
+                        </div>
+
+                        <!-- Right: Content -->
+                        <div class="eleven_about_content">
+                            <div class="eleven_about_logo">Eleven Scent</div>
+                            <div class="eleven_about_subtitle">Smart Scent Diffusers</div>
+                            <h2 class="eleven_about_title">LIVE THE SCENT</h2>
+
+                            <p class="eleven_about_text">
+                                Eleven Scent Perfumes is one of the best online stores in the UAE specializing in selling essential oils for scents.
+                            </p>
+
+                            <p class="eleven_about_text">
+                                Perfume is not just a scent, but an element that creates a distinctive atmosphere and affects the mood and psychological comfort. Blister oils and perfumes are characterized by high purity and quality with the ability to spread a balanced scent that lasts for long hours.
+                            </p>
+
+                            <p class="eleven_about_text">
+                                They transform any room or space into a comfortable and elegant environment and enhance the feeling of freshness and calm. Whether you are looking for a calm scent for the office or luxurious notes for reception rooms or hotel lounges, you will find with us the ideal options.
+                            </p>
+
+                            <p class="eleven_about_text">
+                                We also offer a variety of essential oils specially designed to suit all tastes with elaborate formulations that give the place stability and a wonderful scent throughout the day.
+                            </p>
+
+                            <a href="/contactus" class="eleven_btn_contact_about">CONTACT US</a>
+                        </div>
+                    </div>
+                </section>
+
+                                <!-- Features Section -->
+                                <!-- Features Section -->
+                <section class="eleven_features_section">
+                    <!-- Background Image -->
+                    <div class="eleven_features_bg">
+                        <img src="/eleven_website/static/src/img/Smart-Scent-Diffusers.jpg" class="eleven_features_bg_img" alt="Features Background"/>
+                    </div>
+
+                    <!-- Dark Overlay -->
+                    <div class="eleven_features_overlay"></div>
+
+                    <div class="eleven_features_container">
+                        <h2 class="eleven_features_main_title">SMART SCENT DIFFUSERS</h2>
+
+                        <div class="eleven_features_grid">
+                            <!-- Feature 1 -->
+                            <div class="eleven_feature_box">
+                                <h3 class="eleven_feature_title">Indulge Your Senses with Eleven Scent</h3>
+                                <p class="eleven_feature_text">
+                                    Experience a unique moment of relaxation with our luxurious aroma oils, meticulously crafted from high-quality ingredients to create a calm and soothing ambiance for any space.
+                                </p>
+                            </div>
+
+                            <!-- Feature 2 -->
+                            <div class="eleven_feature_box">
+                                <h3 class="eleven_feature_title">Make Every Moment Radiate Comfort &amp; Beauty</h3>
+                                <p class="eleven_feature_text">
+                                    Our aroma oils provide a serene and enchanting living experience, carefully made with premium ingredients to bring natural beauty and tranquility to any place.
+                                </p>
+                            </div>
+
+                            <!-- Feature 3 -->
+                            <div class="eleven_feature_box">
+                                <h3 class="eleven_feature_title">Discover Smart Air Diffusers</h3>
+                                <p class="eleven_feature_text">
+                                    With elegant design and high efficiency, Eleven Scent diffusers transform any space—home, office, or commercial—into a refreshing and inviting environment.
+                                </p>
+                            </div>
+
+                            <!-- Feature 4 -->
+                            <div class="eleven_feature_box">
+                                <h3 class="eleven_feature_title">Turn Your Space into a Refreshing Oasis</h3>
+                                <p class="eleven_feature_text">
+                                    With Eleven Scent diffusers, add a touch of elegance and calm to every corner of your home, office, or commercial space.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="eleven_why_choose_section">
+                    <div class="eleven_why_choose_container">
+                        <!-- Left: Image -->
+                        <div class="eleven_why_choose_image">
+                            <img src="/eleven_website/static/src/img/9.jpg" alt="Eleven Scent Products"/>
+                        </div>
+
+                        <!-- Right: Content -->
+                        <div class="eleven_why_choose_content">
+                            <h2 class="eleven_why_choose_title">WHY CHOOSE ELEVEN SCENT</h2>
+                            <p class="eleven_why_choose_subtitle">
+                                A features section highlights your product's key attributes, engaging visitors and boosting conversions.
+                            </p>
+
+                            <div class="eleven_why_choose_grid">
+                                <!-- Feature 1 -->
+                                <div class="eleven_why_box">
+                                    <div class="eleven_why_number">01</div>
+                                    <div class="eleven_why_icon">
+                                        <i class="fa fa-leaf"></i>
+                                    </div>
+                                    <h3 class="eleven_why_box_title">Premium Oils</h3>
+                                    <p class="eleven_why_box_text">100% Safe Ingredients Toxin-Free</p>
+                                </div>
+
+                                <!-- Feature 2 -->
+                                <div class="eleven_why_box">
+                                    <div class="eleven_why_number">02</div>
+                                    <div class="eleven_why_icon">
+                                        <i class="fa fa-truck"></i>
+                                    </div>
+                                    <h3 class="eleven_why_box_title">Delivery</h3>
+                                    <p class="eleven_why_box_text">Super Fast Delivery and Assembly</p>
+                                </div>
+
+                                <!-- Feature 3 -->
+                                <div class="eleven_why_box">
+                                    <div class="eleven_why_number">03</div>
+                                    <div class="eleven_why_icon">
+                                        <i class="fa fa-certificate"></i>
+                                    </div>
+                                    <h3 class="eleven_why_box_title">1-Year Warranty</h3>
+                                    <p class="eleven_why_box_text">We stand behind th quality of our products with a comprehensive one-year warranty.</p>
+                                </div>
+
+                                <!-- Feature 4 -->
+                                <div class="eleven_why_box">
+                                    <div class="eleven_why_number">04</div>
+                                    <div class="eleven_why_icon">
+                                        <i class="fa fa-credit-card"></i>
+                                    </div>
+                                    <h3 class="eleven_why_box_title">Payment</h3>
+                                    <p class="eleven_why_box_text">100% Secure Payment.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Essential Oils Section -->
+                <section class="eleven_oils_section">
+                    <div class="eleven_oils_container">
+                        <!-- Header -->
+                        <div class="eleven_oils_header">
+                            <h2 class="eleven_oils_title">Eleven Scent's signature selection of essential oils for diffusers</h2>
+                            <p class="eleven_oils_description">
+                                At Eleven Scent, we are keen to offer a range of essential oils carefully designed to suit all spaces and tastes, so we offer you the best essential oils that provide a unique sensory experience that adds a touch of luxury and freshness anywhere, and here are some of the perfumes:
+                            </p>
+                        </div>
+
+                        <div class="eleven_oils_content">
+                            <!-- Left Features -->
+                            <div class="eleven_oils_left">
+                                <div class="eleven_oil_item">
+                                    <h3 class="eleven_oil_name">Garden scent essential oil after rain</h3>
+                                    <p class="eleven_oil_desc">
+                                        Enjoy the scent of nature in every corner of this specially designed rain scent oil for diffusers and perfume the place with a refreshing and distinctive scent. This oil combines notes of wet dirt with the scent of fresh raindrops to give the place a feeling of vitality and serenity.
+                                    </p>
+                                </div>
+
+                                <div class="eleven_oil_item">
+                                    <h3 class="eleven_oil_name">Royal rose perfume</h3>
+                                    <p class="eleven_oil_desc">
+                                        Enjoy the magic of royal rose, as the essential oil is designed in a way that combines notes of natural rose, touches of oud, musk and luxurious amber to give the place a rich and stable scent that lasts for long hours, adding a feeling of luxury and elegance.
+                                    </p>
+                                </div>
+
+                                <div class="eleven_oil_item">
+                                    <h3 class="eleven_oil_name">sandalwood smell</h3>
+                                    <p class="eleven_oil_desc">
+                                        This essential oil emits a harmonious blend of warm woody scents with a creamy touch that gives the place a feeling of comfort and tranquility, affects the senses with its distinctive depth, and establishes a sense of natural luxury and harmony.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Center Image -->
+                            <div class="eleven_oils_center">
+                                <div class="eleven_oils_circle"></div>
+                                <img src="/eleven_website/static/src/img/2.png" alt="Eleven Scent Essential Oil" class="eleven_oil_bottle"/>
+                            </div>
+
+                            <!-- Right Features -->
+                            <div class="eleven_oils_right">
+                                <div class="eleven_oil_item">
+                                    <h3 class="eleven_oil_name">The scent of golden nectar</h3>
+                                    <p class="eleven_oil_desc">
+                                        This scent is a luxurious blend of natural honey with delicate floral accents that add a feeling of freshness, softness and warmth that gives the place a feeling of radiance and joy that makes the atmosphere surrounding you calm and tranquility.
+                                    </p>
+                                </div>
+
+                                <div class="eleven_oil_item">
+                                    <h3 class="eleven_oil_name">Blue Ocean Perfume Oil</h3>
+                                    <p class="eleven_oil_desc">
+                                        This oil embodies the feeling of a sea breeze, emitting pure aromatic notes with refreshing watery scents with a combination of seaweed and water flower touches to create a feeling of stability and serenity everywhere.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+               <section class="eleven_bestsellers_section">
+                <div class="eleven_bestsellers_container">
+                    <h2 class="eleven_bestsellers_title">BEST SELLERS</h2>
+
+                    <div class="eleven_bestsellers_grid">
+                        <t t-foreach="request.env['product.product'].sudo().search([('is_best_seller', '=', True), ('website_published', '=', True)], limit=4)" t-as="product">
+                            <div class="eleven_bestseller_card">
+                                <div class="eleven_bestseller_image">
+                                    <!-- ✅ غيرنا الرابط لصفحتك المخصصة -->
+                                    <a t-attf-href="/product/#{product.id}">
+                                        <img t-att-src="'/web/image/product.product/%s/image_1024' % product.id"
+                                             t-att-alt="product.display_name"
+                                             class="eleven_bestseller_img"/>
+                                    </a>
+                                </div>
+
+                                <div class="eleven_bestseller_info">
+                                    <h3 class="eleven_bestseller_name">
+                                        <!-- ✅ غيرنا الرابط لصفحتك المخصصة -->
+                                        <a t-attf-href="/product/#{product.id}" t-esc="product.display_name"/>
+                                    </h3>
+
+                                    <div class="eleven_bestseller_rating">
+                                        <i class="fa fa-star"/>
+                                        <i class="fa fa-star"/>
+                                        <i class="fa fa-star"/>
+                                        <i class="fa fa-star"/>
+                                        <i class="fa fa-star"/>
+                                    </div>
+
+                                    <div class="eleven_bestseller_price">
+                                        <span t-esc="product.list_price" t-options="{'widget': 'monetary', 'display_currency': product.currency_id}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </section>
+                
+            </div>
+        </xpath>
+    </template>
+    
+</odoo>

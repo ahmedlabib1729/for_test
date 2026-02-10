@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- About Us Page -->
+    <template id="eleven_about_page" name="Eleven About Us">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Hero Section -->
+                <section class="eleven_about_hero" style="background-image: url('/eleven_website/static/src/img/about-us-banner.jpg');">
+                    <div class="eleven_about_hero_overlay"></div>
+                    <div class="eleven_about_hero_content">
+                        <h1 class="eleven_about_hero_title">ABOUT US</h1>
+                        <p class="eleven_about_hero_subtitle">
+                            Transform your home or office into a space filled with luxurious fragrances with Eleven Scent.
+                        </p>
+                        <p class="eleven_about_hero_text">
+                            Our smart device combines innovation and design to give you a unique, personalized scent experience.
+                        </p>
+                        <a href="/contactus" class="eleven_about_btn">CONTACT US</a>
+                    </div>
+                </section>
+
+                <!-- Main Content -->
+               <section class="eleven_about_page_content">
+                    <div class="container">
+
+                        <!-- Introduction -->
+                        <div class="eleven_about_intro">
+                            <p>
+                                When you are looking for quality and innovation in the world of aromatic diffusers, Eleven
+Scent is the ideal destination with which you will inevitably find creativity and distinction
+because we believe that perfume is a sensory experience that adds luxury to the place.
+                            </p>
+                            <p>
+                                Aromatic diffusers are considered one of the distinctive decorative pieces that create a
+special atmosphere, so Eleven Scent has provided diffusers in multiple shapes and sizes
+while providing the best essential oils that suit different tastes, and we are working hard to
+be pioneers in the field of aromatic diffusers in the United Arab Emirates.
+                            </p>
+                        </div>
+
+                        <!-- Combined Section with Single Image -->
+                        <div class="eleven_about_combined_section">
+
+                            <!-- Who We Are Text Block -->
+                            <div class="eleven_about_text_left">
+                                <div class="eleven_section_icon">
+                                    <i class="fa-solid fa-quote-left"></i>
+                                </div>
+                                <h2 class="eleven_section_title">Who We Are</h2>
+                                <div class="eleven_section_content">
+                                    <p>
+We, Eleven Scent, are your first destination for luxury hotel
+
+diffusers. We create distinctive perfumes that reflect re-
+fined taste and give a touch of luxury everywhere. We
+
+seek to provide modern and innovative products in the
+
+design of smart aromatic diffusers to give you a distinc-
+tive atmosphere that suits your lifestyle Whether you're
+
+looking for fresh floral scents or a blend of oriental scents,
+
+you'll find everything you need with natural quality stan-
+dards. Our products are designed to make your atmo-
+sphere more comfortable and refreshing. We always work
+
+to provide the best in the world of indoor perfumery with
+distinguished customer service and high quality. Discover
+the world of perfumery with Eleven Scent.
+
+
+
+                                    </p>
+
+                                </div>
+                            </div>
+
+                            <!-- Main Image -->
+                            <div class="eleven_about_main_image">
+                                <img src="/eleven_website/static/src/img/01.png" alt="Eleven Scent"/>
+                            </div>
+
+                            <!-- Our Story Text Block -->
+                            <div class="eleven_about_text_right">
+                                <div class="eleven_section_icon">
+                                    <i class="fa-solid fa-quote-left"></i>
+                                </div>
+                                <h2 class="eleven_section_title">Our Story</h2>
+                                <div class="eleven_section_content">
+                                    <p>
+Since the establishment of Eleven Scent, our goal has
+been to represent the United Arab Emirates with
+high-quality brands. For this reason, our company has
+worked on the principle of producing high-quality natural
+oils that conform to international standards that do not
+harm human health and the environment, in addition to
+
+our innovation of aromatic diffusers that distribute the per-
+fume in the place and give a touch of luxury and fresh- ness Discover eco-friendly scents and safe home fra-
+grances through us and transform your home into a
+
+peaceful haven with our unique company group special-
+ized in manufacturing the finest types of distinctive scents
+
+and fragrances. We do not only display products, but we
+
+provide integrated sensory experiences that add a spe-
+cial character to your day.                                    </p>
+
+                                </div>
+                                <a href="/contactus" class="eleven_about_btn_secondary">CONTACT US</a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- Vision, Mission, Values Section -->
+                <section class="eleven_vmv_section">
+                    <div class="container">
+                        <div class="eleven_vmv_grid">
+
+                            <!-- Our Vision -->
+                            <div class="eleven_vmv_card">
+                                <div class="eleven_vmv_icon">
+                                    <i class="fa-solid fa-eye"></i>
+                                </div>
+                                <h3 class="eleven_vmv_title">Our Vision</h3>
+                                <p class="eleven_vmv_text">
+At Eleven Scent, we work to be the first
+
+choice for everyone looking for sophisti-
+cation and high quality. We believe that
+
+details make the difference. We started
+
+with the passion of manufacturing aro-
+matic diffusers and our vision has devel-
+oped to be an integrated platform that
+
+brings together everything creative
+people need under one roof. We are the
+
+best company for manufacturing per-
+fume dispensers with distinctive prod-
+ucts on the local and international levels
+
+with an attractive Emirati touch. We also
+provide the best 100% pure and natural
+
+essential oils Free from harmful chemi-
+cals to meet all needs and enjoy luxuri-
+ous hotel perfumes.                                </p>
+                            </div>
+
+                            <!-- Our Mission -->
+                            <div class="eleven_vmv_card">
+                                <div class="eleven_vmv_icon">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                                <h3 class="eleven_vmv_title">Our Mission</h3>
+                                <p class="eleven_vmv_text">
+At Eleven Scent, we work to provide prod-
+ucts made from natural materials that
+
+absorb essential oils and gradually dis-
+tribute them in the air, giving you
+
+long-lasting comfort Our company com-
+bines the art of perfumery and the latest
+
+technologies to provide you with the
+
+best solutions in perfumers and smart dif-
+fusers with a distinctive range of
+
+high-end essential oils. Whether you are
+looking for a perfume that enriches the
+
+atmosphere of your home or profession-
+al perfumery solutions for your business,
+
+you will find at Eleven Scent a reliable
+
+partner that combines experience, inno-
+vation and luxury.                                </p>
+                            </div>
+
+                            <!-- Our Core Values -->
+                            <div class="eleven_vmv_card">
+                                <div class="eleven_vmv_icon">
+                                    <i class="fa-solid fa-gem"></i>
+                                </div>
+                                <h3 class="eleven_vmv_title">Our Core Values</h3>
+                                <p class="eleven_vmv_text">
+At Eleven Scent, we realize that appear-
+ance is not the only element to consider,
+
+but there must be a balance between
+beauty and performance. Therefore, we
+
+designed a diffuser that has a high abili-
+ty to spread perfume in large spaces for
+
+long periods, but without losing its quali-
+ty. We worked hard to provide rich and
+
+natural aromatic compositions with
+100% raw materials. We also work to
+create a special atmosphere for each
+
+client and always innovate smart aro-
+matic solutions that suit all tastes and
+
+spaces and leave an unforgettable
+impact.                                </p>
+                            </div>
+
+                        </div>
+
+                        <!-- Contact Button -->
+                        <div class="eleven_vmv_cta">
+                            <a href="/contactus" class="eleven_about_btn">CONTACT US</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- The Art of Scent Section -->
+                <section class="eleven_art_scent_section" style="background-image: url('/eleven_website/static/src/img/The Art of Scent-01.jpg');">
+                    <div class="eleven_art_scent_overlay"></div>
+                    <div class="container">
+                        <div class="eleven_art_scent_content">
+                            <h2 class="eleven_art_scent_title">THE ART OF SCENT</h2>
+
+                            <p class="eleven_art_scent_text">
+At Eleven Scent, we see that perfumery is not just an ordinary process, but an artistic painting completed with the
+purest and finest ingredients. Perfume is the language that individuals use to express themselves inside homes,
+
+hotels, offices, or any other space.                            </p>
+
+                            <p class="eleven_art_scent_text">
+The art behind our company's perfumes and oils is to focus on creating a refreshing environment and raising the
+mood. To complement this, we designed smart air freshener devices that spread scents with equal accuracy and
+long-lasting stability, and our goal is to transform the ordinary environment into a place that pulsates with warmth
+
+and distinction.                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <section class="eleven_reach_section">
+                    <div class="container">
+                        <div class="eleven_reach_container">
+
+                            <!-- Product Image with Circle -->
+                            <div class="eleven_reach_image">
+                                <div class="eleven_reach_circle"></div>
+                                <img src="/eleven_website/static/src/img/ReachDistribution.png" alt="Eleven Scent Device"/>
+                            </div>
+
+                            <!-- Reach Content -->
+                            <div class="eleven_reach_content">
+                                <h2 class="eleven_reach_title">Access and Distribution</h2>
+
+                                <p class="eleven_reach_text">
+We are a team that combines our long-standing expertise
+in manufacturing natural essential oils and smart diffusers
+and works to provide high-quality products that excite the
+senses and provide a unique experience for those looking
+for the perfect scent to enhance their personal style.                                </p>
+
+                                <p class="eleven_reach_text">
+Therefore, our services cover all parts of the United Arab
+Emirates, providing fast and safe delivery services for
+
+homes, businesses, hotels, and others, in addition to provid-
+ing international shipping services to perfume lovers world-
+wide.
+
+We strive to provide a unique experience from the moment
+you choose the product until it reaches you. Always make
+
+sure that we take into account quality, accuracy and atten-
+tion to detail to give you a refreshing experience.                                </p>
+
+                                <p class="eleven_reach_text">
+Our vision is to make Eleven Scent your perfect companion
+
+wherever you are and fill your space with distinctive aromat-
+ic scents specially designed to suit all tastes.                                </p>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

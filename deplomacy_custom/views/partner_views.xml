@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- views/partner_views.xml -->
+<odoo>
+    <!-- Partner Form View - Simplified and Fixed -->
+    <record id="view_partner_form_required_fields" model="ir.ui.view">
+        <field name="name">res.partner.form.required.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+
+            <!-- Add Partner Type and Reference at the top -->
+            <xpath expr="//field[@name='name']" position="after">
+                <group>
+                    <group>
+                        <field name="x_partner_type" string="Partner Type" widget="radio" options="{'horizontal': true}"/>
+                    </group>
+                    <group>
+                        <field name="ref" string="Reference" readonly="1" force_save="1" placeholder="Auto-generated"/>
+                    </group>
+                </group>
+            </xpath>
+
+            <!-- Make Mobile Required -->
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                <attribute name="required">1</attribute>
+                <attribute name="placeholder">Mobile (Required)</attribute>
+            </xpath>
+
+            <!-- Make Tags Required -->
+            <xpath expr="//field[@name='category_id']" position="attributes">
+                <attribute name="required">1</attribute>
+                <attribute name="placeholder">Tags (Required)</attribute>
+            </xpath>
+
+            <!-- Make Country Required -->
+            <xpath expr="//field[@name='country_id']" position="attributes">
+                <attribute name="required">1</attribute>
+                <attribute name="placeholder">Country (Required)</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Partner Tree View -->
+    <record id="view_partner_tree_required_fields" model="ir.ui.view">
+        <field name="name">res.partner.tree.required.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <!-- Add Reference and Type columns -->
+            <xpath expr="//field[@name='phone']" position="before">
+                <field name="ref" string="Ref"/>
+                <field name="x_partner_type" string="Type"/>
+            </xpath>
+
+            <!-- Show mobile -->
+            <xpath expr="//field[@name='phone']" position="after">
+                <field name="mobile" optional="show"/>
+            </xpath>
+
+            <!-- Add tags -->
+            <xpath expr="//field[@name='country_id']" position="after">
+                <field name="category_id" widget="many2many_tags" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Partner Search View -->
+    <record id="view_partner_search_required_fields" model="ir.ui.view">
+        <field name="name">res.partner.search.required.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <!-- Add search by reference -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ref" string="Reference"/>
+            </xpath>
+
+            <!-- Add filters by type -->
+            <xpath expr="//filter[@name='inactive']" position="after">
+                <separator/>
+                <filter string="Customers" name="filter_customer" domain="[('x_partner_type', '=', 'customer')]"/>
+                <filter string="Vendors" name="filter_vendor" domain="[('x_partner_type', '=', 'vendor')]"/>
+                <filter string="Both" name="filter_both" domain="[('x_partner_type', '=', 'both')]"/>
+                <filter string="Other" name="filter_other" domain="[('x_partner_type', '=', 'other')]"/>
+                <separator/>
+                <filter string="No Reference" name="no_ref" domain="[('ref', '=', False)]"/>
+                <filter string="No Mobile" name="no_mobile" domain="[('mobile', '=', False)]"/>
+            </xpath>
+
+            <!-- Add grouping -->
+            <xpath expr="//group" position="inside">
+                <filter string="Partner Type" name="group_type" context="{'group_by': 'x_partner_type'}"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+</odoo>

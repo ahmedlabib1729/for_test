@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- إضافة الإعدادات في قسم المبيعات -->
+    <record id="res_config_settings_view_form_inherit_sale_cancel" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sale.cancel</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- إضافة قسم جديد للإعدادات -->
+            <xpath expr="//form" position="inside">
+                <group string="Sales Order Cancellation Settings" class="mt32">
+                    <group>
+                        <div class="row mt16 o_settings_container" id="sale_cancel_settings">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="sale_auto_return_stock"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label for="sale_auto_return_stock" string="Auto Create Stock Returns"/>
+                                    <div class="text-muted">
+                                        Automatically create stock return pickings when cancelling sales orders
+                                    </div>
+                                    <div invisible="not sale_auto_return_stock" class="mt8">
+                                        <field name="sale_auto_process_returns" class="ms-3"/>
+                                        <label for="sale_auto_process_returns" class="ms-1" string="Auto Validate Returns"/>
+                                        <div class="text-muted ms-3">
+                                            Automatically validate return pickings without manual intervention
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <label for="sale_cancel_invoice_method" string="Invoice Cancellation Method"/>
+                                    <div class="text-muted">
+                                        How to handle invoices when cancelling a sales order
+                                    </div>
+                                    <field name="sale_cancel_invoice_method" class="mt8"/>
+                                    <div class="text-muted mt8">
+                                        <ul>
+                                            <li><b>Reset to Draft &amp; Cancel:</b> Reset posted invoice to draft then cancel it (suitable for unpaid invoices)</li>
+                                            <li><b>Create Credit Note:</b> Create a credit note for posted invoices (suitable for paid invoices)</li>
+                                            <li><b>Do Not Cancel Invoices:</b> Leave invoices unchanged</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- إضافة زر إلغاء قوي في أمر البيع -->
+    <record id="view_order_form_inherit_force_cancel" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.force.cancel</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- إضافة زر الإلغاء القوي بجانب زر الإلغاء العادي -->
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button name="action_cancel_force"
+                        type="object"
+                        string="Force Cancel"
+                        invisible="state != 'sale'"
+                        groups="sales_team.group_sale_manager"
+                        class="btn-warning"
+                        confirm="Are you sure? This will cancel the order and ignore any errors with invoices or stock returns."/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

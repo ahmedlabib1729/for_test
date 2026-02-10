@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="samad_daily_report.Dashboard">
+        <div class="o_action">
+            <div class="daily-invoices-dashboard">
+                <!-- Loading Spinner -->
+                <div t-if="state.isLoading" class="dashboard-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div t-else="" class="dashboard-container">
+                    <!-- Header -->
+                    <div class="dashboard-header">
+                        <h2 class="dashboard-title">
+                            <span class="title-icon">📊</span>
+                            Daily Invoices Report
+                        </h2>
+                        <p class="dashboard-subtitle">Real-time tracking of purchases &amp; sales invoices</p>
+                    </div>
+
+                    <!-- Filters Section -->
+                    <div class="filters-section">
+                        <!-- Period Filter -->
+                        <div class="filter-row">
+                            <span class="filter-label">
+                                <i class="fa fa-calendar"/> Period
+                            </span>
+                            <div class="btn-group" role="group">
+                                <button type="button"
+                                        t-att-class="'btn btn-sm ' + (state.period === 'today' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('today')">
+                                    Today
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn btn-sm ' + (state.period === 'week' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('week')">
+                                    This Week
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn btn-sm ' + (state.period === 'month' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('month')">
+                                    This Month
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn btn-sm ' + (state.period === 'year' ? 'btn-primary' : 'btn-outline-primary')"
+                                        t-on-click="() => this.onChangePeriod('year')">
+                                    This Year
+                                </button>
+                                <button type="button"
+                                        t-att-class="'btn btn-sm ' + (state.period === 'custom' ? 'btn-primary' : 'btn-outline-primary')">
+                                    Custom
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Date Range -->
+                        <div class="filter-row">
+                            <span class="filter-label">
+                                <i class="fa fa-clock-o"/> From
+                            </span>
+                            <input type="date"
+                                   class="form-control form-control-sm date-input"
+                                   t-att-value="state.dateFrom"
+                                   t-on-change="onChangeDateFrom"/>
+                            <span class="filter-label">To</span>
+                            <input type="date"
+                                   class="form-control form-control-sm date-input"
+                                   t-att-value="state.dateTo"
+                                   t-on-change="onChangeDateTo"/>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="filter-row">
+                            <button class="btn btn-sm btn-primary" t-on-click="onRefresh">
+                                <i class="fa fa-refresh"/> Refresh
+                            </button>
+                            <button class="btn btn-sm btn-success export-excel-btn" t-on-click="onExportExcel">
+                                <i class="fa fa-file-excel-o"/> Excel
+                            </button>
+                            <button class="btn btn-sm btn-danger export-pdf-btn" t-on-click="onExportPDF">
+                                <i class="fa fa-file-pdf-o"/> PDF
+                            </button>
+                            <button class="btn btn-sm btn-secondary" t-on-click="onPrint">
+                                <i class="fa fa-print"/> Print
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="kpi-row">
+                        <div class="kpi-card kpi-purple">
+                            <div class="kpi-icon">📊</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="state.totalInvoices"/>
+                                <div class="kpi-label">Total Invoices</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-pink">
+                            <div class="kpi-icon">🛒</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="formatNumber(state.totalPurchases)"/>
+                                <div class="kpi-label">Total Purchases</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-blue">
+                            <div class="kpi-icon">💰</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value" t-esc="formatNumber(state.totalSales)"/>
+                                <div class="kpi-label">Total Sales</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card kpi-green">
+                            <div class="kpi-icon">✅</div>
+                            <div class="kpi-content">
+                                <div class="kpi-value"><t t-esc="state.paidPercentage.toFixed(0)"/>%</div>
+                                <div class="kpi-label">Payment Rate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Summary Cards (Net Values) -->
+                    <div class="payment-breakdown">
+                        <div class="breakdown-card cash">
+                            <div class="breakdown-icon">💵</div>
+                            <div class="breakdown-label">Net Cash</div>
+                            <div class="breakdown-value" t-esc="formatNumber(state.reportData.payment_summary?.net_cash || 0)"/>
+                            <div class="breakdown-details">
+                                <span class="in-value">
+                                    <span class="arrow-up">▲</span>
+                                    <t t-esc="formatNumber(state.reportData.payment_summary?.cash_in || 0)"/>
+                                </span>
+                                <span class="out-value">
+                                    <span class="arrow-down">▼</span>
+                                    <t t-esc="formatNumber(state.reportData.payment_summary?.cash_out || 0)"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="breakdown-card bank">
+                            <div class="breakdown-icon">🏦</div>
+                            <div class="breakdown-label">Net Bank</div>
+                            <div class="breakdown-value" t-esc="formatNumber(state.reportData.payment_summary?.net_bank || 0)"/>
+                            <div class="breakdown-details">
+                                <span class="in-value">
+                                    <span class="arrow-up">▲</span>
+                                    <t t-esc="formatNumber(state.reportData.payment_summary?.bank_in || 0)"/>
+                                </span>
+                                <span class="out-value">
+                                    <span class="arrow-down">▼</span>
+                                    <t t-esc="formatNumber(state.reportData.payment_summary?.bank_out || 0)"/>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="breakdown-card commission">
+                            <div class="breakdown-icon">💳</div>
+                            <div class="breakdown-label">Commission</div>
+                            <div class="breakdown-value" t-esc="formatNumber(state.reportData.payment_summary?.total_commission || 0)"/>
+                        </div>
+                        <div class="breakdown-card comm-tax">
+                            <div class="breakdown-icon">📊</div>
+                            <div class="breakdown-label">C. Tax</div>
+                            <div class="breakdown-value" t-esc="formatNumber(state.reportData.payment_summary?.total_commission_tax_account || 0)"/>
+                        </div>
+                        <div class="breakdown-card other">
+                            <div class="breakdown-icon">👥</div>
+                            <div class="breakdown-label">Other</div>
+                            <div class="breakdown-value" t-esc="formatNumber(state.reportData.payment_summary?.total_other || 0)"/>
+                        </div>
+                    </div>
+
+                    <!-- ============ PURCHASES SECTION ============ -->
+                    <div class="report-section purchases-section">
+                        <div class="section-header" style="border-color: #e74c3c;">
+                            <div class="section-title">
+                                <span class="section-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">🛒</span>
+                                <div>
+                                    <h3>Purchase Invoices</h3>
+                                    <span class="section-count">
+                                        <t t-esc="(state.reportData.purchases?.paid?.length || 0) + (state.reportData.purchases?.unpaid?.length || 0)"/> invoices
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="section-total">
+                                <div class="total-amount" t-esc="formatNumber(state.reportData.purchases?.grand_total || 0)"/> AED
+                                <div class="total-tax">Tax: <t t-esc="formatNumber(state.reportData.purchases?.grand_total_tax || 0)"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Paid Purchases -->
+                        <div class="subsection">
+                            <div class="subsection-header paid" t-on-click="() => this.toggleSection('paidPurchases')">
+                                <div class="subsection-title">
+                                    <i t-att-class="'fa ' + (isSectionExpanded('paidPurchases') ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                    <span class="status-icon">✅</span>
+                                    <span>Paid Purchases</span>
+                                    <span class="badge bg-success ms-2"><t t-esc="state.reportData.purchases?.paid?.length || 0"/></span>
+                                </div>
+                                <div class="subsection-total">
+                                    <t t-esc="formatNumber(state.reportData.purchases?.total_paid || 0)"/> AED
+                                </div>
+                            </div>
+                            <div t-if="isSectionExpanded('paidPurchases')" class="subsection-content">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice</th>
+                                            <th>Vendor</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Untaxed</th>
+                                            <th class="text-end">Tax</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="!state.reportData.purchases?.paid?.length">
+                                            <tr><td colspan="6" class="text-center text-muted">No paid invoices</td></tr>
+                                        </t>
+                                        <t t-foreach="state.reportData.purchases?.paid || []" t-as="inv" t-key="inv.id">
+                                            <tr>
+                                                <td>
+                                                    <a class="invoice-link" t-on-click="() => this.openInvoice(inv.id, 'in_invoice')">
+                                                        📄 <t t-esc="inv.name"/>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a class="partner-link" t-on-click="() => this.openPartner(inv.partner_id)">
+                                                        <t t-esc="inv.partner"/>
+                                                    </a>
+                                                </td>
+                                                <td t-esc="inv.date"/>
+                                                <td class="text-end" t-esc="formatNumber(inv.amount_untaxed)"/>
+                                                <td class="text-end" t-esc="formatNumber(inv.amount_tax)"/>
+                                                <td class="text-end fw-bold" t-esc="formatNumber(inv.amount_total)"/>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Unpaid Purchases -->
+                        <div class="subsection">
+                            <div class="subsection-header unpaid" t-on-click="() => this.toggleSection('unpaidPurchases')">
+                                <div class="subsection-title">
+                                    <i t-att-class="'fa ' + (isSectionExpanded('unpaidPurchases') ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                    <span class="status-icon">⏳</span>
+                                    <span>Unpaid Purchases</span>
+                                    <span class="badge bg-warning ms-2"><t t-esc="state.reportData.purchases?.unpaid?.length || 0"/></span>
+                                </div>
+                                <div class="subsection-total">
+                                    <t t-esc="formatNumber(state.reportData.purchases?.total_unpaid || 0)"/> AED
+                                </div>
+                            </div>
+                            <div t-if="isSectionExpanded('unpaidPurchases')" class="subsection-content">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice</th>
+                                            <th>Vendor</th>
+                                            <th>Date</th>
+                                            <th>Payment Type</th>
+                                            <th class="text-end">Untaxed</th>
+                                            <th class="text-end">Tax</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="!state.reportData.purchases?.unpaid?.length">
+                                            <tr><td colspan="7" class="text-center text-muted">No unpaid invoices</td></tr>
+                                        </t>
+                                        <t t-foreach="state.reportData.purchases?.unpaid || []" t-as="inv" t-key="inv.id">
+                                            <tr>
+                                                <td>
+                                                    <a class="invoice-link" t-on-click="() => this.openInvoice(inv.id, 'in_invoice')">
+                                                        📄 <t t-esc="inv.name"/>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a class="partner-link" t-on-click="() => this.openPartner(inv.partner_id)">
+                                                        <t t-esc="inv.partner"/>
+                                                    </a>
+                                                </td>
+                                                <td t-esc="inv.date"/>
+                                                <td>
+                                                    <span t-if="inv.payment_type === 'cash'" class="badge bg-success">💵 Cash</span>
+                                                    <span t-elif="inv.payment_type === 'credit'" class="badge bg-info">💳 Credit</span>
+                                                    <span t-else="" class="text-muted">-</span>
+                                                </td>
+                                                <td class="text-end" t-esc="formatNumber(inv.amount_untaxed)"/>
+                                                <td class="text-end" t-esc="formatNumber(inv.amount_tax)"/>
+                                                <td class="text-end fw-bold" t-esc="formatNumber(inv.amount_total)"/>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ SALES SECTION ============ -->
+                    <div class="report-section sales-section">
+                        <div class="section-header" style="border-color: #3498db;">
+                            <div class="section-title">
+                                <span class="section-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">💰</span>
+                                <div>
+                                    <h3>Sales Invoices</h3>
+                                    <span class="section-count">
+                                        <t t-esc="(state.reportData.sales?.paid?.length || 0) + (state.reportData.sales?.unpaid?.length || 0)"/> invoices
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="section-total">
+                                <div class="total-amount" t-esc="formatNumber(state.reportData.sales?.grand_total || 0)"/> AED
+                                <div class="total-tax">Tax: <t t-esc="formatNumber(state.reportData.sales?.grand_total_tax || 0)"/></div>
+                            </div>
+                        </div>
+
+                        <!-- Paid Sales -->
+                        <div class="subsection">
+                            <div class="subsection-header paid" t-on-click="() => this.toggleSection('paidSales')">
+                                <div class="subsection-title">
+                                    <i t-att-class="'fa ' + (isSectionExpanded('paidSales') ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                    <span class="status-icon">✅</span>
+                                    <span>Paid Sales</span>
+                                    <span class="badge bg-success ms-2"><t t-esc="state.reportData.sales?.paid?.length || 0"/></span>
+                                </div>
+                                <div class="subsection-total">
+                                    <t t-esc="formatNumber(state.reportData.sales?.total_paid || 0)"/> AED
+                                </div>
+                            </div>
+                            <div t-if="isSectionExpanded('paidSales')" class="subsection-content">
+                                <div class="table-responsive">
+                                    <table class="report-table sales-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <th>Customer</th>
+                                                <th>Date</th>
+                                                <th class="text-end col-cash">💵 Cash</th>
+                                                <th class="text-end col-bank">🏦 Bank</th>
+                                                <th class="text-end col-comm">💳 Comm.</th>
+                                                <th class="text-end col-ctax">📊 C.Tax</th>
+                                                <th class="text-end">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="!state.reportData.sales?.paid?.length">
+                                                <tr><td colspan="8" class="text-center text-muted">No paid sales invoices</td></tr>
+                                            </t>
+                                            <t t-foreach="state.reportData.sales?.paid || []" t-as="inv" t-key="inv.id">
+                                                <tr>
+                                                    <td>
+                                                        <a class="invoice-link" t-on-click="() => this.openInvoice(inv.id, 'out_invoice')">
+                                                            📄 <t t-esc="inv.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a class="partner-link" t-on-click="() => this.openPartner(inv.partner_id)">
+                                                            <t t-esc="inv.partner"/>
+                                                        </a>
+                                                    </td>
+                                                    <td t-esc="inv.date"/>
+                                                    <td class="text-end text-success" t-esc="formatNumber(inv.cash_amount || 0)"/>
+                                                    <td class="text-end text-primary" t-esc="formatNumber(inv.bank_amount || 0)"/>
+                                                    <td class="text-end text-warning" t-esc="formatNumber(inv.commission_amount || 0)"/>
+                                                    <td class="text-end text-purple" t-esc="formatNumber(inv.commission_tax_account_amount || 0)"/>
+                                                    <td class="text-end fw-bold" t-esc="formatNumber(inv.amount_total)"/>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Unpaid Sales -->
+                        <div class="subsection">
+                            <div class="subsection-header unpaid" t-on-click="() => this.toggleSection('unpaidSales')">
+                                <div class="subsection-title">
+                                    <i t-att-class="'fa ' + (isSectionExpanded('unpaidSales') ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                    <span class="status-icon">⏳</span>
+                                    <span>Unpaid Sales</span>
+                                    <span class="badge bg-warning ms-2"><t t-esc="state.reportData.sales?.unpaid?.length || 0"/></span>
+                                </div>
+                                <div class="subsection-total">
+                                    <t t-esc="formatNumber(state.reportData.sales?.total_unpaid || 0)"/> AED
+                                </div>
+                            </div>
+                            <div t-if="isSectionExpanded('unpaidSales')" class="subsection-content">
+                                <div class="table-responsive">
+                                    <table class="report-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Invoice</th>
+                                                <th>Customer</th>
+                                                <th>Date</th>
+                                                <th>Payment Type</th>
+                                                <th class="text-end">Untaxed</th>
+                                                <th class="text-end">Tax</th>
+                                                <th class="text-end">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="!state.reportData.sales?.unpaid?.length">
+                                                <tr><td colspan="7" class="text-center text-muted">No unpaid sales invoices</td></tr>
+                                            </t>
+                                            <t t-foreach="state.reportData.sales?.unpaid || []" t-as="inv" t-key="inv.id">
+                                                <tr>
+                                                    <td>
+                                                        <a class="invoice-link" t-on-click="() => this.openInvoice(inv.id, 'out_invoice')">
+                                                            📄 <t t-esc="inv.name"/>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <a class="partner-link" t-on-click="() => this.openPartner(inv.partner_id)">
+                                                            <t t-esc="inv.partner"/>
+                                                        </a>
+                                                    </td>
+                                                    <td t-esc="inv.date"/>
+                                                    <td>
+                                                        <span t-if="inv.payment_type === 'cash'" class="badge bg-success">💵 Cash</span>
+                                                        <span t-elif="inv.payment_type === 'credit'" class="badge bg-info">💳 Credit</span>
+                                                        <span t-else="" class="text-muted">-</span>
+                                                    </td>
+                                                    <td class="text-end" t-esc="formatNumber(inv.amount_untaxed)"/>
+                                                    <td class="text-end" t-esc="formatNumber(inv.amount_tax)"/>
+                                                    <td class="text-end fw-bold" t-esc="formatNumber(inv.amount_total)"/>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ OTHER PAYMENTS SECTION ============ -->
+                    <div class="report-section other-section">
+                        <div class="section-header" style="border-color: #9b59b6;">
+                            <div class="section-title">
+                                <span class="section-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad);">👥</span>
+                                <div>
+                                    <h3>Other Payments</h3>
+                                    <span class="section-count">
+                                        <t t-esc="state.reportData.sales?.other_payments?.length || 0"/> payments
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="section-total">
+                                <div class="total-amount" t-esc="formatNumber(state.reportData.sales?.total_other || 0)"/> AED
+                            </div>
+                        </div>
+
+                        <!-- Other Payments Table -->
+                        <div class="subsection">
+                            <div class="subsection-header other" t-on-click="() => this.toggleSection('otherPayments')">
+                                <div class="subsection-title">
+                                    <i t-att-class="'fa ' + (isSectionExpanded('otherPayments') ? 'fa-chevron-down' : 'fa-chevron-right')"/>
+                                    <span class="status-icon">👥</span>
+                                    <span>Other Payments Details</span>
+                                    <span class="badge bg-secondary ms-2"><t t-esc="state.reportData.sales?.other_payments?.length || 0"/></span>
+                                </div>
+                                <div class="subsection-total">
+                                    <t t-esc="formatNumber(state.reportData.sales?.total_other || 0)"/> AED
+                                </div>
+                            </div>
+                            <div t-if="isSectionExpanded('otherPayments')" class="subsection-content">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice</th>
+                                            <th>Partner</th>
+                                            <th>Account</th>
+                                            <th>Date</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-if="!state.reportData.sales?.other_payments?.length">
+                                            <tr><td colspan="5" class="text-center text-muted">No other payments</td></tr>
+                                        </t>
+                                        <t t-foreach="state.reportData.sales?.other_payments || []" t-as="pay" t-key="pay_index">
+                                            <tr>
+                                                <td>
+                                                    <a class="invoice-link" t-on-click="() => this.openInvoice(pay.invoice_id, 'entry')">
+                                                        📄 <t t-esc="pay.invoice_name"/>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a class="partner-link" t-on-click="() => this.openPartner(pay.partner_id)">
+                                                        <t t-esc="pay.partner"/>
+                                                    </a>
+                                                </td>
+                                                <td class="text-muted small" t-esc="pay.account"/>
+                                                <td t-esc="pay.date"/>
+                                                <td class="text-end fw-bold text-purple" t-esc="formatNumber(pay.amount)"/>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="dashboard-footer">
+                        <div class="footer-item">
+                            <span class="footer-label">Generated</span>
+                            <span class="footer-value" t-esc="new Date().toLocaleString()"/>
+                        </div>
+                        <div class="footer-item">
+                            <span class="footer-label">Period</span>
+                            <span class="footer-value"><t t-esc="state.dateFrom"/> to <t t-esc="state.dateTo"/></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

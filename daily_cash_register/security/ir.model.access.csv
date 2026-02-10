@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_daily_cash_register_user,daily.cash.register.user,model_daily_cash_register,account.group_account_user,1,1,1,1
+access_daily_cash_register_manager,daily.cash.register.manager,model_daily_cash_register,account.group_account_manager,1,1,1,1
+access_daily_cash_register_line_user,daily.cash.register.line.user,model_daily_cash_register_line,account.group_account_user,1,1,1,1
+access_daily_cash_register_line_manager,daily.cash.register.line.manager,model_daily_cash_register_line,account.group_account_manager,1,1,1,1
+access_daily_register_dashboard_user,daily.register.dashboard.user,model_daily_register_dashboard,account.group_account_user,1,1,1,1
+access_daily_register_dashboard_manager,daily.register.dashboard.manager,model_daily_register_dashboard,account.group_account_manager,1,1,1,1

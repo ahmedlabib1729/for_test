@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Invoice Form -->
+    <record id="view_move_form_expense_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.expense.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add Smart Buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_expenses" type="object" 
+                        class="oe_stat_button" icon="fa-money"
+                        invisible="move_type != 'out_invoice'">
+                    <field name="expense_count" widget="statinfo" 
+                           string="Expenses"/>
+                </button>
+            </xpath>
+            
+            
+            <!-- Add Expenses Tab -->
+            <xpath expr="//page[@id='aml_tab']" position="after">
+                <page string="Related Expenses" name="expenses_tab"
+                      invisible="move_type != 'out_invoice'">
+                    <field name="expense_distribution_ids" readonly="1">
+                        <list string="Expense Distributions" create="0" delete="0">
+                            <field name="expense_id" string="Expense Reference"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="notes"/>
+                            <button name="%(action_invoice_expense)d" string="View Expense" 
+                                    type="action" icon="fa-external-link"
+                                    context="{'search_default_id': expense_id}"/>
+                        </list>
+                    </field>
+                    
+                    <!-- Profitability Summary -->
+                    <group string="Profitability Analysis" 
+                           class="oe_subtotal_footer oe_right">
+                        <field name="amount_untaxed" readonly="1" 
+                               string="Sales (Untaxed)"/>
+                        <field name="invoice_cost" readonly="1" 
+                               string="Cost of Goods"/>
+                        <div class="oe_subtotal_footer_separator"/>
+                        <field name="total_expenses" readonly="1" 
+                               string="Total Expenses"/>
+                        <div class="oe_subtotal_footer_separator oe_inline"/>
+                        <field name="net_profit" readonly="1" 
+                               class="oe_subtotal_footer_separator" 
+                               style="font-weight: bold;"
+                               decoration-success="net_profit &gt; 0"
+                               decoration-danger="net_profit &lt; 0"/>
+                        <field name="profit_margin" readonly="1" 
+                               widget="percentage" string="Profit Margin %"
+                               decoration-success="profit_margin &gt; 0"
+                               decoration-danger="profit_margin &lt; 0"/>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+
+    <!-- Add filter to invoice search view -->
+    <record id="view_account_invoice_filter_expense_inherit" model="ir.ui.view">
+        <field name="name">account.invoice.select.expense.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='late']" position="after">
+                <separator/>
+                <filter string="Has Expenses" name="has_expenses" 
+                        domain="[('expense_count','&gt;',0)]"/>
+                <filter string="Profitable" name="profitable" 
+                        domain="[('net_profit','&gt;',0)]"/>
+                <filter string="Loss" name="loss" 
+                        domain="[('net_profit','&lt;',0)]"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

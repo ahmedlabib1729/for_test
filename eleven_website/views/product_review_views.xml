@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product Review list View -->
+    <record id="view_product_review_list" model="ir.ui.view">
+        <field name="name">product.review.list</field>
+        <field name="model">product.review</field>
+        <field name="arch" type="xml">
+            <list string="Product Reviews">
+                <field name="create_date"/>
+                <field name="product_id"/>
+                <field name="name"/>
+                <field name="rating"/>
+                <field name="is_approved"/>
+                <field name="helpful_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Product Review Form View -->
+    <record id="view_product_review_form" model="ir.ui.view">
+        <field name="name">product.review.form</field>
+        <field name="model">product.review</field>
+        <field name="arch" type="xml">
+            <form string="Product Review">
+                <header>
+                    <field name="is_approved" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="email"/>
+                            <field name="rating"/>
+                        </group>
+                        <group>
+                            <field name="is_verified"/>
+                            <field name="helpful_count"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="title" placeholder="Review title..."/>
+                    </group>
+                    <group>
+                        <field name="comment" placeholder="Write your review..." widget="text"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Review Search View -->
+    <record id="view_product_review_search" model="ir.ui.view">
+        <field name="name">product.review.search</field>
+        <field name="model">product.review</field>
+        <field name="arch" type="xml">
+            <search string="Search Reviews">
+                <field name="product_id"/>
+                <field name="name"/>
+                <field name="comment"/>
+                <filter string="Approved" name="approved" domain="[('is_approved', '=', True)]"/>
+                <filter string="Pending" name="pending" domain="[('is_approved', '=', False)]"/>
+                <filter string="Verified Purchase" name="verified" domain="[('is_verified', '=', True)]"/>
+                <separator/>
+                <filter string="5 Stars" name="five_stars" domain="[('rating', '=', 5)]"/>
+                <filter string="4 Stars" name="four_stars" domain="[('rating', '=', 4)]"/>
+                <filter string="3 Stars" name="three_stars" domain="[('rating', '=', 3)]"/>
+                <filter string="2 Stars" name="two_stars" domain="[('rating', '=', 2)]"/>
+                <filter string="1 Star" name="one_star" domain="[('rating', '=', 1)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Rating" name="group_rating" context="{'group_by': 'rating'}"/>
+                    <filter string="Approved" name="group_approved" context="{'group_by': 'is_approved'}"/>
+                    <filter string="Date" name="group_date" context="{'group_by': 'create_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Review Action -->
+    <record id="action_product_review" model="ir.actions.act_window">
+        <field name="name">Product Reviews</field>
+        <field name="res_model">product.review</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_approved': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No reviews yet!
+            </p>
+            <p>
+                Customer reviews will appear here once submitted from the website.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_product_review"
+              name="Product Reviews"
+              parent="sale.sale_menu_root"
+              action="action_product_review"
+              sequence="50"/>
+
+    <!-- Add Reviews Tab to Product Form -->
+    <record id="view_product_form_inherit_reviews" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.reviews</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Reviews" name="reviews">
+                    <group>
+                        <group>
+                            <field name="review_count" readonly="1"/>
+                            <field name="average_rating" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="review_ids" readonly="1">
+                        <list decoration-success="is_approved == True" decoration-danger="is_approved == False">
+                            <field name="create_date"/>
+                            <field name="name"/>
+                            <field name="rating"/>
+                            <field name="title"/>
+                            <field name="is_approved" invisible="1"/>
+                        </list>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <group>
+                                        <field name="name"/>
+                                        <field name="email"/>
+                                        <field name="rating"/>
+                                    </group>
+                                    <group>
+                                        <field name="is_approved"/>
+                                        <field name="is_verified"/>
+                                        <field name="create_date"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="title"/>
+                                    <field name="comment"/>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Reviews Tab to Product Template Form -->
+    <record id="view_product_template_form_inherit_reviews" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.reviews</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Reviews" name="reviews">
+                    <group>
+                        <group>
+                            <field name="review_count" readonly="1"/>
+                            <field name="average_rating" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="All Variant Reviews">
+                        <p>Total reviews across all variants of this product.</p>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

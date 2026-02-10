@@ -1,0 +1,66 @@
+.o_invoice_profitability_dashboard {
+    padding: 20px;
+    background: #f8f9fa;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.o_invoice_profitability_dashboard .card {
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.o_invoice_profitability_dashboard .card-header {
+    background: #fff;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+.o_invoice_profitability_dashboard .search-box {
+    margin-bottom: 20px;
+}
+
+.o_invoice_profitability_dashboard .search-input-group {
+    max-width: 500px;
+}
+
+.o_invoice_profitability_dashboard table {
+    font-size: 13px;
+}
+
+.o_invoice_profitability_dashboard table thead th {
+    font-weight: 600;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.o_invoice_profitability_dashboard .table-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.o_invoice_profitability_dashboard .text-success {
+    color: #28a745 !important;
+}
+
+.o_invoice_profitability_dashboard .text-danger {
+    color: #dc3545 !important;
+}
+
+.o_invoice_profitability_dashboard .table-secondary {
+    background-color: #f8f9fa;
+}
+
+.o_invoice_profitability_dashboard .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+
+.o_invoice_profitability_dashboard .filter-badge {
+    display: inline-block;
+    margin-left: 5px;
+}

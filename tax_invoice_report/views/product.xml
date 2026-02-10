@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="product_normal_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.template.form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//label[@for='list_price']" position="before">
+                    <field name="gov_fee"/>
+                    <!--                    <field name="gov_fee_account_id"/>-->
+                </xpath>
+            </field>
+        </record>
+        <record id="product_category_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.categ.form</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="inside">
+                    <group>
+                        <field name="not_default_in_categ_report"/>
+
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        <!--
+                <record id="product_template_form_view_inherit" model="ir.ui.view">
+                    <field name="name">product.template.form</field>
+                    <field name="model">product.template</field>
+                    <field name="inherit_id" ref="account.product_template_form_view"/>
+                    <field name="arch" type="xml">
+                        <xpath expr="//group[@name='properties']" position="inside">
+                            <group name="gov_fee_account" string="Government Fee Account">
+                                <field name="gov_fee_account_id"/>
+                            </group>
+                        </xpath>
+                    </field>
+                </record>
+        -->
+    </data>
+</odoo>

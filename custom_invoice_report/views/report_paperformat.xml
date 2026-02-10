@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Custom Paper Format - No Header Margin -->
+    <record id="paperformat_custom_no_margin" model="report.paperformat">
+        <field name="name">Custom Report (No Header Margin)</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Link Paper Format to Journal Voucher Report -->
+    <record id="action_report_journal_voucher" model="ir.actions.report">
+        <field name="name">Journal Voucher Report</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_report.report_journal_voucher_document</field>
+        <field name="report_file">custom_invoice_report.report_journal_voucher_document</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_custom_no_margin"/>
+    </record>
+
+    <!-- Link Paper Format to Payment Receipt Report -->
+    <record id="action_report_customer_payment_receipt" model="ir.actions.report">
+        <field name="name">Customer Payment Receipt</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_report.report_payment_receipt_document</field>
+        <field name="report_file">custom_invoice_report.report_payment_receipt_document</field>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_custom_no_margin"/>
+    </record>
+
+    <!-- Link Paper Format to Vendor Bill Report -->
+    <record id="action_report_vendor_bill" model="ir.actions.report">
+        <field name="name">Vendor Bill (Custom)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_report.report_vendor_bill_document</field>
+        <field name="report_file">custom_invoice_report.report_vendor_bill_document</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_custom_no_margin"/>
+    </record>
+
+</odoo>

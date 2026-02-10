@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Paper Format -->
+    <record id="paperformat_custom_invoice" model="report.paperformat">
+        <field name="name">Custom Invoice Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Define the Report Action -->
+    <record id="action_report_custom_invoice" model="ir.actions.report">
+        <field name="name">Tax Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_report.report_custom_invoice</field>
+        <field name="report_file">custom_invoice_report.report_custom_invoice</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_custom_invoice"/>
+    </record>
+
+    <!-- Invoice Report Template - Main -->
+    <template id="report_custom_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!-- Original Copy -->
+                <t t-call="custom_invoice_report.report_custom_invoice_document">
+                    <t t-set="copy_type" t-value="'Original'"/>
+                </t>
+                <!-- Page Break -->
+                <div style="page-break-after: always;"/>
+                <!-- Duplicate Copy -->
+                <t t-call="custom_invoice_report.report_custom_invoice_document">
+                    <t t-set="copy_type" t-value="'Duplicate'"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Main Invoice Document Template -->
+    <template id="report_custom_invoice_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o"/>
+            <t t-set="company" t-value="o.company_id"/>
+            
+            <div class="page">
+                <!-- Copy Type Badge -->
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <span style="color: black; padding: 5px 20px; border-radius: 3px; font-size: 14px;">
+                        <t t-esc="copy_type"/>
+                    </span>
+                </div>
+
+                <!-- Invoice Title -->
+                <h2 style="text-align: center; color: #2E7D32; margin-bottom: 20px;">Tax Invoice / فاتورة ضريبية</h2>
+
+                <!-- Invoice Info Section -->
+                <table style="width: 100%; margin-bottom: 20px; font-size: 13px;">
+                    <tr>
+                        <td style="width: 15%; padding: 5px;"><strong>Invoice NO.:</strong></td>
+                        <td style="width: 35%; padding: 5px;"><t t-esc="o.name"/></td>
+                        <td style="width: 15%; padding: 5px;"><strong>Date:</strong></td>
+                        <td style="width: 35%; padding: 5px;"><t t-esc="o.invoice_date" t-options="{'widget': 'date'}"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px;"><strong>Customer:</strong></td>
+                        <td style="padding: 5px;"><t t-esc="o.partner_id.name"/></td>
+                        <td style="padding: 5px;"><strong>Payment Type:</strong></td>
+                        <td style="padding: 5px;">
+                            <t t-if="o.payment_type == 'cash'">Cash</t>
+                            <t t-elif="o.payment_type == 'credit'">Credit</t>
+                            <t t-else="">-</t>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Products Table -->
+                <table class="table table-sm table-bordered" style="font-size: 11px;">
+                    <!-- Table Header -->
+                    <thead>
+                        <tr style=" color: black;">
+                            <th style="text-align: center; width: 5%;">Seq.</th>
+                            <th style="text-align: center; width: 30%;">Item</th>
+                            <th style="text-align: center; width: 15%;">Description</th>
+                            <th style="text-align: center; width: 8%;">QTY</th>
+                            <th style="text-align: center; width: 8%;">UNIT</th>
+                            <th style="text-align: center; width: 10%;">Price</th>
+                            <th style="text-align: center; width: 12%;">Amount</th>
+                        </tr>
+                    </thead>
+                    <!-- Table Body -->
+                    <tbody>
+                        <t t-set="seq" t-value="0"/>
+                        <t t-foreach="o.invoice_line_ids" t-as="line">
+                            <t t-if="line.display_type == False or line.display_type == 'product'">
+                                <t t-set="seq" t-value="seq + 1"/>
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <t t-esc="seq"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="line.product_id.name or line.name"/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <t t-esc="line.x_custom_description or ''"/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <t t-esc="'%.2f' % line.quantity"/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <t t-esc="line.product_uom_id.name or ''"/>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <t t-esc="'%.2f' % line.price_unit"/>
+                                    </td>
+
+                                    <td style="text-align: center;">
+                                        <t t-esc="'%.2f' % line.price_subtotal"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+
+                <!-- Totals Section -->
+                <table style="width: 100%; margin-top: 20px; font-size: 13px;">
+                    <tr>
+                        <td style="width: 70%;"></td>
+                        <td style="width: 15%; text-align: right; padding: 5px;"><strong>SubTotal</strong></td>
+                        <td style="width: 15%; text-align: right; padding: 5px; color: #2E7D32; font-weight: bold;">
+                            <t t-esc="'%.2f' % o.amount_untaxed"/> <t t-esc="o.currency_id.name"/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td></td>
+                        <td style="text-align: right; padding: 5px; border-top: 2px solid #2E7D32;"><strong>TOTAL</strong></td>
+                        <td style="text-align: right; padding: 5px; border-top: 2px solid #2E7D32; color: #2E7D32; font-weight: bold; font-size: 15px;">
+                            <t t-esc="'%.2f' % o.amount_total"/> <t t-esc="o.currency_id.name"/>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

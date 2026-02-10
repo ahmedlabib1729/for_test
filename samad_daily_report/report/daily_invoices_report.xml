@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report Action -->
+    <record id="action_report_daily_invoices" model="ir.actions.report">
+        <field name="name">Daily Invoices Report</field>
+        <field name="model">daily.invoices.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">samad_daily_report.report_daily_invoices_document</field>
+        <field name="report_file">samad_daily_report.report_daily_invoices_document</field>
+        <field name="print_report_name">'Daily_Invoices_Report_%s_%s' % (object.date_from, object.date_to)</field>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="samad_daily_report.paperformat_daily_invoices"/>
+    </record>
+
+    <!-- Paper Format -->
+    <record id="paperformat_daily_invoices" model="report.paperformat">
+        <field name="name">Daily Invoices Report Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Template -->
+    <template id="report_daily_invoices_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="samad_daily_report.report_daily_invoices_content"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report Content -->
+    <template id="report_daily_invoices_content">
+        <div class="page" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+            
+            <!-- Inline Styles -->
+            <style>
+                .report-header {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 25px;
+                    border-radius: 12px;
+                    margin-bottom: 25px;
+                    text-align: center;
+                }
+                .report-header h1 {
+                    margin: 0;
+                    font-size: 28px;
+                    font-weight: 700;
+                }
+                .report-header .subtitle {
+                    font-size: 14px;
+                    opacity: 0.9;
+                    margin-top: 8px;
+                }
+                .report-header .date-range {
+                    background: rgba(255,255,255,0.2);
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    display: inline-block;
+                    margin-top: 12px;
+                    font-size: 13px;
+                }
+                
+                .summary-cards {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 25px;
+                    flex-wrap: wrap;
+                }
+                .summary-card {
+                    flex: 1;
+                    min-width: 120px;
+                    padding: 18px 12px;
+                    border-radius: 10px;
+                    text-align: center;
+                    color: white;
+                }
+                .summary-card.purchases { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+                .summary-card.sales { background: linear-gradient(135deg, #27ae60, #1e8449); }
+                .summary-card.cash { background: linear-gradient(135deg, #00b894, #00cec9); }
+                .summary-card.bank { background: linear-gradient(135deg, #0984e3, #74b9ff); }
+                .summary-card.commission { background: linear-gradient(135deg, #fdcb6e, #f39c12); }
+                .summary-card .card-label {
+                    font-size: 11px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    opacity: 0.9;
+                }
+                .summary-card .card-value {
+                    font-size: 20px;
+                    font-weight: 700;
+                    margin-top: 5px;
+                }
+                .summary-card .card-details {
+                    font-size: 10px;
+                    margin-top: 8px;
+                    padding-top: 8px;
+                    border-top: 1px solid rgba(255,255,255,0.3);
+                }
+                .summary-card .in-val { color: #a8ffc4; }
+                .summary-card .out-val { color: #ffc4c4; }
+                
+                .section {
+                    margin-bottom: 25px;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                }
+                .section-header {
+                    padding: 14px 20px;
+                    color: white;
+                    font-weight: 600;
+                    font-size: 15px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .section-header.purchases { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+                .section-header.sales { background: linear-gradient(135deg, #27ae60, #1e8449); }
+                .section-header.other { background: linear-gradient(135deg, #636e72, #2d3436); }
+                .section-header .section-total {
+                    font-size: 18px;
+                    font-weight: 700;
+                }
+                
+                table.invoice-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 11px;
+                }
+                table.invoice-table th {
+                    background: #34495e;
+                    color: white;
+                    padding: 10px 8px;
+                    text-align: center;
+                    font-weight: 600;
+                    font-size: 10px;
+                }
+                table.invoice-table td {
+                    padding: 10px 8px;
+                    text-align: center;
+                    border-bottom: 1px solid #ecf0f1;
+                }
+                table.invoice-table tr:nth-child(even) {
+                    background: #f8f9fa;
+                }
+                table.invoice-table tr:hover {
+                    background: #e8f4f8;
+                }
+                table.invoice-table .text-left {
+                    text-align: left;
+                }
+                table.invoice-table .status-paid {
+                    background: #27ae60;
+                    color: white;
+                    padding: 3px 10px;
+                    border-radius: 12px;
+                    font-size: 9px;
+                    font-weight: 600;
+                }
+                table.invoice-table .status-unpaid {
+                    background: #e74c3c;
+                    color: white;
+                    padding: 3px 10px;
+                    border-radius: 12px;
+                    font-size: 9px;
+                    font-weight: 600;
+                }
+                table.invoice-table .total-row {
+                    background: #2c3e50 !important;
+                    color: white;
+                    font-weight: 700;
+                }
+                table.invoice-table .total-row td {
+                    border: none;
+                    padding: 12px 8px;
+                }
+                
+                .footer {
+                    margin-top: 30px;
+                    padding-top: 15px;
+                    border-top: 2px solid #ecf0f1;
+                    text-align: center;
+                    font-size: 10px;
+                    color: #7f8c8d;
+                }
+                .footer .company-name {
+                    font-weight: 600;
+                    color: #2c3e50;
+                    font-size: 12px;
+                }
+                
+                .no-data {
+                    text-align: center;
+                    padding: 30px;
+                    color: #95a5a6;
+                    font-style: italic;
+                }
+            </style>
+            
+            <!-- Report Header -->
+            <div class="report-header">
+                <h1>📊 Daily Invoices Report</h1>
+                <div class="subtitle">تقرير الفواتير اليومي</div>
+                <div class="date-range">
+                    <strong>From:</strong> <t t-esc="doc.date_from"/> 
+                    <span style="margin: 0 10px;">—</span>
+                    <strong>To:</strong> <t t-esc="doc.date_to"/>
+                </div>
+            </div>
+            
+            <!-- Summary Cards -->
+            <t t-set="report_data" t-value="doc.get_report_data()"/>
+            
+            <div class="summary-cards">
+                <div class="summary-card purchases">
+                    <div class="card-label">Total Purchases</div>
+                    <div class="card-label" style="font-size: 9px;">إجمالي المشتريات</div>
+                    <div class="card-value"><t t-esc="'{:,.2f}'.format(report_data['purchases']['grand_total'])"/></div>
+                </div>
+                <div class="summary-card sales">
+                    <div class="card-label">Total Sales</div>
+                    <div class="card-label" style="font-size: 9px;">إجمالي المبيعات</div>
+                    <div class="card-value"><t t-esc="'{:,.2f}'.format(report_data['sales']['grand_total'])"/></div>
+                </div>
+                <div class="summary-card cash">
+                    <div class="card-label">Net Cash</div>
+                    <div class="card-label" style="font-size: 9px;">صافي الكاش</div>
+                    <div class="card-value"><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['net_cash'])"/></div>
+                    <div class="card-details">
+                        <span class="in-val">▲ <t t-esc="'{:,.2f}'.format(report_data['payment_summary']['cash_in'])"/></span>
+                        <span style="margin: 0 5px;">|</span>
+                        <span class="out-val">▼ <t t-esc="'{:,.2f}'.format(report_data['payment_summary']['cash_out'])"/></span>
+                    </div>
+                </div>
+                <div class="summary-card bank">
+                    <div class="card-label">Net Bank</div>
+                    <div class="card-label" style="font-size: 9px;">صافي البنك</div>
+                    <div class="card-value"><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['net_bank'])"/></div>
+                    <div class="card-details">
+                        <span class="in-val">▲ <t t-esc="'{:,.2f}'.format(report_data['payment_summary']['bank_in'])"/></span>
+                        <span style="margin: 0 5px;">|</span>
+                        <span class="out-val">▼ <t t-esc="'{:,.2f}'.format(report_data['payment_summary']['bank_out'])"/></span>
+                    </div>
+                </div>
+                <div class="summary-card commission">
+                    <div class="card-label">Commission</div>
+                    <div class="card-label" style="font-size: 9px;">العمولة</div>
+                    <div class="card-value"><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['total_commission'])"/></div>
+                </div>
+            </div>
+            
+            <!-- Purchases Section -->
+            <div class="section">
+                <div class="section-header purchases">
+                    <span>🛒 Purchase Invoices - فواتير المشتريات</span>
+                    <span class="section-total"><t t-esc="'{:,.2f}'.format(report_data['purchases']['grand_total'])"/> AED</span>
+                </div>
+                
+                <t t-if="report_data['purchases']['paid'] or report_data['purchases']['unpaid']">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 12%;">Invoice<br/>الفاتورة</th>
+                                <th style="width: 28%;" class="text-left">Vendor<br/>المورد</th>
+                                <th style="width: 10%;">Date<br/>التاريخ</th>
+                                <th style="width: 10%;">Status<br/>الحالة</th>
+                                <th style="width: 13%;">Untaxed<br/>قبل الضريبة</th>
+                                <th style="width: 12%;">Tax<br/>الضريبة</th>
+                                <th style="width: 15%;">Total<br/>الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data['purchases']['paid']" t-as="inv">
+                                <tr>
+                                    <td><t t-esc="inv['name']"/></td>
+                                    <td class="text-left"><t t-esc="inv['partner']"/></td>
+                                    <td><t t-esc="inv['date']"/></td>
+                                    <td><span class="status-paid">Paid ✓</span></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv['amount_untaxed'])"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv['amount_tax'])"/></td>
+                                    <td><strong><t t-esc="'{:,.2f}'.format(inv['amount_total'])"/></strong></td>
+                                </tr>
+                            </t>
+                            <t t-foreach="report_data['purchases']['unpaid']" t-as="inv">
+                                <tr>
+                                    <td><t t-esc="inv['name']"/></td>
+                                    <td class="text-left"><t t-esc="inv['partner']"/></td>
+                                    <td><t t-esc="inv['date']"/></td>
+                                    <td><span class="status-unpaid">Unpaid ✗</span></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv['amount_untaxed'])"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv['amount_tax'])"/></td>
+                                    <td><strong><t t-esc="'{:,.2f}'.format(inv['amount_total'])"/></strong></td>
+                                </tr>
+                            </t>
+                            <tr class="total-row">
+                                <td colspan="4" style="text-align: right;">TOTAL - الإجمالي</td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['purchases']['grand_total'] - report_data['purchases']['grand_total_tax'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['purchases']['grand_total_tax'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['purchases']['grand_total'])"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+                <t t-else="">
+                    <div class="no-data">No purchase invoices found - لا توجد فواتير مشتريات</div>
+                </t>
+            </div>
+            
+            <!-- Sales Section -->
+            <div class="section">
+                <div class="section-header sales">
+                    <span>💰 Sales Invoices - فواتير المبيعات</span>
+                    <span class="section-total"><t t-esc="'{:,.2f}'.format(report_data['sales']['grand_total'])"/> AED</span>
+                </div>
+                
+                <t t-if="report_data['sales']['paid'] or report_data['sales']['unpaid']">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">Invoice<br/>الفاتورة</th>
+                                <th style="width: 22%;" class="text-left">Customer<br/>العميل</th>
+                                <th style="width: 8%;">Date<br/>التاريخ</th>
+                                <th style="width: 8%;">Status<br/>الحالة</th>
+                                <th style="width: 10%;">Cash<br/>كاش</th>
+                                <th style="width: 10%;">Bank<br/>بنك</th>
+                                <th style="width: 10%;">Comm.<br/>عمولة</th>
+                                <th style="width: 10%;">Tax<br/>الضريبة</th>
+                                <th style="width: 12%;">Total<br/>الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data['sales']['paid']" t-as="inv">
+                                <tr>
+                                    <td><t t-esc="inv['name']"/></td>
+                                    <td class="text-left"><t t-esc="inv['partner']"/></td>
+                                    <td><t t-esc="inv['date']"/></td>
+                                    <td><span class="status-paid">Paid ✓</span></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv.get('cash_amount', 0))"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv.get('bank_amount', 0))"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv.get('commission_amount', 0))"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv['amount_tax'])"/></td>
+                                    <td><strong><t t-esc="'{:,.2f}'.format(inv['amount_total'])"/></strong></td>
+                                </tr>
+                            </t>
+                            <t t-foreach="report_data['sales']['unpaid']" t-as="inv">
+                                <tr>
+                                    <td><t t-esc="inv['name']"/></td>
+                                    <td class="text-left"><t t-esc="inv['partner']"/></td>
+                                    <td><t t-esc="inv['date']"/></td>
+                                    <td><span class="status-unpaid">Unpaid ✗</span></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv.get('cash_amount', 0))"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv.get('bank_amount', 0))"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv.get('commission_amount', 0))"/></td>
+                                    <td><t t-esc="'{:,.2f}'.format(inv['amount_tax'])"/></td>
+                                    <td><strong><t t-esc="'{:,.2f}'.format(inv['amount_total'])"/></strong></td>
+                                </tr>
+                            </t>
+                            <tr class="total-row">
+                                <td colspan="4" style="text-align: right;">TOTAL - الإجمالي</td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['cash_in'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['bank_in'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['total_commission'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['sales']['grand_total_tax'])"/></td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['sales']['grand_total'])"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+                <t t-else="">
+                    <div class="no-data">No sales invoices found - لا توجد فواتير مبيعات</div>
+                </t>
+            </div>
+            
+            <!-- Other Payments Section -->
+            <t t-if="report_data['sales']['other_payments']">
+                <div class="section">
+                    <div class="section-header other">
+                        <span>👥 Other Payments - مدفوعات أخرى</span>
+                        <span class="section-total"><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['total_other'])"/> AED</span>
+                    </div>
+                    
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Entry<br/>القيد</th>
+                                <th style="width: 25%;" class="text-left">Partner<br/>الشريك</th>
+                                <th style="width: 30%;" class="text-left">Account<br/>الحساب</th>
+                                <th style="width: 12%;">Date<br/>التاريخ</th>
+                                <th style="width: 18%;">Amount<br/>المبلغ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="report_data['sales']['other_payments']" t-as="pay">
+                                <tr>
+                                    <td><t t-esc="pay['invoice_name']"/></td>
+                                    <td class="text-left"><t t-esc="pay['partner']"/></td>
+                                    <td class="text-left"><t t-esc="pay['account']"/></td>
+                                    <td><t t-esc="pay['date']"/></td>
+                                    <td><strong><t t-esc="'{:,.2f}'.format(pay['amount'])"/></strong></td>
+                                </tr>
+                            </t>
+                            <tr class="total-row">
+                                <td colspan="4" style="text-align: right;">TOTAL - الإجمالي</td>
+                                <td><t t-esc="'{:,.2f}'.format(report_data['payment_summary']['total_other'])"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <div class="company-name"><t t-esc="doc.env.company.name"/></div>
+                <div style="margin-top: 5px;">
+                    Generated on: <t t-esc="doc.get_current_datetime()"/>
+                </div>
+                <div style="margin-top: 3px; font-size: 9px;">
+                    Daily Invoices Report Module | Powered by Odoo
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+</odoo>

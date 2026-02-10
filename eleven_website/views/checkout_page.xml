@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==========================================
+         STEP 2: PAYMENT PAGE WITH ODOO PAYMENT FORM
+         ========================================== -->
+    <template id="eleven_payment_page" name="Eleven Payment">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <!-- Breadcrumb -->
+                <div class="eleven_simple_breadcrumb">
+                    <div class="container">
+                        <a href="/">Home</a>
+                        <span class="separator">/</span>
+                        <a href="/cart">Cart</a>
+                        <span class="separator">/</span>
+                        <a href="/eleven/checkout">Shipping</a>
+                        <span class="separator">/</span>
+                        <span>Payment</span>
+                    </div>
+                </div>
+
+                <section class="eleven_checkout_section">
+                    <div class="container">
+
+                        <!-- Progress Steps -->
+                        <div class="eleven_checkout_steps">
+                            <div class="eleven_step completed">
+                                <span class="step_number"><i class="fa fa-check"></i></span>
+                                <span class="step_label">Shipping</span>
+                            </div>
+                            <div class="eleven_step_line completed"></div>
+                            <div class="eleven_step active">
+                                <span class="step_number">2</span>
+                                <span class="step_label">Payment</span>
+                            </div>
+                            <div class="eleven_step_line"></div>
+                            <div class="eleven_step">
+                                <span class="step_number">3</span>
+                                <span class="step_label">Confirmation</span>
+                            </div>
+                        </div>
+
+                        <h1 class="eleven_checkout_title">Payment Method</h1>
+
+                        <!-- Error Messages -->
+                        <t t-if="error_message">
+                            <div class="eleven_alert eleven_alert_error">
+                                <i class="fa fa-exclamation-circle"></i>
+                                <t t-esc="error_message"/>
+                            </div>
+                        </t>
+
+                        <div class="eleven_checkout_grid">
+
+                            <!-- Left: Payment Form -->
+                            <div class="eleven_checkout_left">
+
+                                <!-- Shipping Summary -->
+                                <div class="eleven_checkout_box eleven_address_summary">
+                                    <div class="eleven_summary_header">
+                                        <h2 class="eleven_box_title">
+                                            <i class="fa fa-map-marker"></i> Shipping To
+                                        </h2>
+                                        <a href="/eleven/checkout" class="eleven_change_link">Change</a>
+                                    </div>
+                                    <div class="eleven_address_preview">
+                                        <strong t-esc="order.partner_shipping_id.name"/>
+                                        <p>
+                                            <t t-esc="order.partner_shipping_id.street"/>
+                                            <t t-if="order.partner_shipping_id.street2">, <t t-esc="order.partner_shipping_id.street2"/></t>
+                                            <br/>
+                                            <t t-esc="order.partner_shipping_id.city"/>,
+                                            <t t-esc="order.partner_shipping_id.country_id.name"/>
+                                            <br/>
+                                            <i class="fa fa-phone"></i> <t t-esc="order.partner_shipping_id.phone or '-'"/>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Form Box -->
+                                <div class="eleven_checkout_box">
+                                    <h2 class="eleven_box_title">
+                                        <i class="fa fa-credit-card"></i> Payment Method
+                                    </h2>
+
+                                    <!-- Odoo Payment Form -->
+                                    <div id="eleven_payment_form_container">
+                                        <t t-call="payment.form">
+                                            <t t-set="show_partner_details" t-value="False"/>
+                                        </t>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Right: Order Summary -->
+                            <div class="eleven_checkout_right">
+                                <div class="eleven_order_summary">
+                                    <h2 class="eleven_box_title">Order Summary</h2>
+
+                                    <div class="eleven_summary_items">
+                                        <t t-foreach="order.order_line" t-as="line">
+                                            <div class="eleven_summary_item">
+                                                <div class="eleven_item_image">
+                                                    <img t-attf-src="/web/image/product.product/#{line.product_id.id}/image_128"
+                                                         t-att-alt="line.product_id.display_name"/>
+                                                    <span class="eleven_item_qty" t-esc="int(line.product_uom_qty)"/>
+                                                </div>
+                                                <div class="eleven_item_details">
+                                                    <h4 t-esc="line.product_id.display_name"/>
+                                                </div>
+                                                <div class="eleven_item_price">
+                                                    <span t-field="line.price_subtotal"
+                                                          t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+
+                                    <div class="eleven_summary_totals">
+                                        <div class="eleven_total_row">
+                                            <span>Subtotal</span>
+                                            <span t-field="order.amount_untaxed"
+                                                  t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                        </div>
+                                        <div class="eleven_total_row">
+                                            <span>Shipping</span>
+                                            <span class="eleven_free_shipping">FREE</span>
+                                        </div>
+                                        <t t-if="order.amount_tax > 0">
+                                            <div class="eleven_total_row">
+                                                <span>Tax</span>
+                                                <span t-field="order.amount_tax"
+                                                      t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                            </div>
+                                        </t>
+                                        <div class="eleven_total_row eleven_grand_total">
+                                            <span>Total</span>
+                                            <span t-field="order.amount_total"
+                                                  t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                        </div>
+                                    </div>
+
+                                    <p class="eleven_secure_note">
+                                        <i class="fa fa-shield"></i>
+                                        Your payment information is secure and encrypted
+                                    </p>
+
+                                    <a href="/eleven/checkout" class="eleven_edit_cart_link">
+                                        <i class="fa fa-arrow-left"></i> Back to Shipping
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+
+    <!-- ==========================================
+         STEP 1: SHIPPING ADDRESS PAGE
+         ========================================== -->
+    <template id="eleven_checkout_page" name="Eleven Checkout - Shipping">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <div class="eleven_simple_breadcrumb">
+                    <div class="container">
+                        <a href="/">Home</a>
+                        <span class="separator">/</span>
+                        <a href="/cart">Cart</a>
+                        <span class="separator">/</span>
+                        <span>Checkout</span>
+                    </div>
+                </div>
+
+                <t t-if="not order or not order.order_line">
+                    <section class="eleven_checkout_section">
+                        <div class="container">
+                            <div class="eleven_empty_checkout">
+                                <i class="fa fa-shopping-cart"></i>
+                                <h2>Your cart is empty</h2>
+                                <a href="/products" class="eleven_btn eleven_btn_primary">Continue Shopping</a>
+                            </div>
+                        </div>
+                    </section>
+                </t>
+
+                <t t-if="order and order.order_line">
+                    <section class="eleven_checkout_section">
+                        <div class="container">
+
+                            <!-- Progress Steps -->
+                            <div class="eleven_checkout_steps">
+                                <div class="eleven_step active">
+                                    <span class="step_number">1</span>
+                                    <span class="step_label">Shipping</span>
+                                </div>
+                                <div class="eleven_step_line"></div>
+                                <div class="eleven_step">
+                                    <span class="step_number">2</span>
+                                    <span class="step_label">Payment</span>
+                                </div>
+                                <div class="eleven_step_line"></div>
+                                <div class="eleven_step">
+                                    <span class="step_number">3</span>
+                                    <span class="step_label">Confirmation</span>
+                                </div>
+                            </div>
+
+                            <h1 class="eleven_checkout_title">Shipping Information</h1>
+
+                            <t t-if="error_message">
+                                <div class="eleven_alert eleven_alert_error">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    <t t-esc="error_message"/>
+                                </div>
+                            </t>
+
+                            <form action="/eleven/checkout/save-address" method="POST" id="checkout_form">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="eleven_checkout_grid">
+
+                                    <div class="eleven_checkout_left">
+
+                                        <t t-if="is_logged_in and saved_addresses">
+                                            <div class="eleven_checkout_box">
+                                                <h2 class="eleven_box_title">
+                                                    <i class="fa fa-map-marker"></i> Shipping Address
+                                                </h2>
+
+                                                <div class="eleven_saved_addresses">
+                                                    <t t-foreach="saved_addresses" t-as="addr">
+                                                        <label t-att-class="'eleven_address_card selected' if addr.id == default_address_id else 'eleven_address_card'">
+                                                            <input type="radio" name="address_id" t-att-value="addr.id"
+                                                                   t-att-checked="'checked' if addr.id == default_address_id else None"/>
+                                                            <div class="eleven_address_content">
+                                                                <strong t-esc="addr.name"/>
+                                                                <span t-if="addr.id == default_address_id" class="eleven_default_badge">Default</span>
+                                                                <p>
+                                                                    <t t-esc="addr.street"/>
+                                                                    <t t-if="addr.street2"><br/><t t-esc="addr.street2"/></t><br/>
+                                                                    <t t-esc="addr.city"/>, <t t-esc="addr.country_id.name"/><br/>
+                                                                    <i class="fa fa-phone"></i> <t t-esc="addr.phone or '-'"/>
+                                                                </p>
+                                                                <a t-attf-href="/eleven/checkout/address/edit/#{addr.id}" class="eleven_link_btn">
+                                                                    <i class="fa fa-edit"></i> Edit
+                                                                </a>
+                                                            </div>
+                                                        </label>
+                                                    </t>
+
+                                                    <label class="eleven_address_card eleven_add_new">
+                                                        <input type="radio" name="address_id" value="new"/>
+                                                        <div class="eleven_address_content">
+                                                            <i class="fa fa-plus-circle"></i>
+                                                            <span>Add New Address</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+
+                                                <div class="eleven_new_address_form" id="new_address_form" style="display: none;">
+                                                    <h3>New Shipping Address</h3>
+                                                    <t t-call="eleven_website.address_form_fields"/>
+                                                    <label class="eleven_checkbox_label">
+                                                        <input type="checkbox" name="save_address" value="1" checked="checked"/>
+                                                        Save this address
+                                                    </label>
+                                                    <label class="eleven_checkbox_label">
+                                                        <input type="checkbox" name="set_default" value="1"/>
+                                                        Set as default
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </t>
+
+                                        <t t-if="not is_logged_in or not saved_addresses">
+                                            <div class="eleven_checkout_box">
+                                                <h2 class="eleven_box_title">
+                                                    <i class="fa fa-map-marker"></i> Shipping Address
+                                                </h2>
+
+                                                <t t-if="not is_logged_in">
+                                                    <div class="eleven_guest_notice">
+                                                        <p><i class="fa fa-info-circle"></i>
+                                                            <a href="/web/login?redirect=/eleven/checkout">Login</a> to use saved addresses.
+                                                        </p>
+                                                    </div>
+                                                </t>
+
+                                                <input type="hidden" name="address_id" value="new"/>
+                                                <t t-call="eleven_website.address_form_fields"/>
+
+                                                <t t-if="is_logged_in">
+                                                    <label class="eleven_checkbox_label">
+                                                        <input type="checkbox" name="save_address" value="1" checked="checked"/>
+                                                        Save this address
+                                                    </label>
+                                                </t>
+                                            </div>
+                                        </t>
+
+                                        <div class="eleven_checkout_box">
+                                            <h2 class="eleven_box_title"><i class="fa fa-user"></i> Contact</h2>
+                                            <div class="eleven_form_row">
+                                                <div class="eleven_form_group">
+                                                    <label>Email *</label>
+                                                    <input type="email" name="email" required="required"
+                                                           t-att-value="partner.email if is_logged_in else ''"/>
+                                                </div>
+                                                <div class="eleven_form_group">
+                                                    <label>Phone *</label>
+                                                    <input type="tel" name="contact_phone" required="required"
+                                                           t-att-value="partner.phone if is_logged_in else ''"/>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="eleven_checkout_box">
+                                            <h2 class="eleven_box_title"><i class="fa fa-comment"></i> Notes (Optional)</h2>
+                                            <textarea name="order_notes" rows="3" placeholder="Special instructions..."></textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="eleven_checkout_right">
+                                        <div class="eleven_order_summary">
+                                            <h2 class="eleven_box_title">Order Summary</h2>
+
+                                            <div class="eleven_summary_items">
+                                                <t t-foreach="order.order_line" t-as="line">
+                                                    <div class="eleven_summary_item">
+                                                        <div class="eleven_item_image">
+                                                            <img t-attf-src="/web/image/product.product/#{line.product_id.id}/image_128"/>
+                                                            <span class="eleven_item_qty" t-esc="int(line.product_uom_qty)"/>
+                                                        </div>
+                                                        <div class="eleven_item_details">
+                                                            <h4 t-esc="line.product_id.display_name"/>
+                                                        </div>
+                                                        <div class="eleven_item_price">
+                                                            <span t-field="line.price_subtotal"
+                                                                  t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+
+                                            <div class="eleven_summary_totals">
+                                                <div class="eleven_total_row">
+                                                    <span>Subtotal</span>
+                                                    <span t-field="order.amount_untaxed"
+                                                          t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                </div>
+                                                <div class="eleven_total_row">
+                                                    <span>Shipping</span>
+                                                    <span class="eleven_free_shipping">FREE</span>
+                                                </div>
+                                                <t t-if="order.amount_tax > 0">
+                                                    <div class="eleven_total_row">
+                                                        <span>Tax</span>
+                                                        <span t-field="order.amount_tax"
+                                                              t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                    </div>
+                                                </t>
+                                                <div class="eleven_total_row eleven_grand_total">
+                                                    <span>Total</span>
+                                                    <span t-field="order.amount_total"
+                                                          t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="eleven_btn_place_order">
+                                                Continue to Payment <i class="fa fa-arrow-right"></i>
+                                            </button>
+
+                                            <a href="/cart" class="eleven_edit_cart_link">
+                                                <i class="fa fa-edit"></i> Edit Cart
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+                </t>
+
+            </div>
+        </t>
+    </template>
+
+
+    <!-- ==========================================
+         STEP 3: BEAUTIFUL CONFIRMATION PAGE
+         ========================================== -->
+    <template id="eleven_order_confirmation" name="Order Confirmation">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+
+                <section class="eleven_confirmation_section">
+                    <div class="container">
+
+                        <!-- Progress Steps - All Completed -->
+                        <div class="eleven_checkout_steps">
+                            <div class="eleven_step completed">
+                                <span class="step_number"><i class="fa fa-check"></i></span>
+                                <span class="step_label">Shipping</span>
+                            </div>
+                            <div class="eleven_step_line completed"></div>
+                            <div class="eleven_step completed">
+                                <span class="step_number"><i class="fa fa-check"></i></span>
+                                <span class="step_label">Payment</span>
+                            </div>
+                            <div class="eleven_step_line completed"></div>
+                            <div class="eleven_step completed">
+                                <span class="step_number"><i class="fa fa-check"></i></span>
+                                <span class="step_label">Confirmed</span>
+                            </div>
+                        </div>
+
+                        <!-- Main Confirmation Card -->
+                        <div class="eleven_confirmation_card">
+
+                            <!-- Success Animation -->
+                            <div class="eleven_success_animation">
+                                <div class="eleven_success_checkmark">
+                                    <div class="eleven_checkmark_circle"></div>
+                                    <div class="eleven_checkmark_stem"></div>
+                                    <div class="eleven_checkmark_kick"></div>
+                                </div>
+                            </div>
+
+                            <!-- Thank You Message -->
+                            <div class="eleven_thank_you">
+                                <h1>Thank You for Your Order!</h1>
+                                <p class="eleven_subtitle">Your order has been placed successfully</p>
+                            </div>
+
+                            <!-- Order Number Badge -->
+                            <div class="eleven_order_badge">
+                                <span class="eleven_badge_label">Order Number</span>
+                                <span class="eleven_badge_value" t-esc="order.name"/>
+                            </div>
+
+                            <!-- Confirmation Email Notice -->
+                            <div class="eleven_email_notice">
+                                <i class="fa fa-envelope"></i>
+                                <p>
+                                    A confirmation email has been sent to
+                                    <strong t-esc="order.partner_id.email or order.partner_shipping_id.email or 'your email'"/>
+                                </p>
+                            </div>
+
+                            <!-- Order Details Grid -->
+                            <div class="eleven_confirmation_grid">
+
+                                <!-- Shipping Information -->
+                                <div class="eleven_info_card">
+                                    <div class="eleven_info_header">
+                                        <div class="eleven_info_icon shipping">
+                                            <i class="fa fa-truck"></i>
+                                        </div>
+                                        <h3>Shipping Details</h3>
+                                    </div>
+                                    <div class="eleven_info_content">
+                                        <p class="eleven_customer_name" t-esc="order.partner_shipping_id.name"/>
+                                        <p>
+                                            <t t-esc="order.partner_shipping_id.street"/>
+                                            <t t-if="order.partner_shipping_id.street2">
+                                                <br/><t t-esc="order.partner_shipping_id.street2"/>
+                                            </t>
+                                        </p>
+                                        <p>
+                                            <t t-esc="order.partner_shipping_id.city"/>
+                                            <t t-if="order.partner_shipping_id.state_id">, <t t-esc="order.partner_shipping_id.state_id.name"/></t>
+                                            <t t-if="order.partner_shipping_id.zip"> <t t-esc="order.partner_shipping_id.zip"/></t>
+                                        </p>
+                                        <p t-esc="order.partner_shipping_id.country_id.name"/>
+                                        <p class="eleven_phone">
+                                            <i class="fa fa-phone"></i>
+                                            <t t-esc="order.partner_shipping_id.phone or order.partner_shipping_id.mobile or '-'"/>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Information -->
+                                <div class="eleven_info_card">
+                                    <div class="eleven_info_header">
+                                        <div class="eleven_info_icon payment">
+                                            <i class="fa fa-credit-card"></i>
+                                        </div>
+                                        <h3>Payment Method</h3>
+                                    </div>
+                                    <div class="eleven_info_content">
+                                        <t t-if="order.transaction_ids">
+                                            <t t-set="tx" t-value="order.transaction_ids[-1]"/>
+                                            <p class="eleven_payment_method">
+                                                <t t-esc="tx.provider_id.name or 'Online Payment'"/>
+                                            </p>
+                                            <p class="eleven_payment_status">
+                                                <span class="eleven_status_badge success">
+                                                    <i class="fa fa-check-circle"></i> Payment Confirmed
+                                                </span>
+                                            </p>
+                                        </t>
+                                        <t t-else="">
+                                            <p class="eleven_payment_method">Payment Pending</p>
+                                        </t>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Order Items -->
+                            <div class="eleven_order_items_card">
+                                <div class="eleven_items_header">
+                                    <h3><i class="fa fa-shopping-bag"></i> Order Items</h3>
+                                    <span class="eleven_items_count">
+                                        <t t-esc="len(order.order_line)"/> item(s)
+                                    </span>
+                                </div>
+
+                                <div class="eleven_items_list">
+                                    <t t-foreach="order.order_line" t-as="line">
+                                        <t t-if="not line.is_delivery">
+                                            <div class="eleven_order_item">
+                                                <div class="eleven_item_image">
+                                                    <img t-attf-src="/web/image/product.product/#{line.product_id.id}/image_128"
+                                                         t-att-alt="line.product_id.display_name"/>
+                                                </div>
+                                                <div class="eleven_item_info">
+                                                    <h4 t-esc="line.product_id.display_name"/>
+                                                    <p class="eleven_item_variant" t-if="line.product_id.product_template_attribute_value_ids">
+                                                        <t t-foreach="line.product_id.product_template_attribute_value_ids" t-as="attr">
+                                                            <span t-esc="attr.name"/>
+                                                            <t t-if="not attr_last"> · </t>
+                                                        </t>
+                                                    </p>
+                                                    <p class="eleven_item_qty">Qty: <t t-esc="int(line.product_uom_qty)"/></p>
+                                                </div>
+                                                <div class="eleven_item_price">
+                                                    <span t-field="line.price_subtotal"
+                                                          t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </t>
+                                </div>
+
+                                <!-- Order Totals -->
+                                <div class="eleven_order_totals">
+                                    <div class="eleven_total_line">
+                                        <span>Subtotal</span>
+                                        <span t-field="order.amount_untaxed"
+                                              t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                    </div>
+
+                                    <t t-if="order.carrier_id">
+                                        <div class="eleven_total_line">
+                                            <span>Shipping (<t t-esc="order.carrier_id.name"/>)</span>
+                                            <t t-set="delivery_line" t-value="order.order_line.filtered(lambda l: l.is_delivery)"/>
+                                            <t t-if="delivery_line and delivery_line[0].price_subtotal > 0">
+                                                <span t-field="delivery_line[0].price_subtotal"
+                                                      t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="eleven_free">FREE</span>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="eleven_total_line">
+                                            <span>Shipping</span>
+                                            <span class="eleven_free">FREE</span>
+                                        </div>
+                                    </t>
+
+                                    <t t-if="order.amount_tax > 0">
+                                        <div class="eleven_total_line">
+                                            <span>Tax</span>
+                                            <span t-field="order.amount_tax"
+                                                  t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                        </div>
+                                    </t>
+
+                                    <div class="eleven_total_line eleven_grand_total">
+                                        <span>Total</span>
+                                        <span t-field="order.amount_total"
+                                              t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- What's Next Section -->
+                            <div class="eleven_whats_next">
+                                <h3><i class="fa fa-info-circle"></i> What's Next?</h3>
+                                <div class="eleven_next_steps">
+                                    <div class="eleven_next_step">
+                                        <div class="eleven_step_icon">
+                                            <i class="fa fa-envelope"></i>
+                                        </div>
+                                        <div class="eleven_step_text">
+                                            <h4>Order Confirmation</h4>
+                                            <p>You'll receive an email with your order details</p>
+                                        </div>
+                                    </div>
+                                    <div class="eleven_next_step">
+                                        <div class="eleven_step_icon">
+                                            <i class="fa fa-box"></i>
+                                        </div>
+                                        <div class="eleven_step_text">
+                                            <h4>Order Processing</h4>
+                                            <p>We're preparing your order for shipment</p>
+                                        </div>
+                                    </div>
+                                    <div class="eleven_next_step">
+                                        <div class="eleven_step_icon">
+                                            <i class="fa fa-truck"></i>
+                                        </div>
+                                        <div class="eleven_step_text">
+                                            <h4>Shipping Updates</h4>
+                                            <p>Track your order once it's on its way</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="eleven_confirmation_actions">
+                                <a href="/products" class="eleven_btn eleven_btn_primary">
+                                    <i class="fa fa-shopping-bag"></i> Continue Shopping
+                                </a>
+                                <t t-if="is_logged_in">
+                                    <a href="/my/orders" class="eleven_btn eleven_btn_secondary">
+                                        <i class="fa fa-list-alt"></i> View My Orders
+                                    </a>
+                                </t>
+                            </div>
+
+                            <!-- Support Notice -->
+                            <div class="eleven_support_notice">
+                                <p>
+                                    <i class="fa fa-headphones"></i>
+                                    Need help? Contact us at
+                                    <a href="mailto:support@example.com">support@example.com</a>
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </t>
+    </template>
+
+
+    <!-- Address Form Fields - No required attributes, validation done in JS/Controller -->
+    <template id="address_form_fields" name="Address Form Fields">
+        <div class="eleven_address_fields">
+            <div class="eleven_form_row">
+                <div class="eleven_form_group">
+                    <label>First Name *</label>
+                    <input type="text" name="first_name" class="new_address_field" placeholder="John"/>
+                </div>
+                <div class="eleven_form_group">
+                    <label>Last Name *</label>
+                    <input type="text" name="last_name" class="new_address_field" placeholder="Doe"/>
+                </div>
+            </div>
+            <div class="eleven_form_row">
+                <div class="eleven_form_group">
+                    <label>Street *</label>
+                    <input type="text" name="street" class="new_address_field"/>
+                </div>
+            </div>
+            <div class="eleven_form_row">
+                <div class="eleven_form_group">
+                    <label>Apt/Suite</label>
+                    <input type="text" name="street2"/>
+                </div>
+            </div>
+            <div class="eleven_form_row eleven_form_row_3">
+                <div class="eleven_form_group">
+                    <label>City *</label>
+                    <input type="text" name="city" class="new_address_field"/>
+                </div>
+                <div class="eleven_form_group">
+                    <label>State</label>
+                    <select name="state_id" id="state_id">
+                        <option value="">Select</option>
+                        <t t-foreach="states or []" t-as="state">
+                            <option t-att-value="state.id" t-esc="state.name"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="eleven_form_group">
+                    <label>ZIP</label>
+                    <input type="text" name="zip"/>
+                </div>
+            </div>
+            <div class="eleven_form_row">
+                <div class="eleven_form_group">
+                    <label>Country *</label>
+                    <select name="country_id" id="country_id" class="new_address_field">
+                        <option value="">Select</option>
+                        <t t-foreach="countries or []" t-as="country">
+                            <option t-att-value="country.id"
+                                    t-att-selected="'selected' if country.code == 'AE' else None"
+                                    t-esc="country.name"/>
+                        </t>
+                    </select>
+                </div>
+                <div class="eleven_form_group">
+                    <label>Phone *</label>
+                    <input type="tel" name="phone" class="new_address_field"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <!-- Edit Address Page -->
+    <template id="eleven_edit_address_page" name="Edit Address">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <section class="eleven_checkout_section">
+                    <div class="container">
+                        <div class="eleven_edit_address_box">
+                            <h1>Edit Address</h1>
+                            <form action="/eleven/checkout/address/save" method="POST">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <input type="hidden" name="address_id" t-att-value="address.id"/>
+
+                                <div class="eleven_address_fields">
+                                    <div class="eleven_form_row">
+                                        <div class="eleven_form_group">
+                                            <label>Full Name *</label>
+                                            <input type="text" name="name" required="required" t-att-value="address.name"/>
+                                        </div>
+                                    </div>
+                                    <div class="eleven_form_row">
+                                        <div class="eleven_form_group">
+                                            <label>Street *</label>
+                                            <input type="text" name="street" required="required" t-att-value="address.street"/>
+                                        </div>
+                                    </div>
+                                    <div class="eleven_form_row">
+                                        <div class="eleven_form_group">
+                                            <label>Apt/Suite</label>
+                                            <input type="text" name="street2" t-att-value="address.street2"/>
+                                        </div>
+                                    </div>
+                                    <div class="eleven_form_row eleven_form_row_3">
+                                        <div class="eleven_form_group">
+                                            <label>City *</label>
+                                            <input type="text" name="city" required="required" t-att-value="address.city"/>
+                                        </div>
+                                        <div class="eleven_form_group">
+                                            <label>State</label>
+                                            <select name="state_id">
+                                                <option value="">Select</option>
+                                                <t t-foreach="states or []" t-as="state">
+                                                    <option t-att-value="state.id"
+                                                            t-att-selected="'selected' if address.state_id.id == state.id else None"
+                                                            t-esc="state.name"/>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="eleven_form_group">
+                                            <label>ZIP</label>
+                                            <input type="text" name="zip" t-att-value="address.zip"/>
+                                        </div>
+                                    </div>
+                                    <div class="eleven_form_row">
+                                        <div class="eleven_form_group">
+                                            <label>Country *</label>
+                                            <select name="country_id" required="required">
+                                                <option value="">Select</option>
+                                                <t t-foreach="countries or []" t-as="country">
+                                                    <option t-att-value="country.id"
+                                                            t-att-selected="'selected' if address.country_id.id == country.id else None"
+                                                            t-esc="country.name"/>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="eleven_form_group">
+                                            <label>Phone *</label>
+                                            <input type="tel" name="phone" required="required" t-att-value="address.phone"/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <label class="eleven_checkbox_label">
+                                    <input type="checkbox" name="set_default" value="1" t-att-checked="'checked' if is_default else None"/>
+                                    Set as default
+                                </label>
+
+                                <div class="eleven_form_actions">
+                                    <a href="/eleven/checkout" class="eleven_btn eleven_btn_secondary">Cancel</a>
+                                    <button type="submit" class="eleven_btn eleven_btn_primary">Save</button>
+                                </div>
+                            </form>
+
+                            <t t-if="can_delete">
+                                <form action="/eleven/checkout/address/delete" method="POST" class="eleven_delete_form">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="address_id" t-att-value="address.id"/>
+                                    <button type="submit" class="eleven_btn_delete" onclick="return confirm('Delete this address?')">
+                                        <i class="fa fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </t>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+</odoo>

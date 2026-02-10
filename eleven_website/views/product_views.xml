@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Best Seller field to Product Variant Form -->
+    <record id="product_variant_form_view_inherit_best_seller" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.best.seller</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="is_best_seller"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>
