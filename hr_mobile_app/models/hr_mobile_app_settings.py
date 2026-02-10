@@ -270,8 +270,8 @@ class HrMobileAppSettings(models.TransientModel):
             return False
 
     def execute(self):
-        if self.mobile_service_password and len(self.mobile_service_password) < 3:
-            raise ValidationError(_('Password must be at least 3 characters long'))
+        if self.mobile_service_password and len(self.mobile_service_password) < 12:
+            raise ValidationError(_('Password must be at least 12 characters long'))
 
         params = self.env['ir.config_parameter'].sudo()
         params.set_param('hr_mobile_app.allow_mobile_app_access', str(self.allow_mobile_app_access))

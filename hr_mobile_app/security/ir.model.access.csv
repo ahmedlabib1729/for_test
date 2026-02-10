@@ -5,7 +5,7 @@ access_hr_leave_mobile,hr.leave.mobile,hr_holidays.model_hr_leave,base.group_use
 access_hr_leave_type_mobile,hr.leave.type.mobile,hr_holidays.model_hr_leave_type,base.group_user,1,0,0,0
 access_hr_mobile_app_settings,hr.mobile.app.settings,model_hr_mobile_app_settings,hr.group_hr_manager,1,1,1,0
 access_hr_mobile_token_confirm_wizard,hr.mobile.token.confirm.wizard,model_hr_mobile_token_confirm_wizard,hr.group_hr_manager,1,1,1,1
-access_hr_leave_mobile_delete,hr.leave.mobile.delete,hr_holidays.model_hr_leave,base.group_user,1,1,1,1
+access_hr_leave_mobile_delete,hr.leave.mobile.delete,hr_holidays.model_hr_leave,base.group_user,1,1,1,0
 access_hr_announcement_user,hr.announcement.user,model_hr_announcement,base.group_user,1,0,0,0
 access_hr_announcement_hr_user,hr.announcement.hr.user,model_hr_announcement,hr.group_hr_user,1,1,1,0
 access_hr_announcement_hr_manager,hr.announcement.hr.manager,model_hr_announcement,hr.group_hr_manager,1,1,1,1

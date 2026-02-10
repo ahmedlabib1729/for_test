@@ -153,6 +153,51 @@ class HrAttendance(models.Model):
         return distance_m
 
     @api.model
+    # الحد الأدنى لحجم الصورة (5 كيلوبايت) لمنع الصور الوهمية
+    MIN_PHOTO_SIZE = 5 * 1024
+    # الحد الأقصى لحجم الصورة (10 ميجابايت)
+    MAX_PHOTO_SIZE = 10 * 1024 * 1024
+
+    def _validate_photo_data(self, photo_base64):
+        """
+        التحقق من صحة بيانات الصورة المرسلة على الخادم
+        إرجاع tuple: (is_valid, error_message)
+        """
+        if not photo_base64:
+            return False, 'لم يتم إرسال صورة'
+
+        try:
+            # إزالة prefix إذا وجد
+            photo_data = photo_base64
+            if ',' in str(photo_data):
+                photo_data = photo_data.split(',')[1]
+
+            # التحقق من صحة ترميز base64
+            decoded = base64.b64decode(photo_data, validate=True)
+
+            # التحقق من الحد الأدنى للحجم (منع الصور الوهمية/الفارغة)
+            if len(decoded) < self.MIN_PHOTO_SIZE:
+                _logger.warning("صورة صغيرة جداً: %s bytes", len(decoded))
+                return False, 'الصورة صغيرة جداً - يرجى التقاط صورة واضحة'
+
+            # التحقق من الحد الأقصى للحجم
+            if len(decoded) > self.MAX_PHOTO_SIZE:
+                return False, 'حجم الصورة كبير جداً'
+
+            # التحقق من أن البيانات هي صورة فعلية (JPEG أو PNG)
+            is_jpeg = decoded[:2] == b'\xff\xd8'
+            is_png = decoded[:8] == b'\x89PNG\r\n\x1a\n'
+
+            if not is_jpeg and not is_png:
+                _logger.warning("بيانات ليست صورة صالحة (ليست JPEG أو PNG)")
+                return False, 'تنسيق الصورة غير صالح'
+
+            return True, None
+
+        except Exception as e:
+            _logger.error("خطأ في التحقق من بيانات الصورة: %s", str(e))
+            return False, 'بيانات الصورة غير صالحة'
+
     def _verify_location(self, employee_id, latitude, longitude):
         """
         التحقق من أن الموقع ضمن النطاق المسموح للموظف
@@ -548,6 +593,13 @@ class HrAttendance(models.Model):
                     'error': 'يوجد بالفعل سجل حضور مفتوح لهذا الموظف'
                 }
 
+            # التحقق من صحة الصورة على الخادم
+            photo_valid = False
+            if photo_base64:
+                photo_valid, photo_error = self._validate_photo_data(photo_base64)
+                if not photo_valid:
+                    return {'success': False, 'error': photo_error}
+
             # التحقق من الموقع
             location_verified = False
             distance = 0
@@ -572,8 +624,8 @@ class HrAttendance(models.Model):
                 'employee_id': int(employee_id),
                 'check_in': fields.Datetime.now(),
                 'mobile_created': True,
-                'face_verified': True if photo_base64 else False,
-                'verification_method': 'face_action' if photo_base64 else 'none',
+                'face_verified': photo_valid,
+                'verification_method': 'face_action' if photo_valid else 'none',
             }
 
             # إضافة إحداثيات الموقع
@@ -645,6 +697,13 @@ class HrAttendance(models.Model):
                     'error': 'لا يوجد سجل حضور مفتوح لهذا الموظف'
                 }
 
+            # التحقق من صحة الصورة على الخادم
+            photo_valid = False
+            if photo_base64:
+                photo_valid, photo_error = self._validate_photo_data(photo_base64)
+                if not photo_valid:
+                    return {'success': False, 'error': photo_error}
+
             # التحقق من الموقع
             location_verified = False
             distance = 0
@@ -677,14 +736,15 @@ class HrAttendance(models.Model):
                     'check_out_distance': distance,
                 })
 
-            # إضافة الصورة
-            if photo_base64:
+            # إضافة الصورة (تم التحقق منها مسبقاً)
+            if photo_valid and photo_base64:
                 # إزالة prefix إذا وجد
-                if ',' in str(photo_base64):
-                    photo_base64 = photo_base64.split(',')[1]
+                clean_photo = photo_base64
+                if ',' in str(clean_photo):
+                    clean_photo = clean_photo.split(',')[1]
 
                 update_vals.update({
-                    'check_out_photo': photo_base64,
+                    'check_out_photo': clean_photo,
                     'check_out_photo_filename': f'checkout_{employee_id}_{fields.Datetime.now().strftime("%Y%m%d_%H%M%S")}.jpg',
                     'check_out_action': action_performed or 'unknown',
                     'face_verified': True,

@@ -72,7 +72,7 @@ class MobileConfigAPI(http.Controller):
             if not token:
                 return self._error_response("Token is required")
 
-            _logger.info("Verifying token: %s...", token[:8] if len(token) > 8 else token)
+            _logger.info("Company token verification attempt received")
 
             # البحث عن Token في الإعدادات
             config_params = request.env['ir.config_parameter'].sudo()
@@ -90,7 +90,7 @@ class MobileConfigAPI(http.Controller):
                 _logger.info("Token matched (short code)")
 
             if not is_valid:
-                _logger.warning("Invalid token attempt: %s...", token[:8] if len(token) > 8 else token)
+                _logger.warning("Invalid token verification attempt")
                 return self._error_response("Invalid token or code")
 
             # التحقق من صلاحية Token
@@ -136,7 +136,7 @@ class MobileConfigAPI(http.Controller):
 
         except Exception as e:
             _logger.error("Error verifying company token: %s", str(e))
-            return self._error_response(f"Server error: {str(e)}")
+            return self._error_response("حدث خطأ في الخادم")
 
     @http.route('/api/mobile/verify_code', type='http', auth='none',
                 methods=['POST', 'OPTIONS'], csrf=False, cors='*')
@@ -162,11 +162,9 @@ class MobileConfigAPI(http.Controller):
 
             is_enabled = config_params.get_param('hr_mobile_app.allow_mobile_app_access', 'False')
 
+            # Only expose minimal info without authentication
             result = {
                 'server_online': True,
-                'mobile_app_enabled': is_enabled.lower() == 'true',
-                'company_name': company.name,
-                'database': request.db,
                 'api_version': '2.0',
                 'requires_token': True,
             }
@@ -175,7 +173,7 @@ class MobileConfigAPI(http.Controller):
 
         except Exception as e:
             _logger.error("Error getting config info: %s", str(e))
-            return self._error_response(f"Server error: {str(e)}")
+            return self._error_response("حدث خطأ في الخادم")
 
     # ═══════════════════════════════════════════════════════════════
     # Helper Methods
@@ -214,27 +212,37 @@ class MobileConfigAPI(http.Controller):
         }
         return self._json_response(response_data)
 
+    def _get_allowed_origin(self):
+        """Get configured CORS origin or restrict by default"""
+        try:
+            return request.env['ir.config_parameter'].sudo().get_param(
+                'hr_mobile_app.allowed_cors_origin', 'null')
+        except Exception:
+            return 'null'
+
     def _json_response(self, data):
         """إرجاع استجابة JSON مع CORS headers"""
+        allowed_origin = self._get_allowed_origin()
         response = request.make_response(
             json.dumps(data),
             headers=[
                 ('Content-Type', 'application/json'),
-                ('Access-Control-Allow-Origin', '*'),
-                ('Access-Control-Allow-Methods', 'POST, GET, OPTIONS'),
-                ('Access-Control-Allow-Headers', 'Content-Type, Authorization'),
+                ('Access-Control-Allow-Origin', allowed_origin),
+                ('Access-Control-Allow-Methods', 'POST, OPTIONS'),
+                ('Access-Control-Allow-Headers', 'Content-Type'),
             ]
         )
         return response
 
     def _cors_response(self):
         """استجابة لـ CORS preflight"""
+        allowed_origin = self._get_allowed_origin()
         response = request.make_response(
             '',
             headers=[
-                ('Access-Control-Allow-Origin', '*'),
-                ('Access-Control-Allow-Methods', 'POST, GET, OPTIONS'),
-                ('Access-Control-Allow-Headers', 'Content-Type, Authorization'),
+                ('Access-Control-Allow-Origin', allowed_origin),
+                ('Access-Control-Allow-Methods', 'POST, OPTIONS'),
+                ('Access-Control-Allow-Headers', 'Content-Type'),
                 ('Access-Control-Max-Age', '86400'),
             ]
         )

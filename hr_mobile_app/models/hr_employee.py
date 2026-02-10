@@ -2,10 +2,12 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 import hashlib
+import hmac
 import secrets
 import base64
 import re
 import logging
+from datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -51,6 +53,15 @@ class HrEmployee(models.Model):
         string="Mobile Login Count",
         default=0,
         readonly=True,
+        copy=False,
+    )
+    mobile_failed_login_count = fields.Integer(
+        string="Failed Login Attempts",
+        default=0,
+        copy=False,
+    )
+    mobile_locked_until = fields.Datetime(
+        string="Account Locked Until",
         copy=False,
     )
 
@@ -124,34 +135,49 @@ class HrEmployee(models.Model):
         # Convert result to base64 string for storage
         return base64.b64encode(dk).decode()
 
+    MAX_FAILED_ATTEMPTS = 5
+    LOCKOUT_DURATION_MINUTES = 15
+
     def verify_pin(self, pin):
-        """Verify the entered PIN"""
+        """Verify the entered PIN using constant-time comparison with brute-force protection"""
         self.ensure_one()
 
-        # Log for debugging
-        _logger.info("Verifying PIN for employee: %s (ID: %s)", self.name, self.id)
-        _logger.info("Mobile access allowed: %s", self.allow_mobile_access)
-        _logger.info("PIN hash exists: %s", bool(self.mobile_pin_hash))
-        _logger.info("Salt exists: %s", bool(self.mobile_salt))
+        # Check if account is locked
+        if self.mobile_locked_until and fields.Datetime.now() < self.mobile_locked_until:
+            _logger.warning("Account locked for employee ID: %s", self.id)
+            return False
 
         if not self.mobile_pin_hash or not self.mobile_salt:
-            _logger.warning("Missing PIN hash or salt for employee: %s", self.name)
             return False
 
         # Compute hash to compare with stored value
         hashed_pin = self._hash_pin(pin, self.mobile_salt)
 
-        # Compare calculated and stored value
-        result = (self.mobile_pin_hash == hashed_pin)
+        # Use constant-time comparison to prevent timing attacks
+        result = hmac.compare_digest(
+            self.mobile_pin_hash.encode('utf-8'),
+            hashed_pin.encode('utf-8')
+        )
 
-        _logger.info("PIN verification result: %s", result)
-
-        # Log successful login
         if result:
-            self.write({
+            # Reset failed attempts on success
+            self.sudo().write({
                 'mobile_last_login': fields.Datetime.now(),
                 'mobile_login_count': self.mobile_login_count + 1,
+                'mobile_failed_login_count': 0,
+                'mobile_locked_until': False,
             })
+        else:
+            # Increment failed attempts and lock if threshold reached
+            failed_count = self.mobile_failed_login_count + 1
+            vals = {'mobile_failed_login_count': failed_count}
+
+            if failed_count >= self.MAX_FAILED_ATTEMPTS:
+                lock_until = fields.Datetime.now() + timedelta(minutes=self.LOCKOUT_DURATION_MINUTES)
+                vals['mobile_locked_until'] = lock_until
+                _logger.warning("Account locked for employee ID: %s until %s", self.id, lock_until)
+
+            self.sudo().write(vals)
 
         return result
 
@@ -177,16 +203,11 @@ class HrEmployee(models.Model):
         salt = secrets.token_hex(8)
         pin_hash = self._hash_pin(new_pin, salt)
 
-        # Update database directly
-        self.env.cr.execute("""
-            UPDATE hr_employee 
-            SET mobile_salt = %s, mobile_pin_hash = %s 
-            WHERE id = %s
-        """, (salt, pin_hash, self.id))
-
-        # Update memory values
-        self.mobile_salt = salt
-        self.mobile_pin_hash = pin_hash
+        # Update via ORM
+        self.sudo().write({
+            'mobile_salt': salt,
+            'mobile_pin_hash': pin_hash,
+        })
 
         return {
             'type': 'ir.actions.client',
@@ -244,17 +265,12 @@ class HrEmployee(models.Model):
         salt = secrets.token_hex(8)
         pin_hash = self._hash_pin(new_pin, salt)
 
-        # Save data directly
-        self.env.cr.execute("""
-            UPDATE hr_employee 
-            SET mobile_salt = %s, mobile_pin_hash = %s, allow_mobile_access = TRUE 
-            WHERE id = %s
-        """, (salt, pin_hash, self.id))
-
-        # Update memory
-        self.mobile_salt = salt
-        self.mobile_pin_hash = pin_hash
-        self.allow_mobile_access = True
+        # Save via ORM
+        self.sudo().write({
+            'mobile_salt': salt,
+            'mobile_pin_hash': pin_hash,
+            'allow_mobile_access': True,
+        })
 
         # Verify encryption and storage
         verification_result = self.verify_pin(new_pin)
@@ -332,34 +348,24 @@ class HrEmployee(models.Model):
     @api.model
     def verify_employee_credentials(self, username, pin):
         """Verify employee credentials"""
-        # Log for debugging
-        _logger.info("Verifying credentials for user: %s", username)
+        _logger.info("Login attempt for username: %s", username)
 
-        # Log all employees for debugging
-        all_employees = self.search_read([], ['name', 'mobile_username', 'allow_mobile_access'])
-        _logger.info("All employees in system: %s", all_employees)
-
-        # Find employee by username
+        # Find employee by exact username match
         employee = self.search([
             ('mobile_username', '=', username),
             ('allow_mobile_access', '=', True),
         ], limit=1)
 
         if not employee:
-            _logger.warning("No employee found with username: %s", username)
-            return {'success': False, 'error': 'Employee not found or access denied'}
-
-        _logger.info("Employee found: %s (ID: %s), More info: %s",
-                     employee.name, employee.id,
-                     employee.read(['mobile_username', 'allow_mobile_access', 'mobile_pin_hash', 'mobile_salt']))
+            _logger.warning("Login failed - username not found: %s", username)
+            # Use generic error to prevent username enumeration
+            return {'success': False, 'error': 'بيانات الدخول غير صحيحة'}
 
         # Verify PIN
-        _logger.info("Attempting to verify PIN for employee: %s", employee.name)
         verification_result = employee.verify_pin(pin)
-        _logger.info("PIN verification result: %s", verification_result)
 
         if verification_result:
-            _logger.info("PIN verified successfully for employee: %s", employee.name)
+            _logger.info("Login successful for employee ID: %s", employee.id)
 
             # جلب صورة الموظف
             avatar_128 = None
@@ -388,5 +394,5 @@ class HrEmployee(models.Model):
                 }
             }
         else:
-            _logger.warning("PIN verification failed for employee: %s", employee.name)
-            return {'success': False, 'error': 'Invalid PIN'}
+            _logger.warning("Login failed - incorrect PIN for employee ID: %s", employee.id)
+            return {'success': False, 'error': 'بيانات الدخول غير صحيحة'}

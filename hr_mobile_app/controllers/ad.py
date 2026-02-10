@@ -24,7 +24,7 @@ class MobileAPI(http.Controller):
             }
         })
 
-    @http.route('/api/mobile/simple_login', type='http', auth='none', methods=['POST'], csrf=False)
+    @http.route('/api/mobile/simple_login', type='http', auth='public', methods=['POST'], csrf=False)
     def simple_login(self, **kw):
         """تسجيل دخول مبسط للتطبيق المحمول"""
         try:
@@ -33,7 +33,6 @@ class MobileAPI(http.Controller):
 
             # التحقق من البيانات المستلمة
             if not request.httprequest.data:
-                _logger.error("لم يتم استلام بيانات في الطلب")
                 return json.dumps({
                     'success': False,
                     'error': 'لم يتم استلام بيانات في الطلب'
@@ -42,116 +41,47 @@ class MobileAPI(http.Controller):
             # تحليل بيانات الطلب
             try:
                 data = json.loads(request.httprequest.data.decode('utf-8'))
-                _logger.info("البيانات المستلمة: %s", data)
-            except Exception as e:
-                _logger.error("خطأ في تحليل بيانات JSON: %s", str(e))
+            except Exception:
                 return json.dumps({
                     'success': False,
-                    'error': f'خطأ في تحليل بيانات JSON: {str(e)}'
+                    'error': 'خطأ في تحليل البيانات المرسلة'
                 })
 
             # استخراج معلومات تسجيل الدخول
             params = data.get('params', {})
             username = params.get('username')
             password = params.get('password')
-            db = params.get('db', request.db)
 
             if not username or not password:
-                _logger.error("معلومات تسجيل الدخول غير مكتملة")
                 return json.dumps({
                     'success': False,
                     'error': 'معلومات تسجيل الدخول غير مكتملة'
                 })
 
-            _logger.info("محاولة تسجيل دخول للمستخدم: %s في قاعدة البيانات: %s", username, db)
+            _logger.info("محاولة تسجيل دخول للمستخدم: %s", username)
 
-            # تسجيل دخول المستخدم المشترك
-            try:
-                uid = request.session.authenticate(db, 'mobile_app_service', 'Secure_P@ssword123')
-                if not uid:
-                    _logger.error("فشل تسجيل دخول المستخدم المشترك")
-                    return json.dumps({
-                        'success': False,
-                        'error': 'فشل تسجيل دخول المستخدم المشترك'
-                    })
-                _logger.info("تم تسجيل دخول المستخدم المشترك بنجاح، معرف المستخدم: %s", uid)
-            except Exception as e:
-                _logger.error("خطأ في تسجيل دخول المستخدم المشترك: %s", str(e))
-                return json.dumps({
-                    'success': False,
-                    'error': f'خطأ في تسجيل دخول المستخدم المشترك: {str(e)}'
-                })
-
-            # البحث عن الموظف بطريقتين (دعم أكبر)
-            # 1. بحث مباشر
+            # البحث عن الموظف بالاسم المطابق تماماً فقط
             employee = request.env['hr.employee'].sudo().search([
                 ('mobile_username', '=', username),
                 ('allow_mobile_access', '=', True),
             ], limit=1)
 
-            # 2. إذا لم يتم العثور، جرب بحث غير حساس لحالة الأحرف
             if not employee:
-                employee = request.env['hr.employee'].sudo().search([
-                    ('mobile_username', 'ilike', username),
-                    ('allow_mobile_access', '=', True),
-                ], limit=1)
-
-            # 3. إذا لم يتم العثور بعد، جرب البحث بالاسم
-            if not employee:
-                employee = request.env['hr.employee'].sudo().search([
-                    ('name', 'ilike', username),
-                    ('allow_mobile_access', '=', True),
-                ], limit=1)
-
-            _logger.info("نتيجة البحث عن الموظف: %s", "تم العثور" if employee else "لم يتم العثور")
-
-            if not employee:
-                # للتجربة فقط: إنشاء موظف تجريبي إذا لم يتم العثور
-                try:
-                    # التحقق مما إذا كان الموظف الاختباري موجوداً بالفعل
-                    test_employee = request.env['hr.employee'].sudo().search([
-                        ('name', '=', 'موظف تجريبي')
-                    ], limit=1)
-
-                    if test_employee:
-                        _logger.info("استخدام موظف تجريبي موجود بالفعل")
-                        employee = test_employee
-                    else:
-                        _logger.info("إنشاء موظف تجريبي للاختبار")
-                        # إنشاء قسم تجريبي إذا لم يوجد
-                        test_dept = request.env['hr.department'].sudo().search([
-                            ('name', '=', 'قسم تجريبي')
-                        ], limit=1)
-
-                        if not test_dept:
-                            test_dept = request.env['hr.department'].sudo().create({
-                                'name': 'قسم تجريبي'
-                            })
-
-                        # إنشاء موظف تجريبي
-                        employee = request.env['hr.employee'].sudo().create({
-                            'name': 'موظف تجريبي',
-                            'job_title': 'مسمى وظيفي تجريبي',
-                            'department_id': test_dept.id,
-                            'mobile_username': username,
-                            'allow_mobile_access': True
-                        })
-                        _logger.info("تم إنشاء موظف تجريبي بنجاح: %s", employee.id)
-                except Exception as e:
-                    _logger.error("خطأ في إنشاء موظف تجريبي: %s", str(e))
-                    # استمر على أي حال
-
-            if not employee:
-                _logger.warning("لم يتم العثور على موظف بهذا الاسم: %s", username)
+                _logger.warning("فشل تسجيل الدخول - اسم مستخدم غير موجود")
                 return json.dumps({
                     'success': False,
-                    'error': 'لم يتم العثور على موظف بهذا الاسم'
+                    'error': 'بيانات الدخول غير صحيحة'
                 })
 
-            # للاختبار فقط: السماح بالوصول دائمًا بغض النظر عن كلمة المرور
-            # في البيئة الإنتاجية، يجب تعديل هذا ليستخدم تشفير حقيقي للـ PIN
-            _logger.info("التحقق من كلمة المرور (مبسط للاختبار)")
-            password_check = (password == '123456' or True)  # دائماً صح للاختبار
+            # التحقق من PIN باستخدام التشفير
+            if not employee.mobile_pin_hash or not employee.mobile_salt:
+                _logger.warning("لم يتم تعيين PIN للموظف: %s", employee.id)
+                return json.dumps({
+                    'success': False,
+                    'error': 'بيانات الدخول غير صحيحة'
+                })
+
+            password_check = employee.verify_pin(password)
 
             if password_check:
                 _logger.info("تم التحقق من كلمة المرور بنجاح")
@@ -172,7 +102,6 @@ class MobileAPI(http.Controller):
 
                 }
 
-                _logger.info("إرجاع بيانات الموظف: %s", employee_data)
                 return json.dumps({
                     'success': True,
                     'employee': employee_data
@@ -188,7 +117,7 @@ class MobileAPI(http.Controller):
             _logger.error("خطأ عام في تسجيل الدخول المبسط: %s", str(e))
             return json.dumps({
                 'success': False,
-                'error': str(e)
+                'error': 'حدث خطأ في الخادم. يرجى المحاولة لاحقاً'
             })
 
     @http.route('/api/mobile/authenticate', type='json', auth='user', csrf=False)
@@ -210,9 +139,11 @@ class MobileAPI(http.Controller):
                 _logger.warning("المستخدم غير موجود أو غير مفعل: %s", username)
                 return {'success': False, 'error': _('المستخدم غير موجود أو غير مفعل')}
 
-            # للاختبار: قبول أي PIN
-            verification_result = True
-            _logger.info("تم التحقق من PIN (مبسط للاختبار)")
+            # التحقق من PIN باستخدام التشفير
+            verification_result = employee.verify_pin(pin)
+            if not verification_result:
+                _logger.warning("فشل التحقق من PIN للمستخدم: %s", username)
+                return {'success': False, 'error': _('بيانات الدخول غير صحيحة')}
 
             # إرجاع معلومات الموظف
             return {
@@ -248,9 +179,10 @@ class MobileAPI(http.Controller):
                 _logger.warning("الموظف غير موجود: %s", employee_id)
                 return {'success': False, 'error': _('الموظف غير موجود')}
 
-            # للتجربة: تجاهل فحص allow_mobile_access
-            # if not employee.allow_mobile_access:
-            #     return {'success': False, 'error': _('الموظف غير مصرح له')}
+            # التحقق من صلاحية الوصول عبر التطبيق المحمول
+            if not employee.allow_mobile_access:
+                _logger.warning("محاولة وصول غير مصرح بها للموظف: %s", employee_id)
+                return {'success': False, 'error': _('الموظف غير مصرح له بالوصول')}
 
             # إرجاع معلومات الموظف
             return {
@@ -478,19 +410,24 @@ class MobileAPI(http.Controller):
             }
 
     @http.route('/api/mobile/leave/cancel', type='json', auth='user', csrf=False)
-    def cancel_leave_request(self, request_id=None):
+    def cancel_leave_request(self, request_id=None, employee_id=None):
         """إلغاء طلب إجازة"""
         try:
             _logger.info("====== إلغاء طلب الإجازة %s ======", request_id)
 
-            if not request_id:
-                return {'success': False, 'error': 'معرف طلب الإجازة مطلوب'}
+            if not request_id or not employee_id:
+                return {'success': False, 'error': 'البيانات غير مكتملة'}
 
             # البحث عن طلب الإجازة
             leave_request = request.env['hr.leave'].sudo().browse(int(request_id))
 
             if not leave_request.exists():
                 return {'success': False, 'error': 'طلب الإجازة غير موجود'}
+
+            # التحقق من ملكية الطلب
+            if leave_request.employee_id.id != int(employee_id):
+                _logger.warning("محاولة إلغاء غير مصرح بها: employee=%s, leave=%s", employee_id, request_id)
+                return {'success': False, 'error': 'غير مصرح بإلغاء هذا الطلب'}
 
             # التحقق من إمكانية الإلغاء
             if leave_request.state not in ['draft', 'confirm']:
