@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo view:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl:*)",
+      "Bash(/usr/bin/curl:*)",
+      "Bash(python3 -c \"\nimport urllib.request\nurl = ''https://raw.githubusercontent.com/ahmedlabib1729/for_test/main/hr_mobile_app/controllers/mobile_api.py''\noutput = ''/Users/admin/mac drive/employee_system/mobile_api.py''\nurllib.request.urlretrieve\\(url, output\\)\nprint\\(''Downloaded successfully''\\)\n\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nSecurity audit fixes for hr_mobile_app module\n\nCritical fixes:\n- Fix authentication bypass \\(or True\\) in ad.py\n- Fix hardcoded credentials, use ir.config_parameter\n- Fix PIN bypass in authenticate_employee\n- Remove test employee auto-creation\n- Fix plaintext PIN comparison in employee_login \\(mobile_api.py\\)\n- Fix global employee read rule exposing all records\n\nHigh severity fixes:\n- Add IDOR protection to all 20+ API endpoints \\(mobile_api.py\\)\n- Add ownership verification for payslip, leave, attendance endpoints\n- Remove ilike/name-based login fallbacks\n- Fix CORS wildcard with configurable origin\n- Add brute-force protection \\(5 attempts, 15-min lockout\\)\n- Add constant-time PIN comparison \\(hmac.compare_digest\\)\n- Fix info disclosure in config_info endpoint\n- Add ownership check to cancel_leave_request\n\nMedium severity fixes:\n- Eliminate plaintext service password storage \\(switch to auth=''public''\\)\n- Increase minimum password length from 3 to 12\n- Add server-side photo validation \\(format, size, magic bytes\\)\n- Replace str\\(e\\) error responses with generic messages\n- Replace raw SQL with ORM operations\n- Remove credential/request data logging\n\nLow severity fixes:\n- Remove token value logging\n- Fix leave unlink permission in ACL\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git config:*)",
+      "Bash(git push:*)",
+      "Bash(find:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter test:*)",
+      "Bash(flutter build:*)",
+      "Bash(git status:*)",
+      "Bash(git init:*)",
+      "Bash(git branch:*)"
+    ]
+  }
+}
