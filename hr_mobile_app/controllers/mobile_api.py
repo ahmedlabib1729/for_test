@@ -24,20 +24,6 @@ class MobileApi(http.Controller):
         })
 
     # ═══════════════════════════════════════════════════════════════════════════
-    # التحقق من صلاحية الوصول
-    # ═══════════════════════════════════════════════════════════════════════════
-
-    def _verify_employee_access(self, employee_id):
-        """التحقق من أن المستخدم المصادق له صلاحية الوصول لهذا الموظف"""
-        try:
-            current_employee = request.env.user.employee_id
-            if not current_employee or current_employee.id != int(employee_id):
-                return False
-            return True
-        except (ValueError, TypeError):
-            return False
-
-    # ═══════════════════════════════════════════════════════════════════════════
     # واجهات الحضور والانصراف الأساسية
     # ═══════════════════════════════════════════════════════════════════════════
 
@@ -46,16 +32,13 @@ class MobileApi(http.Controller):
         """التحقق من الموقع قبل السماح بتسجيل الحضور/الانصراف"""
         try:
             _logger.info("====== التحقق من موقع الحضور ======")
+            _logger.info("employee_id: %s, lat: %s, lng: %s", employee_id, latitude, longitude)
 
             if not all([employee_id, latitude, longitude]):
                 return {
                     'success': False,
                     'error': 'جميع البيانات مطلوبة (معرف الموظف، خط العرض، خط الطول)'
                 }
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             result = request.env['hr.attendance'].sudo().check_location_before_attendance(
                 int(employee_id),
@@ -69,7 +52,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في التحقق من الموقع: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/attendance/check_in', type='json', auth='user', csrf=False)
@@ -77,13 +60,10 @@ class MobileApi(http.Controller):
         """تسجيل حضور مع الموقع الجغرافي (بدون صورة)"""
         try:
             _logger.info("====== تسجيل حضور مع الموقع ======")
+            _logger.info("employee_id: %s, lat: %s, lng: %s", employee_id, latitude, longitude)
 
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             emp_id = int(employee_id)
             lat = float(latitude) if latitude else None
@@ -105,7 +85,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في تسجيل الحضور: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/attendance/check_out', type='json', auth='user', csrf=False)
@@ -113,13 +93,10 @@ class MobileApi(http.Controller):
         """تسجيل انصراف مع الموقع الجغرافي (بدون صورة)"""
         try:
             _logger.info("====== تسجيل انصراف مع الموقع ======")
+            _logger.info("employee_id: %s, lat: %s, lng: %s", employee_id, latitude, longitude)
 
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             emp_id = int(employee_id)
             lat = float(latitude) if latitude else None
@@ -141,7 +118,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في تسجيل الانصراف: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -153,14 +130,16 @@ class MobileApi(http.Controller):
                                    photo_base64=None, action_performed=None):
         """تسجيل حضور مع صورة التحقق من الوجه"""
         try:
-            _logger.info("====== تسجيل حضور مع صورة ======")
+            _logger.info("=" * 60)
+            _logger.info("📸 API: تسجيل حضور مع صورة")
+            _logger.info("employee_id: %s", employee_id)
+            _logger.info("latitude: %s, longitude: %s", latitude, longitude)
+            _logger.info("action_performed: %s", action_performed)
+            _logger.info("photo_size: %s bytes", len(photo_base64) if photo_base64 else 0)
+            _logger.info("=" * 60)
 
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             if not photo_base64:
                 return {'success': False, 'error': 'الصورة مطلوبة للتحقق'}
@@ -185,7 +164,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في تسجيل الحضور مع الصورة: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/attendance/check_out_photo', type='json', auth='user', csrf=False)
@@ -193,14 +172,16 @@ class MobileApi(http.Controller):
                                     photo_base64=None, action_performed=None):
         """تسجيل انصراف مع صورة التحقق من الوجه"""
         try:
-            _logger.info("====== تسجيل انصراف مع صورة ======")
+            _logger.info("=" * 60)
+            _logger.info("📸 API: تسجيل انصراف مع صورة")
+            _logger.info("employee_id: %s", employee_id)
+            _logger.info("latitude: %s, longitude: %s", latitude, longitude)
+            _logger.info("action_performed: %s", action_performed)
+            _logger.info("photo_size: %s bytes", len(photo_base64) if photo_base64 else 0)
+            _logger.info("=" * 60)
 
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             if not photo_base64:
                 return {'success': False, 'error': 'الصورة مطلوبة للتحقق'}
@@ -225,7 +206,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في تسجيل الانصراف مع الصورة: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/attendance/get_photos', type='json', auth='user', csrf=False)
@@ -240,10 +221,6 @@ class MobileApi(http.Controller):
             if not attendance.exists():
                 return {'success': False, 'error': 'سجل الحضور غير موجود'}
 
-            # التحقق من ملكية سجل الحضور
-            if not self._verify_employee_access(attendance.employee_id.id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
-
             return {
                 'success': True,
                 'data': attendance.get_attendance_photos(),
@@ -253,7 +230,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب صور الحضور: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -264,12 +241,10 @@ class MobileApi(http.Controller):
     def get_attendance_status(self, employee_id=None):
         """الحصول على حالة الحضور الحالية للموظف"""
         try:
+            _logger.info("====== طلب حالة الحضور ======")
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             status = request.env['hr.attendance'].sudo().get_employee_attendance_status(
                 int(employee_id)
@@ -284,19 +259,17 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب حالة الحضور: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/attendance/history', type='json', auth='user', csrf=False)
     def get_attendance_history(self, employee_id=None, limit=10):
         """الحصول على سجل الحضور السابق"""
         try:
+            _logger.info("====== طلب سجل الحضور ======")
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             history = request.env['hr.attendance'].sudo().get_employee_attendance_history(
                 int(employee_id),
@@ -312,19 +285,17 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب سجل الحضور: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/attendance/summary', type='json', auth='user', csrf=False)
     def get_attendance_summary(self, employee_id=None):
         """الحصول على ملخص الحضور اليومي"""
         try:
+            _logger.info("====== طلب ملخص الحضور ======")
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             summary = request.env['hr.attendance'].sudo().get_employee_attendance_summary(
                 int(employee_id)
@@ -339,7 +310,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب ملخص الحضور: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -353,12 +324,10 @@ class MobileApi(http.Controller):
         ✅ يظهر فقط الإجازات المخصصة للموظف من Odoo
         """
         try:
+            _logger.info("====== طلب رصيد الإجازات للموظف %s ======", employee_id)
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             employee = request.env['hr.employee'].sudo().browse(int(employee_id))
             if not employee.exists():
@@ -483,7 +452,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب رصيد الإجازات: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/leave/types', type='json', auth='user', csrf=False)
@@ -493,12 +462,11 @@ class MobileApi(http.Controller):
         ✅ يظهر فقط الأنواع التي لها تخصيص للموظف
         """
         try:
+            _logger.info("====== طلب أنواع الإجازات للموظف %s ======", employee_id)
+
             types_data = []
 
             if employee_id:
-                # التحقق من صلاحية الوصول
-                if not self._verify_employee_access(employee_id):
-                    return {'success': False, 'error': 'غير مصرح بالوصول'}
                 # ═══════════════════════════════════════════════════════════════
                 # ✅ جلب فقط أنواع الإجازات المخصصة للموظف
                 # ═══════════════════════════════════════════════════════════════
@@ -555,7 +523,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب أنواع الإجازات: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -566,12 +534,10 @@ class MobileApi(http.Controller):
     def get_leave_requests(self, employee_id=None, limit=50):
         """الحصول على طلبات الإجازة للموظف"""
         try:
+            _logger.info("====== طلب جلب طلبات الإجازة للموظف %s ======", employee_id)
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             domain = [('employee_id', '=', int(employee_id))]
 
@@ -631,7 +597,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب طلبات الإجازة: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/leave/create', type='json', auth='user', csrf=False)
@@ -639,15 +605,15 @@ class MobileApi(http.Controller):
                              date_from=None, date_to=None, reason=None):
         """إنشاء طلب إجازة جديد"""
         try:
+            _logger.info("====== إنشاء طلب إجازة جديد ======")
+            _logger.info("employee_id: %s, leave_type_id: %s", employee_id, leave_type_id)
+            _logger.info("date_from: %s, date_to: %s", date_from, date_to)
+
             if not all([employee_id, leave_type_id, date_from, date_to]):
                 return {
                     'success': False,
                     'error': 'جميع البيانات مطلوبة (معرف الموظف، نوع الإجازة، تاريخ البداية، تاريخ النهاية)'
                 }
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             # التحقق من أن الموظف لديه تخصيص لهذا النوع
             allocation = request.env['hr.leave.allocation'].sudo().search([
@@ -693,13 +659,16 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في إنشاء طلب الإجازة: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/leave/cancel', type='json', auth='user', csrf=False)
     def cancel_leave_request(self, leave_id=None):
         """إلغاء طلب إجازة"""
         try:
+            _logger.info("====== إلغاء طلب إجازة ======")
+            _logger.info("leave_id: %s", leave_id)
+
             if not leave_id:
                 return {'success': False, 'error': 'معرف طلب الإجازة مطلوب'}
 
@@ -707,10 +676,6 @@ class MobileApi(http.Controller):
 
             if not leave_request.exists():
                 return {'success': False, 'error': 'طلب الإجازة غير موجود'}
-
-            # التحقق من ملكية طلب الإجازة
-            if not self._verify_employee_access(leave_request.employee_id.id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             if leave_request.state not in ['draft', 'confirm']:
                 return {
@@ -729,7 +694,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في إلغاء طلب الإجازة: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/leave/check_availability', type='json', auth='user', csrf=False)
@@ -737,12 +702,10 @@ class MobileApi(http.Controller):
                                  date_from=None, date_to=None):
         """فحص توفر الإجازة قبل الإنشاء"""
         try:
+            _logger.info("====== فحص توفر الإجازة ======")
+
             if not all([employee_id, holiday_status_id, date_from, date_to]):
                 return {'available': False, 'message': 'جميع البيانات مطلوبة'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'available': False, 'message': 'غير مصرح بالوصول'}
 
             # التحقق من وجود تخصيص للموظف
             allocation = request.env['hr.leave.allocation'].sudo().search([
@@ -813,7 +776,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في فحص توفر الإجازة: %s", str(e))
             return {
                 'available': False,
-                'message': 'حدث خطأ في الخادم'
+                'message': str(e)
             }
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -887,12 +850,10 @@ class MobileApi(http.Controller):
             limit = kwargs.get('limit', 20)
             offset = kwargs.get('offset', 0)
 
+            _logger.info(f"📢 جلب الإعلانات للموظف: {employee_id}")
+
             if not employee_id:
                 return {'success': False, 'error': 'Employee ID is required'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             employee = request.env['hr.employee'].sudo().browse(int(employee_id))
             if not employee.exists():
@@ -943,7 +904,7 @@ class MobileApi(http.Controller):
 
         except Exception as e:
             _logger.error(f"❌ خطأ في جلب الإعلانات: {str(e)}")
-            return {'success': False, 'error': 'حدث خطأ في الخادم'}
+            return {'success': False, 'error': str(e)}
 
     @http.route('/api/mobile/announcements/detail', type='json', auth='user', methods=['POST'], csrf=False)
     def get_announcement_detail(self, announcement_id=None, employee_id=None, **kwargs):
@@ -951,10 +912,6 @@ class MobileApi(http.Controller):
         try:
             if not announcement_id or not employee_id:
                 return {'success': False, 'error': 'announcement_id and employee_id are required'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             announcement = request.env['hr.announcement'].sudo().browse(int(announcement_id))
 
@@ -1000,7 +957,7 @@ class MobileApi(http.Controller):
 
         except Exception as e:
             _logger.error(f"❌ خطأ في جلب تفاصيل الإعلان: {str(e)}")
-            return {'success': False, 'error': 'حدث خطأ في الخادم'}
+            return {'success': False, 'error': str(e)}
 
     @http.route('/api/mobile/announcements/mark_read', type='json', auth='user', methods=['POST'], csrf=False)
     def mark_announcement_read(self, announcement_id=None, employee_id=None, **kwargs):
@@ -1008,10 +965,6 @@ class MobileApi(http.Controller):
         try:
             if not announcement_id or not employee_id:
                 return {'success': False, 'error': 'announcement_id and employee_id are required'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             announcement = request.env['hr.announcement'].sudo().browse(int(announcement_id))
             if not announcement.exists():
@@ -1034,7 +987,7 @@ class MobileApi(http.Controller):
 
         except Exception as e:
             _logger.error(f"❌ خطأ في تعليم الإعلان كمقروء: {str(e)}")
-            return {'success': False, 'error': 'حدث خطأ في الخادم'}
+            return {'success': False, 'error': str(e)}
 
     @http.route('/api/mobile/announcements/categories', type='json', auth='user', methods=['POST'], csrf=False)
     def get_announcement_categories(self, **kwargs):
@@ -1052,12 +1005,10 @@ class MobileApi(http.Controller):
     def search_announcements(self, employee_id=None, search_term='', category='all', limit=20, **kwargs):
         """البحث في الإعلانات"""
         try:
+            _logger.info(f"🔍 البحث في الإعلانات: {search_term}, الفئة: {category}")
+
             if not employee_id:
                 return {'success': False, 'error': 'Employee ID is required'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             # بناء domain أساسي
             domain = self._get_employee_announcements_domain(int(employee_id))
@@ -1109,7 +1060,7 @@ class MobileApi(http.Controller):
 
         except Exception as e:
             _logger.error(f"❌ خطأ في البحث: {str(e)}")
-            return {'success': False, 'error': 'حدث خطأ في الخادم'}
+            return {'success': False, 'error': str(e)}
 
     # ═══════════════════════════════════════════════════════════════════════════
     # واجهات الموظفين
@@ -1119,12 +1070,10 @@ class MobileApi(http.Controller):
     def get_employee_info(self, employee_id=None):
         """الحصول على معلومات الموظف"""
         try:
+            _logger.info("====== طلب معلومات الموظف ======")
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             employee = request.env['hr.employee'].sudo().browse(int(employee_id))
 
@@ -1150,20 +1099,17 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب معلومات الموظف: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/employee/login', type='json', auth='public', csrf=False)
     def employee_login(self, username=None, pin=None):
         """تسجيل دخول الموظف بالـ username و PIN"""
         try:
-            _logger.info("====== محاولة تسجيل دخول ======")
-            _logger.info("username: %s", username)
-
             if not username or not pin:
                 return {'success': False, 'error': 'اسم المستخدم ورمز PIN مطلوبان'}
 
-            # البحث عن الموظف بالاسم فقط (بدون مقارنة PIN كنص)
+            # البحث عن الموظف بالاسم فقط
             employee = request.env['hr.employee'].sudo().search([
                 ('mobile_username', '=', username),
                 ('allow_mobile_access', '=', True),
@@ -1175,12 +1121,24 @@ class MobileApi(http.Controller):
                     'error': 'اسم المستخدم أو رمز PIN غير صحيح'
                 }
 
-            # التحقق من PIN باستخدام المقارنة المشفرة
-            if not employee.verify_pin(pin):
+            # التحقق من PIN - يدعم كلاً من التشفير والنص العادي
+            pin_valid = False
+            if hasattr(employee, 'verify_pin') and employee.mobile_pin_hash:
+                pin_valid = employee.verify_pin(pin)
+            elif employee.mobile_pin:
+                pin_valid = (employee.mobile_pin == pin)
+
+            if not pin_valid:
                 return {
                     'success': False,
                     'error': 'اسم المستخدم أو رمز PIN غير صحيح'
                 }
+
+            # تحديث آخر تسجيل دخول
+            employee.sudo().write({
+                'mobile_last_login': fields.Datetime.now(),
+                'mobile_login_count': (employee.mobile_login_count or 0) + 1,
+            })
 
             return {
                 'success': True,
@@ -1197,7 +1155,7 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في تسجيل الدخول: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     # ═══════════════════════════════════════════════════════════════════════════
@@ -1208,12 +1166,10 @@ class MobileApi(http.Controller):
     def get_payslips(self, employee_id=None, limit=12, offset=0, year=None, **kwargs):
         """الحصول على قائمة كشوف مرتبات الموظف"""
         try:
+            _logger.info("====== طلب كشوف المرتبات للموظف %s ======", employee_id)
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             # التحقق من وجود الموظف
             employee = request.env['hr.employee'].sudo().browse(int(employee_id))
@@ -1330,13 +1286,15 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب كشوف المرتبات: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/payslips/detail', type='json', auth='user', methods=['POST'], csrf=False)
     def get_payslip_details(self, payslip_id=None, **kwargs):
         """الحصول على تفاصيل كشف مرتب محدد"""
         try:
+            _logger.info("====== طلب تفاصيل كشف المرتب %s ======", payslip_id)
+
             if not payslip_id:
                 return {'success': False, 'error': 'معرف كشف المرتب مطلوب'}
 
@@ -1344,10 +1302,6 @@ class MobileApi(http.Controller):
 
             if not payslip.exists():
                 return {'success': False, 'error': 'كشف المرتب غير موجود'}
-
-            # التحقق من ملكية كشف المرتب
-            if not self._verify_employee_access(payslip.employee_id.id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             # تصنيف بنود الراتب
             allowances = {}
@@ -1487,19 +1441,17 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب تفاصيل كشف المرتب: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/payslips/summary', type='json', auth='user', methods=['POST'], csrf=False)
     def get_payslips_summary(self, employee_id=None, **kwargs):
         """الحصول على ملخص كشوف المرتبات"""
         try:
+            _logger.info("====== طلب ملخص كشوف المرتبات للموظف %s ======", employee_id)
+
             if not employee_id:
                 return {'success': False, 'error': 'معرف الموظف مطلوب'}
-
-            # التحقق من صلاحية الوصول
-            if not self._verify_employee_access(employee_id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             # جلب كشوف المرتبات المدفوعة
             paid_payslips = request.env['hr.payslip'].sudo().search([
@@ -1547,13 +1499,15 @@ class MobileApi(http.Controller):
             _logger.error("خطأ في جلب ملخص كشوف المرتبات: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
 
     @http.route('/api/mobile/payslips/download', type='json', auth='user', methods=['POST'], csrf=False)
     def download_payslip_pdf(self, payslip_id=None, **kwargs):
         """تحميل كشف المرتب كملف PDF (Base64)"""
         try:
+            _logger.info("====== طلب تحميل PDF لكشف المرتب %s ======", payslip_id)
+
             if not payslip_id:
                 return {'success': False, 'error': 'معرف كشف المرتب مطلوب'}
 
@@ -1561,10 +1515,6 @@ class MobileApi(http.Controller):
 
             if not payslip.exists():
                 return {'success': False, 'error': 'كشف المرتب غير موجود'}
-
-            # التحقق من ملكية كشف المرتب
-            if not self._verify_employee_access(payslip.employee_id.id):
-                return {'success': False, 'error': 'غير مصرح بالوصول'}
 
             # توليد PDF
             try:
@@ -1584,12 +1534,12 @@ class MobileApi(http.Controller):
                 _logger.error("خطأ في توليد PDF: %s", str(pdf_error))
                 return {
                     'success': False,
-                    'error': 'فشل في توليد ملف PDF'
+                    'error': f'فشل في توليد ملف PDF: {str(pdf_error)}'
                 }
 
         except Exception as e:
             _logger.error("خطأ في تحميل كشف المرتب: %s", str(e))
             return {
                 'success': False,
-                'error': 'حدث خطأ في الخادم'
+                'error': str(e)
             }
