@@ -152,12 +152,12 @@ class HrAttendance(models.Model):
 
         return distance_m
 
-    @api.model
     # الحد الأدنى لحجم الصورة (5 كيلوبايت) لمنع الصور الوهمية
     MIN_PHOTO_SIZE = 5 * 1024
     # الحد الأقصى لحجم الصورة (10 ميجابايت)
     MAX_PHOTO_SIZE = 10 * 1024 * 1024
 
+    @api.model
     def _validate_photo_data(self, photo_base64):
         """
         التحقق من صحة بيانات الصورة المرسلة على الخادم

@@ -161,12 +161,15 @@ class MobileConfigAPI(http.Controller):
             company = request.env.company.sudo()
 
             is_enabled = config_params.get_param('hr_mobile_app.allow_mobile_app_access', 'False')
+            database = config_params.get_param('hr_mobile_app.api_database', '') or request.db
 
-            # Only expose minimal info without authentication
             result = {
                 'server_online': True,
                 'api_version': '2.0',
                 'requires_token': True,
+                'mobile_app_enabled': is_enabled.lower() == 'true',
+                'database': database,
+                'company_name': company.name if company else '',
             }
 
             return self._success_response(result)
@@ -213,12 +216,12 @@ class MobileConfigAPI(http.Controller):
         return self._json_response(response_data)
 
     def _get_allowed_origin(self):
-        """Get configured CORS origin or restrict by default"""
+        """Get configured CORS origin - default to * for mobile app compatibility"""
         try:
             return request.env['ir.config_parameter'].sudo().get_param(
-                'hr_mobile_app.allowed_cors_origin', 'null')
+                'hr_mobile_app.allowed_cors_origin', '*')
         except Exception:
-            return 'null'
+            return '*'
 
     def _json_response(self, data):
         """إرجاع استجابة JSON مع CORS headers"""
@@ -228,7 +231,7 @@ class MobileConfigAPI(http.Controller):
             headers=[
                 ('Content-Type', 'application/json'),
                 ('Access-Control-Allow-Origin', allowed_origin),
-                ('Access-Control-Allow-Methods', 'POST, OPTIONS'),
+                ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'),
                 ('Access-Control-Allow-Headers', 'Content-Type'),
             ]
         )
