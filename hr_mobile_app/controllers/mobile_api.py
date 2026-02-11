@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import http, fields
 from odoo.http import request
+import json
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -10,8 +11,107 @@ class MobileApi(http.Controller):
     """واجهات API للتطبيق المحمول"""
 
     # ═══════════════════════════════════════════════════════════════════════════
-    # واجهات عامة
+    # واجهات عامة (HTTP endpoints - no session required)
     # ═══════════════════════════════════════════════════════════════════════════
+
+    @http.route('/api/mobile/version', type='http', auth='none',
+                methods=['GET'], csrf=False, cors='*')
+    def get_api_version(self, **kw):
+        """API version check - basic connectivity test"""
+        return request.make_response(
+            json.dumps({
+                'jsonrpc': '2.0',
+                'result': {
+                    'version': '2.0',
+                    'name': 'Odoo Mobile API',
+                    'status': 'online',
+                }
+            }),
+            headers=[('Content-Type', 'application/json')]
+        )
+
+    @http.route('/api/mobile/simple_login', type='http', auth='none',
+                methods=['POST', 'OPTIONS'], csrf=False, cors='*')
+    def simple_login(self, **kw):
+        """Simple login for mobile app - no Odoo session required"""
+        if request.httprequest.method == 'OPTIONS':
+            return request.make_response('', headers=[
+                ('Access-Control-Allow-Origin', '*'),
+                ('Access-Control-Allow-Methods', 'POST, OPTIONS'),
+                ('Access-Control-Allow-Headers', 'Content-Type'),
+            ])
+
+        try:
+            _logger.info("====== Simple Login Request ======")
+
+            if not request.httprequest.data:
+                return self._make_json_response(
+                    {'success': False, 'error': 'No data received'})
+
+            data = json.loads(request.httprequest.data.decode('utf-8'))
+            params = data.get('params', data)
+            username = params.get('username', '')
+            password = params.get('password', params.get('pin', ''))
+
+            if not username or not password:
+                return self._make_json_response(
+                    {'success': False, 'error': 'Username and password required'})
+
+            _logger.info("Login attempt for: %s", username)
+
+            employee = request.env['hr.employee'].sudo().search([
+                ('mobile_username', '=', username),
+                ('allow_mobile_access', '=', True),
+            ], limit=1)
+
+            if not employee:
+                _logger.warning("Login failed - user not found: %s", username)
+                return self._make_json_response(
+                    {'success': False, 'error': 'بيانات الدخول غير صحيحة'})
+
+            # Verify PIN - supports both hashed and plaintext
+            pin_valid = False
+            if hasattr(employee, 'verify_pin') and employee.mobile_pin_hash and employee.mobile_salt:
+                pin_valid = employee.verify_pin(password)
+            elif employee.mobile_pin:
+                pin_valid = (employee.mobile_pin == password)
+
+            if not pin_valid:
+                _logger.warning("Login failed - wrong PIN for: %s", username)
+                return self._make_json_response(
+                    {'success': False, 'error': 'بيانات الدخول غير صحيحة'})
+
+            _logger.info("Login successful for employee ID: %s", employee.id)
+
+            return self._make_json_response({
+                'success': True,
+                'employee': {
+                    'id': employee.id,
+                    'name': employee.name,
+                    'job_title': employee.job_title or '',
+                    'department': employee.department_id.name if employee.department_id else '',
+                    'work_email': employee.work_email or '',
+                    'work_phone': employee.work_phone or '',
+                    'mobile_phone': employee.mobile_phone or '',
+                }
+            })
+
+        except Exception as e:
+            _logger.error("simple_login error: %s", str(e))
+            return self._make_json_response(
+                {'success': False, 'error': 'حدث خطأ في الخادم'})
+
+    def _make_json_response(self, data):
+        """Return JSON response with CORS headers"""
+        return request.make_response(
+            json.dumps(data),
+            headers=[
+                ('Content-Type', 'application/json'),
+                ('Access-Control-Allow-Origin', '*'),
+                ('Access-Control-Allow-Methods', 'POST, GET, OPTIONS'),
+                ('Access-Control-Allow-Headers', 'Content-Type'),
+            ]
+        )
 
     @http.route('/api/mobile/test', type='json', auth='public', csrf=False)
     def test_api(self):
