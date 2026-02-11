@@ -1,6 +1,7 @@
 // lib/pages/setup_screen.dart
 // شاشة إعداد التطبيق - تصميم احترافي جديد
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
@@ -88,10 +89,15 @@ class _SetupScreenState extends State<SetupScreen>
 
     try {
       final code = _codeController.text.trim();
+      debugPrint('[Setup] Processing code: ${code.length} chars');
 
       final parseResult = await _configService.parseConnectionCode(code);
+      debugPrint('[Setup] Parse result: success=${parseResult.isSuccess}, '
+          'server=${parseResult.serverUrl}, db=${parseResult.database}, '
+          'hasServiceCreds=${parseResult.serviceUsername != null}');
 
       if (!parseResult.isSuccess) {
+        debugPrint('[Setup] Parse failed: ${parseResult.errorMessage}');
         setState(() {
           _errorMessage = parseResult.errorMessage;
           _isLoading = false;
@@ -103,9 +109,13 @@ class _SetupScreenState extends State<SetupScreen>
         _successMessage = 'جاري التحقق من الاتصال...';
       });
 
+      debugPrint('[Setup] Verifying connection to ${parseResult.serverUrl}...');
       final verifyResult = await _configService.verifyConnection(parseResult);
+      debugPrint('[Setup] Verify result: success=${verifyResult.isSuccess}, '
+          'warning=${verifyResult.warning}, error=${verifyResult.errorMessage}');
 
       if (!verifyResult.isSuccess) {
+        debugPrint('[Setup] Verification failed: ${verifyResult.errorMessage}');
         setState(() {
           _errorMessage = verifyResult.errorMessage;
           _isLoading = false;
@@ -114,6 +124,7 @@ class _SetupScreenState extends State<SetupScreen>
         return;
       }
 
+      debugPrint('[Setup] Saving config...');
       final saved = await _configService.saveConfig(
         serverUrl: verifyResult.serverUrl!,
         database: verifyResult.database!,
@@ -124,6 +135,7 @@ class _SetupScreenState extends State<SetupScreen>
       );
 
       if (!saved) {
+        debugPrint('[Setup] Save failed');
         setState(() {
           _errorMessage = 'فشل في حفظ الإعدادات';
           _isLoading = false;
@@ -131,6 +143,8 @@ class _SetupScreenState extends State<SetupScreen>
         });
         return;
       }
+
+      debugPrint('[Setup] Config saved successfully, navigating to login...');
 
       // نجاح! الانتقال لصفحة تسجيل الدخول
       setState(() {
@@ -152,6 +166,7 @@ class _SetupScreenState extends State<SetupScreen>
         ),
       );
     } catch (e) {
+      debugPrint('[Setup] Exception: $e');
       setState(() {
         _errorMessage = 'حدث خطأ: $e';
         _isLoading = false;

@@ -2,6 +2,7 @@
 // خدمة إدارة إعدادات الاتصال - تقرأ من Connection String أو QR Code
 
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'secure_storage_service.dart';
@@ -269,15 +270,20 @@ class ConfigService {
     final serverUrl = parseResult.serverUrl!;
     final database = parseResult.database!;
 
+    debugPrint('[ConfigService] verifyConnection: serverUrl=$serverUrl, db=$database');
+
     try {
       // محاولة 1: اختبار /api/mobile/version
       final apiUrl = '$serverUrl/api/mobile/version';
+      debugPrint('[ConfigService] Trying: $apiUrl');
 
       try {
         final response = await http.get(
           Uri.parse(apiUrl),
         ).timeout(const Duration(seconds: 10));
 
+        debugPrint('[ConfigService] /api/mobile/version -> ${response.statusCode}');
+
         if (response.statusCode == 200) {
           return VerifyResult.success(
             serverUrl: serverUrl,
@@ -288,15 +294,57 @@ class ConfigService {
             servicePassword: parseResult.servicePassword,
           );
         }
-      } catch (_) {}
+      } catch (e) {
+        debugPrint('[ConfigService] /api/mobile/version failed: $e');
+      }
 
-      // محاولة 2: اختبار /web/webclient/version_info
-      final webUrl = '$serverUrl/web/webclient/version_info';
+      // محاولة 2: اختبار /api/mobile/config_info (module endpoint with company info)
+      final configUrl = '$serverUrl/api/mobile/config_info';
+      debugPrint('[ConfigService] Trying: $configUrl');
 
       try {
         final response = await http.get(
-          Uri.parse(webUrl),
+          Uri.parse(configUrl),
         ).timeout(const Duration(seconds: 10));
+
+        debugPrint('[ConfigService] /api/mobile/config_info -> ${response.statusCode}');
+
+        if (response.statusCode == 200) {
+          // Try to extract company name and database from response
+          String? companyName = parseResult.companyName;
+          try {
+            final body = jsonDecode(response.body);
+            final result = body['result'] ?? body;
+            if (result['company_name'] != null && result['company_name'].toString().isNotEmpty) {
+              companyName = result['company_name'];
+            }
+          } catch (_) {}
+
+          return VerifyResult.success(
+            serverUrl: serverUrl,
+            database: database,
+            token: parseResult.token,
+            companyName: companyName,
+            serviceUsername: parseResult.serviceUsername,
+            servicePassword: parseResult.servicePassword,
+          );
+        }
+      } catch (e) {
+        debugPrint('[ConfigService] /api/mobile/config_info failed: $e');
+      }
+
+      // محاولة 3: اختبار /web/webclient/version_info (standard Odoo endpoint)
+      final webUrl = '$serverUrl/web/webclient/version_info';
+      debugPrint('[ConfigService] Trying: $webUrl');
+
+      try {
+        final response = await http.post(
+          Uri.parse(webUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({"jsonrpc": "2.0", "method": "call", "params": {}}),
+        ).timeout(const Duration(seconds: 10));
+
+        debugPrint('[ConfigService] /web/webclient/version_info -> ${response.statusCode}');
 
         if (response.statusCode == 200) {
           return VerifyResult.success(
@@ -306,28 +354,64 @@ class ConfigService {
             companyName: parseResult.companyName,
             serviceUsername: parseResult.serviceUsername,
             servicePassword: parseResult.servicePassword,
-            warning: 'تم الاتصال بالسيرفر. تأكد من صحة اسم قاعدة البيانات.',
           );
         }
-      } catch (_) {}
-
-      // محاولة 3: اختبار الصفحة الرئيسية
-      final mainResponse = await http.get(
-        Uri.parse(serverUrl),
-      ).timeout(const Duration(seconds: 10));
-
-      if (mainResponse.statusCode == 200 || mainResponse.statusCode == 303) {
-        return VerifyResult.success(
-          serverUrl: serverUrl,
-          database: database,
-          token: parseResult.token,
-          companyName: parseResult.companyName,
-          serviceUsername: parseResult.serviceUsername,
-          servicePassword: parseResult.servicePassword,
-          warning: 'تم الاتصال بالسيرفر.',
-        );
+      } catch (e) {
+        debugPrint('[ConfigService] /web/webclient/version_info failed: $e');
       }
 
+      // محاولة 3: اختبار /web/login (standard Odoo login page)
+      final loginUrl = '$serverUrl/web/login';
+      debugPrint('[ConfigService] Trying: $loginUrl');
+
+      try {
+        final response = await http.get(
+          Uri.parse(loginUrl),
+        ).timeout(const Duration(seconds: 10));
+
+        debugPrint('[ConfigService] /web/login -> ${response.statusCode}');
+
+        // Any response (200, 303, 302) means server is reachable
+        if (response.statusCode >= 200 && response.statusCode < 400) {
+          return VerifyResult.success(
+            serverUrl: serverUrl,
+            database: database,
+            token: parseResult.token,
+            companyName: parseResult.companyName,
+            serviceUsername: parseResult.serviceUsername,
+            servicePassword: parseResult.servicePassword,
+          );
+        }
+      } catch (e) {
+        debugPrint('[ConfigService] /web/login failed: $e');
+      }
+
+      // محاولة 4: اختبار الصفحة الرئيسية
+      debugPrint('[ConfigService] Trying root: $serverUrl');
+
+      try {
+        final mainResponse = await http.get(
+          Uri.parse(serverUrl),
+        ).timeout(const Duration(seconds: 10));
+
+        debugPrint('[ConfigService] root -> ${mainResponse.statusCode}');
+
+        // Accept any response as proof the server exists
+        if (mainResponse.statusCode >= 200 && mainResponse.statusCode < 500) {
+          return VerifyResult.success(
+            serverUrl: serverUrl,
+            database: database,
+            token: parseResult.token,
+            companyName: parseResult.companyName,
+            serviceUsername: parseResult.serviceUsername,
+            servicePassword: parseResult.servicePassword,
+          );
+        }
+      } catch (e) {
+        debugPrint('[ConfigService] root failed: $e');
+      }
+
+      debugPrint('[ConfigService] All verification attempts failed');
       return VerifyResult.failure(
           'لا يمكن الاتصال بالسيرفر.\n'
               'تأكد من:\n'
@@ -336,7 +420,8 @@ class ConfigService {
               '• الشبكة متصلة'
       );
     } catch (e) {
-      return VerifyResult.failure('فشل الاتصال بالسيرفر');
+      debugPrint('[ConfigService] verifyConnection exception: $e');
+      return VerifyResult.failure('فشل الاتصال بالسيرفر: $e');
     }
   }
 

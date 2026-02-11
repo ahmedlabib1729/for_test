@@ -9,7 +9,6 @@ import 'setup_screen.dart';
 import '../services/odoo_service.dart';
 import '../services/config_service.dart';
 import '../services/language_manager.dart';
-import '../services/secure_storage_service.dart';
 import '../widgets/language_switcher.dart';
 
 class LoginPage extends StatefulWidget {
@@ -113,10 +112,13 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
   /// تحميل الإعدادات من ConfigService
   Future<void> _loadConfig() async {
+    debugPrint('[LoginPage] _loadConfig started');
     try {
       final isConfigured = await _configService.isConfigured();
+      debugPrint('[LoginPage] isConfigured=$isConfigured');
 
       if (!isConfigured) {
+        debugPrint('[LoginPage] Not configured, navigating to setup');
         _navigateToSetup();
         return;
       }
@@ -126,15 +128,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       final database = _configService.database!;
       _companyName = _configService.companyName;
 
-      // Check if service credentials exist
-      final secureStorage = SecureStorageService();
-      final svcUser = await secureStorage.getServiceUsername();
-      if (svcUser == null || svcUser.isEmpty) {
-        // No service credentials - need to re-setup with 5-part connection string
-        await _configService.clearConfig();
-        _navigateToSetup();
-        return;
-      }
+      debugPrint('[LoginPage] Config loaded - server: $serverUrl, db: $database, company: $_companyName');
 
       _odooService = OdooService(
         url: serverUrl,
@@ -145,9 +139,11 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
         _isConfigLoading = false;
       });
 
+      debugPrint('[LoginPage] Login page ready, checking connection...');
       // اختبار الاتصال
       _checkConnection();
     } catch (e) {
+      debugPrint('[LoginPage] _loadConfig exception: $e');
       _navigateToSetup();
     }
   }
@@ -167,14 +163,16 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
 
     try {
       final serverConnected = await _odooService!.testServerConnection();
+      debugPrint('[LoginPage] Server connection test: $serverConnected');
 
       final apiConnected = await _odooService!.testApiConnection();
+      debugPrint('[LoginPage] API connection test: $apiConnected');
 
       if (!serverConnected && mounted) {
         _showSnackBar(context.lang.translate('connection_error'), isError: true);
       }
     } catch (e) {
-      // connection test failed
+      debugPrint('[LoginPage] Connection test failed: $e');
     }
   }
 

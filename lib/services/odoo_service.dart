@@ -1,6 +1,7 @@
 // lib/services/odoo_service.dart - إصدار كامل ومصحح
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
@@ -39,12 +40,40 @@ class OdooService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   Future<bool> testApiConnection() async {
+    // Try multiple endpoints to test API connectivity
+    final endpoints = [
+      '${baseUrl}api/mobile/version',
+      '${baseUrl}api/mobile/config_info',
+    ];
+
+    for (final testUrl in endpoints) {
+      try {
+        final response = await http.get(Uri.parse(testUrl))
+            .timeout(const Duration(seconds: 10));
+        debugPrint('[OdooService] testApiConnection $testUrl -> ${response.statusCode}');
+        if (response.statusCode == 200) return true;
+      } catch (e) {
+        debugPrint('[OdooService] testApiConnection $testUrl failed: $e');
+      }
+    }
+
+    // Fallback: try JSON-RPC test endpoint
     try {
       final testUrl = '${baseUrl}api/mobile/test';
-      final response = await http.get(Uri.parse(testUrl))
-          .timeout(const Duration(seconds: 10));
+      final response = await http.post(
+        Uri.parse(testUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'jsonrpc': '2.0',
+          'method': 'call',
+          'params': {},
+          'id': 1
+        }),
+      ).timeout(const Duration(seconds: 10));
+      debugPrint('[OdooService] testApiConnection $testUrl -> ${response.statusCode}');
       return response.statusCode == 200;
     } catch (e) {
+      debugPrint('[OdooService] testApiConnection test endpoint failed: $e');
       return false;
     }
   }
@@ -53,8 +82,10 @@ class OdooService {
     try {
       final response = await http.get(Uri.parse(baseUrl))
           .timeout(const Duration(seconds: 10));
-      return response.statusCode == 200;
+      // Odoo root may return 200, 303 (redirect to /web/login), or 302
+      return response.statusCode >= 200 && response.statusCode < 400;
     } catch (e) {
+      debugPrint('[OdooService] testServerConnection failed: $e');
       return false;
     }
   }
@@ -67,8 +98,10 @@ class OdooService {
 
       if (serviceUsername == null || servicePassword == null ||
           serviceUsername.isEmpty || servicePassword.isEmpty) {
+        debugPrint('[OdooService] loginWithService: no service credentials stored');
         return false;
       }
+      debugPrint('[OdooService] loginWithService: attempting with user=$serviceUsername db=$database');
 
       final loginUrl = '${baseUrl}web/session/authenticate';
       final response = await http.post(
@@ -115,58 +148,110 @@ class OdooService {
   }
 
   Future<Employee?> loginEmployee(String username, String pin) async {
+    debugPrint('[OdooService] loginEmployee: username=$username');
+
     // Method 1: Try JSON-RPC endpoint (supports both hashed and plaintext PIN)
     try {
+      debugPrint('[OdooService] Trying Method 1: JSON-RPC /api/mobile/employee/login');
       final employee = await _tryJsonRpcLogin(username, pin);
-      if (employee != null) return employee;
-    } catch (_) {}
+      if (employee != null) {
+        debugPrint('[OdooService] Method 1 succeeded');
+        return employee;
+      }
+      debugPrint('[OdooService] Method 1: no employee returned');
+    } catch (e) {
+      debugPrint('[OdooService] Method 1 failed: $e');
+    }
 
     // Method 2: Try simple_login HTTP endpoint (uses verify_pin with hashed PINs)
     try {
+      debugPrint('[OdooService] Trying Method 2: /api/mobile/simple_login');
       final employee = await _trySimpleLogin(username, pin);
-      if (employee != null) return employee;
-    } catch (_) {}
+      if (employee != null) {
+        debugPrint('[OdooService] Method 2 succeeded');
+        return employee;
+      }
+      debugPrint('[OdooService] Method 2: no employee returned');
+    } catch (e) {
+      debugPrint('[OdooService] Method 2 failed: $e');
+    }
 
     // Method 3: Fallback to service account + search_read (legacy)
     try {
+      debugPrint('[OdooService] Trying Method 3: service login + search_read');
       final loggedIn = await loginWithService();
+      debugPrint('[OdooService] Service login: $loggedIn');
       if (loggedIn) {
         final employee = await _searchEmployeeByUsername(username, pin);
-        if (employee != null) return employee;
+        if (employee != null) {
+          debugPrint('[OdooService] Method 3 succeeded');
+          return employee;
+        }
+        debugPrint('[OdooService] Method 3: search found no match');
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('[OdooService] Method 3 failed: $e');
+    }
 
+    debugPrint('[OdooService] All login methods failed');
     return null;
   }
 
   /// Login via /api/mobile/employee/login (JSON-RPC, auth='public')
   Future<Employee?> _tryJsonRpcLogin(String username, String pin) async {
-    final url = '${baseUrl}api/mobile/employee/login';
+    // Pass db as query parameter for Odoo database resolution
+    final url = '${baseUrl}api/mobile/employee/login?db=${Uri.encodeComponent(database)}';
+    final requestBody = jsonEncode({
+      'jsonrpc': '2.0',
+      'method': 'call',
+      'params': {
+        'username': username,
+        'pin': pin,
+      },
+      'id': DateTime.now().millisecondsSinceEpoch
+    });
+    debugPrint('[OdooService] Method 1 URL: $url');
+    debugPrint('[OdooService] Method 1 db: $database');
+
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'jsonrpc': '2.0',
-        'method': 'call',
-        'params': {'username': username, 'pin': pin},
-        'id': DateTime.now().millisecondsSinceEpoch
-      }),
+      body: requestBody,
     ).timeout(const Duration(seconds: 15));
+
+    debugPrint('[OdooService] Method 1 status: ${response.statusCode}');
+    final bodyPreview = response.body.length > 500
+        ? response.body.substring(0, 500)
+        : response.body;
+    debugPrint('[OdooService] Method 1 response: $bodyPreview');
 
     if (response.statusCode != 200) return null;
 
     final result = jsonDecode(response.body);
+
+    // Check for JSON-RPC error
+    if (result['error'] != null) {
+      debugPrint('[OdooService] Method 1 JSON-RPC error: ${result['error']}');
+      return null;
+    }
+
     final apiResult = result['result'];
 
     if (apiResult != null && apiResult['success'] == true && apiResult['employee'] != null) {
       return _buildEmployeeFromLogin(apiResult['employee']);
     }
+
+    if (apiResult != null) {
+      debugPrint('[OdooService] Method 1 server says: ${apiResult['error'] ?? 'no success flag'}');
+    }
     return null;
   }
 
-  /// Login via /api/mobile/simple_login (HTTP, auth='public', uses verify_pin)
+  /// Login via /api/mobile/simple_login (HTTP, auth='none')
   Future<Employee?> _trySimpleLogin(String username, String pin) async {
-    final url = '${baseUrl}api/mobile/simple_login';
+    final url = '${baseUrl}api/mobile/simple_login?db=${Uri.encodeComponent(database)}';
+    debugPrint('[OdooService] Method 2 URL: $url');
+
     final response = await http.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
@@ -175,14 +260,34 @@ class OdooService {
       }),
     ).timeout(const Duration(seconds: 15));
 
+    debugPrint('[OdooService] Method 2 status: ${response.statusCode}');
+    final bodyPreview = response.body.length > 500
+        ? response.body.substring(0, 500)
+        : response.body;
+    debugPrint('[OdooService] Method 2 response: $bodyPreview');
+
     if (response.statusCode != 200) return null;
 
     final result = jsonDecode(response.body);
 
-    // simple_login returns plain JSON (not JSON-RPC wrapped)
+    // Handle plain JSON response (from our simple_login endpoint)
     if (result['success'] == true && result['employee'] != null) {
       return _buildEmployeeFromLogin(result['employee']);
     }
+
+    // Handle JSON-RPC wrapped response (from type='json' endpoint)
+    if (result['result'] != null) {
+      final apiResult = result['result'];
+      if (apiResult['success'] == true && apiResult['employee'] != null) {
+        return _buildEmployeeFromLogin(apiResult['employee']);
+      }
+      debugPrint('[OdooService] Method 2 server says: ${apiResult['error'] ?? 'no success'}');
+    }
+
+    if (result['error'] != null) {
+      debugPrint('[OdooService] Method 2 error: ${result['error']}');
+    }
+
     return null;
   }
 
